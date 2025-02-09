@@ -1,0 +1,93 @@
+/* Faz o layout ocupar toda a tela */
+.home-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+}
+
+/* Mantém o título e a barra de pesquisa centralizados ao iniciar */
+.search-section {
+  text-align: center;
+  margin-top: 15vh; /* Centraliza verticalmente na tela inicial */
+}
+
+/* Ajuste na barra de pesquisa */
+.search-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.search-input {
+  padding: 10px;
+  width: 250px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.search-button {
+  padding: 10px 15px;
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+.search-button:hover {
+  background-color: #e65c00;
+}
+
+/* Área onde os carros aparecem */
+.results-container {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 5px; /* Dá um espaço entre a busca e os resultados */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Estilização dos cards */
+.car-item {
+  background: rgb(255, 255, 255);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.car-image {
+  width: 100%;
+  max-width: 200px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.buttons {
+  margin-top: 10px;
+}
+
+.buttons button {
+  padding: 8px 12px;
+  margin: 5px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.buttons button:hover {
+  background-color: #0056b3;
+}
