@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import './HomePage.css'; // Certifique-se de que o CSS seja importado corretamente
+import '../css/HomePage.css';
 
 const HomePage = () => {
   const [search, setSearch] = useState("");
@@ -36,25 +36,27 @@ const HomePage = () => {
 
   return (
     <div className="home-container">
-      <h1 className="title">Hot Wheels Collection</h1>
-      
-      <div className="search-container">
-        <div className="search-bar">
+      {/* Seção fixa com título e barra de pesquisa */}
+      <div className="search-section">
+        <h1 className="title">Hot Wheels Collection</h1>
+        <div className="search-container">
           <input 
             type="text" 
             placeholder="Buscar Hot Wheels" 
             value={search} 
             onChange={(e) => setSearch(e.target.value)} 
+            className="search-input"
           />
+          <button onClick={handleSearch} className="search-button">Buscar</button>
         </div>
-        <button onClick={handleSearch} className="search-button">Buscar</button>
       </div>
 
-      <div>
+      {/* Área de resultados */}
+      <div className="results-container">
         {results.map((car) => (
           <div key={car._id} className="car-item">
             <p>{car.name}</p>
-            {car.imageUrl && <img src={car.imageUrl} alt={car.name} className="car-image" />} {/* Alterando aqui */}
+            {car.imageUrl && <img src={car.imageUrl} alt={car.name} className="car-image" />}
             <div className="buttons">
               <button onClick={() => addToCollection(car._id)}>Adicionar à Coleção</button>
               <button onClick={() => addToFavorites(car._id)}>Adicionar aos Favoritos</button>
