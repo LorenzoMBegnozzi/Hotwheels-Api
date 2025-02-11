@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
-const HotWheelSchema = new mongoose.Schema({
+const hotWheelSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  imageUrl: { type: String, required: true },
-  year: { type: Number, required: true },
+  imageUrl: { type: String },
+  year: { type: Number },
 });
 
-module.exports = mongoose.model("HotWheel", HotWheelSchema);
+module.exports = mongoose.model("HotWheel", hotWheelSchema);

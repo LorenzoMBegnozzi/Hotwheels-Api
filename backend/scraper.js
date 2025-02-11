@@ -1,82 +1,104 @@
-const axios = require('axios');
-const cheerio = require('cheerio');
-const mongoose = require('mongoose');
-const HotWheel = require('./models/HotWheel');
+const axios = require("axios");
+const cheerio = require("cheerio");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
-mongoose.connect('mongodb://127.0.0.1:27017/hotwheels')
-  .then(() => console.log('✅ MongoDB conectado'))
-  .catch(err => console.error('❌ Erro ao conectar ao MongoDB:', err));
+// Conectar ao MongoDB
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("✅ Conectado ao MongoDB"))
+  .catch(err => console.error("❌ Erro ao conectar ao MongoDB:", err));
 
-// Base URL
-const baseURL = 'https://hotwheels.fandom.com';
+const HotWheelSchema = new mongoose.Schema({
+  name: { type: String, unique: true },
+  imageUrl: String,
+  year: Number,
+});
 
-// Array de links para testar (fornecendo links diretamente)
-const yearLinks = [
-  { year: '1968', link: 'https://hotwheels.fandom.com/wiki/List_of_1968_Hot_Wheels' },
-  { year: '1969', link: 'https://hotwheels.fandom.com/wiki/List_of_1969_Hot_Wheels' },
-  // Adicione mais links aqui conforme necessário
-];
+const HotWheel = mongoose.model("HotWheel", HotWheelSchema);
 
-// Função para adicionar um pequeno delay entre requisições
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-async function scrapeModels(year, yearLink) {
+// Função para buscar imagem no Google caso não encontre na Fandom
+async function getGoogleImage(searchQuery) {
   try {
-    await sleep(2000); // Delay de 2 segundos para evitar bloqueio
-    const { data } = await axios.get(yearLink);
-    const $ = cheerio.load(data);
-    const models = [];
+    console.log(`🔎 Buscando imagem no Google para: ${searchQuery}`);
 
-    // Encontrando os modelos na tabela
-    $('.mw-parser-output table tr').each((_, row) => {
-      const columns = $(row).find('td');
-      if (columns.length > 0) {
-        const name = $(columns[0]).text().trim();
-        const imageElement = $(columns).find('img');
-        let imageUrl = imageElement.attr('src') || '';
+    const response = await axios.get(`https://www.google.com/search?hl=en&tbm=isch&q=${encodeURIComponent(searchQuery + " Hot Wheels 2025 diecast")}`, {
+      headers: { "User-Agent": "Mozilla/5.0" }
+    });
 
-        if (!name) return;
+    const $ = cheerio.load(response.data);
+    let imageUrl = $("img").eq(1).attr("src"); // Pega a primeira imagem real
 
-        if (imageUrl && !imageUrl.startsWith('http')) {
-          imageUrl = baseURL + imageUrl;
-        }
+    if (!imageUrl || imageUrl.includes("/tia/tia.png")) {
+      console.log(`⚠️ Nenhuma imagem válida encontrada para ${searchQuery}`);
+      return "https://via.placeholder.com/150"; // Imagem padrão caso não encontre
+    }
 
-        models.push({ name, imageUrl, year });
+    return imageUrl;
+  } catch (error) {
+    console.error(`❌ Erro ao buscar imagem no Google para ${searchQuery}:`, error);
+    return "https://via.placeholder.com/150"; // Imagem padrão de fallback
+  }
+}
+
+
+// Função de raspagem
+async function scrapeHotWheels() {
+  try {
+    const url = "https://hotwheels.fandom.com/wiki/List_of_2023_Hot_Wheels";
+
+    const { data } = await axios.get(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
       }
     });
 
-    console.log(`📆 Modelos do ano ${year}: ${models.length}`);
-    return models;
-  } catch (error) {
-    console.error(`❌ Erro ao raspar modelos do ano ${year}:`, error);
-    return [];
-  }
-}
+    const $ = cheerio.load(data);
+    const hotWheels = [];
+    const defaultImage = "https://via.placeholder.com/150";
 
-async function scrapeAndSave() {
-  try {
-    // Testando com os links diretamente fornecidos
-    for (const { year, link } of yearLinks) {
-      console.log(`🔄 Raspando modelos do ano ${year}...`);
-      const models = await scrapeModels(year, link);
+    for (const element of $("table.wikitable tbody tr").toArray()) {
+      const columns = $(element).find("td");
 
-      if (models.length > 0) {
-        try {
-          await HotWheel.insertMany(models);
-          console.log(`✅ ${models.length} modelos do ano ${year} salvos com sucesso.`);
-        } catch (err) {
-          console.error(`❌ Erro ao salvar modelos do ano ${year}:`, err);
+      if (columns.length > 4) {
+        const name = $(columns[2]).find("a").text().trim() || $(columns[2]).text().trim();
+
+        let imageElement = $(columns).find("img");
+        let imageUrl = imageElement.attr("data-src") || imageElement.attr("src") || "";
+
+        // Remove parâmetros extras da URL
+        if (imageUrl) {
+          imageUrl = imageUrl.split("/revision")[0];
         }
-      } else {
-        console.warn(`⚠️ Nenhum modelo encontrado para o ano ${year}.`);
+
+        // Se a imagem for inválida, busca no Google
+        if (!imageUrl || imageUrl.includes("/tia/tia.png") || imageUrl.includes("Image_Not_Available")) {
+          imageUrl = await getGoogleImage(`${name} Hot Wheels`);
+        }
+
+        console.log(`🚗 Modelo: ${name}, 🖼️ Imagem: ${imageUrl}`);
+
+        if (name) {
+          hotWheels.push({ name, imageUrl, year: 2025 });
+        }
       }
     }
+
+    console.log(`📦 Dados para salvar: ${JSON.stringify(hotWheels, null, 2)}`);
+
+    // Inserir ou atualizar no MongoDB
+    for (const hotWheel of hotWheels) {
+      await HotWheel.updateOne(
+        { name: hotWheel.name },
+        { $set: hotWheel },
+        { upsert: true }
+      );
+    }
+
+    console.log("🔥 Dados salvos no MongoDB com sucesso!");
+    mongoose.connection.close();
   } catch (error) {
-    console.error('❌ Erro na raspagem:', error);
-  } finally {
-    console.log('🎉 Raspagem concluída!');
-    mongoose.disconnect();
+    console.error("❌ Erro na raspagem:", error);
   }
 }
 
-scrapeAndSave();
+scrapeHotWheels();
