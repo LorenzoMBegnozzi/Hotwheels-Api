@@ -1,71 +1,98 @@
 import React, { useState } from "react";
 import axios from "axios";
 import '../css/HomePage.css';
+import { Link } from "react-router-dom";
+
 
 const HomePage = () => {
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
-  const userId = "ID_DO_USUÁRIO"; // Troque pelo ID do usuário logado
+  const userId = "ID_DO_USUÁRIO"; // Substitua pelo ID do usuário autenticado
 
   const handleSearch = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/hotwheels/search?name=${search}`);
-      setResults(res.data);
-    } catch (err) {
-      alert("Erro ao buscar Hot Wheels");
+      const response = await axios.get(`http://localhost:5000/api/hotwheels/search?name=${search}`);
+      setResults(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar Hot Wheels:", error);
     }
   };
 
   const addToCollection = async (hotWheelId) => {
     try {
-      await axios.post("http://localhost:5000/api/collection/add", { userId, hotWheelId });
-      alert("Adicionado à coleção!");
-    } catch (err) {
-      alert("Erro ao adicionar à coleção");
+      const token = localStorage.getItem("token"); // Certifique-se de que o token está salvo no localStorage
+      if (!token) {
+        alert("Token de autenticação não encontrado!");
+        return;
+      }
+  
+      const response = await axios.post(
+        "http://localhost:5000/api/collection/add",
+        { userId, hotWheelId }, // Payload enviado
+        {
+          headers: { "x-auth-token": token }, // Headers enviados
+        }
+      );
+  
+      if (response.status === 200) {
+        alert("Adicionado à coleção com sucesso!");
+      } else {
+        alert("Erro ao adicionar à coleção!");
+      }
+    } catch (error) {
+      console.error("Erro ao adicionar à coleção:", error);
+      alert("Erro ao adicionar à coleção. Confira o console.");
     }
   };
 
   const addToFavorites = async (hotWheelId) => {
     try {
-      await axios.post("http://localhost:5000/api/collection/favorite", { userId, hotWheelId });
+      await axios.post("http://localhost:5000/api/collection/favorite", { userId, hotWheelId }, {
+        headers: { "x-auth-token": localStorage.getItem("token") }
+      });
       alert("Adicionado aos favoritos!");
-    } catch (err) {
-      alert("Erro ao adicionar aos favoritos");
+    } catch (error) {
+      console.error("Erro ao adicionar aos favoritos:", error);
     }
   };
 
   return (
     <div className="home-container">
-      {/* Seção fixa com título e barra de pesquisa */}
       <div className="search-section">
-        <h1 className="title">Hot Wheels Collection</h1>
+        <h1>Buscar Hot Wheels</h1>
         <div className="search-container">
-          <input 
-            type="text" 
-            placeholder="Buscar Hot Wheels" 
-            value={search} 
-            onChange={(e) => setSearch(e.target.value)} 
+          <input
+            type="text"
             className="search-input"
+            placeholder="Digite o nome do modelo..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
-          <button onClick={handleSearch} className="search-button">Buscar</button>
+          <button className="search-button" onClick={handleSearch}>Buscar</button>
+        </div>
+  
+        {/* Botão de "Ir para Minha Coleção" */}
+        <div className="collection-button-container">
+          <Link to="/minha-colecao" className="collection-button">
+            🚗 Ir para Minha Coleção
+          </Link>
         </div>
       </div>
-
-      {/* Área de resultados */}
+  
       <div className="results-container">
         {results.map((car) => (
           <div key={car._id} className="car-item">
-            <p>{car.name}</p>
-            {car.imageUrl && <img src={car.imageUrl} alt={car.name} className="car-image" />}
+            <h3>{car.name} ({car.year})</h3>
+            <img src={car.imageUrl} alt={car.name} className="car-image" />
             <div className="buttons">
-              <button onClick={() => addToCollection(car._id)}>Adicionar à Coleção</button>
-              <button onClick={() => addToFavorites(car._id)}>Adicionar aos Favoritos</button>
+              <button onClick={() => addToCollection(car._id)}>➕ Adicionar à Coleção</button>
+              <button onClick={() => addToFavorites(car._id)}>⭐ Adicionar aos Favoritos</button>
             </div>
           </div>
         ))}
       </div>
     </div>
-  );
+  );  
 };
 
 export default HomePage;

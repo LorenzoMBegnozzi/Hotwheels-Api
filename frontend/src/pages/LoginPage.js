@@ -7,11 +7,12 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
+  
   const handleLogin = async () => {
     try {
       const res = await axios.post("http://localhost:5000/api/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);  
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("userId", res.data.userId);  // Salva o userId
       navigate("/home");
     } catch (err) {
       alert("Erro ao fazer login");

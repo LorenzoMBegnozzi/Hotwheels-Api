@@ -1,4 +1,6 @@
-/* Faz o layout ocupar toda a tela */
+/* HomePage.css */
+
+/* A tela agora vai ter a busca e o título fixos no topo e rolagem para os carrinhos */
 .home-container {
   min-height: 100vh;
   display: flex;
@@ -6,53 +8,66 @@
   align-items: center;
   justify-content: flex-start;
   padding: 20px;
+  position: relative; /* Necessário para que o conteúdo fixo funcione */
 }
 
-/* Mantém o título e a barra de pesquisa centralizados ao iniciar */
+/* Título sem o retângulo, mas centralizado */
 .search-section {
   text-align: center;
-  margin-top: 15vh; /* Centraliza verticalmente na tela inicial */
+  margin-top: 10vh; /* Deixe o título um pouco mais para baixo */
 }
 
-/* Ajuste na barra de pesquisa */
+/* Ajustes para a barra de pesquisa */
 .search-container {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 15px; /* Dê um espaço agradável entre o título e a barra de pesquisa */
 }
 
+/* Input de pesquisa mais bonito */
 .search-input {
-  padding: 10px;
+  padding: 12px;
   width: 250px;
-  border: 2px solid #ccc;
+  border: 2px solid #007bff; /* Cor mais forte para combinar com o botão */
   border-radius: 5px;
   font-size: 16px;
+  outline: none; /* Remove a borda de foco */
+  transition: border 0.3s ease-in-out;
 }
 
+/* Estilo do botão de busca */
 .search-button {
-  padding: 10px 15px;
-  background-color: #ff6600;
+  padding: 12px 18px;
+  background-color: #007bff;
   color: white;
   border: none;
   cursor: pointer;
   font-size: 16px;
   border-radius: 5px;
+  transition: background-color 0.3s ease-in-out;
 }
 
 .search-button:hover {
-  background-color: #e65c00;
+  background-color: #0056b3;
 }
 
-/* Área onde os carros aparecem */
+.search-input:focus {
+  border-color: #0056b3; /* Muda a borda para azul mais forte quando em foco */
+}
+
+/* Área rolável para os carros - usando CSS Grid para organizar os itens */
 .results-container {
   width: 100%;
-  max-width: 800px;
-  margin-top: 5px; /* Dá um espaço entre a busca e os resultados */
-  display: flex;
-  flex-wrap: wrap;
+  max-width: 1200px; /* Limita a largura máxima da área de resultados */
+  margin-top: 20px; /* Espaço entre a busca e os resultados */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Gera colunas de 250px que se adaptam conforme a tela */
   gap: 20px;
-  justify-content: center;
+  justify-items: center; /* Alinha os itens ao centro */
+  overflow-y: auto; /* Permite rolagem vertical */
+  max-height: calc(100vh - 250px); /* Ajusta a altura para que o conteúdo não ultrapasse a tela */
+  overflow-x: hidden; /* Garante que não haja rolagem horizontal */
 }
 
 /* Estilização dos cards */
@@ -60,10 +75,15 @@
   background: rgb(255, 255, 255);
   padding: 15px;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
   width: 100%;
-  max-width: 400px;
+  max-width: 350px;
+  transition: transform 0.3s ease; /* Animação suave */
+}
+
+.car-item:hover {
+  transform: scale(1.05); /* Efeito de zoom suave no card quando o mouse passa por cima */
 }
 
 .car-image {
@@ -86,8 +106,29 @@
   cursor: pointer;
   border-radius: 5px;
   font-size: 14px;
+  transition: background-color 0.3s ease;
 }
 
 .buttons button:hover {
+  background-color: #0056b3;
+}
+
+.collection-button-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.collection-button {
+  display: inline-block;
+  padding: 12px 20px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.collection-button:hover {
   background-color: #0056b3;
 }
