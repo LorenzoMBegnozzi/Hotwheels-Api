@@ -1,65 +1,75 @@
 .my-collection-container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    text-align: center;
-  }
-  
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-  }
-  
-  h2 {
-    font-size: 1.5rem;
-    margin-top: 20px;
-  }
-  
-  .car-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-  }
-  
-  .car-item {
-    background: #f5f5f5;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-    width: 180px;
-    text-align: center;
-  }
-  
-  .car-image {
-    width: 100%;
-    border-radius: 5px;
-  }
-  
-  .remove-button {
-    background-color: red;
-    color: white;
-    border: none;
-    padding: 5px;
-    cursor: pointer;
-    margin-top: 5px;
-  }
-  
-  .remove-button:hover {
-    background-color: darkred;
-  }
-  
-  .back-button {
-    margin-top: 20px;
-    background-color: blue;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    font-size: 1rem;
-  }
-  
-  .back-button:hover {
-    background-color: darkblue;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh; /* Ocupa toda a tela */
+  padding: 20px;
+}
+
+.car-list {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Gera colunas responsivas */
+  gap: 20px;
+  justify-items: center; /* Alinha os itens ao centro */
+  overflow-y: auto; /* Permite rolagem vertical */
+  max-height: calc(100vh - 200px); /* Ajuste da altura */
+  overflow-x: hidden;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+/* Estilização individual dos cards */
+.car-item {
+  background: rgba(255, 255, 255, 0.9); /* Deixa um leve efeito translúcido */
+  color: black;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.car-item:hover {
+  transform: scale(1.05);
+}
+
+.car-image {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  background-color: white;
+}
+
+button {
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: none;
+  font-size: 14px;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+.back-button {
+  margin-top: 20px;
+  padding: 10px;
+  background: blue;
+  color: white;
+  border: none;
+  cursor: pointer;
+}

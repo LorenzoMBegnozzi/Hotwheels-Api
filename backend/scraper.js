@@ -44,7 +44,7 @@ async function getGoogleImage(searchQuery) {
 // Função de raspagem
 async function scrapeHotWheels() {
   try {
-    const url = "https://hotwheels.fandom.com/wiki/List_of_2023_Hot_Wheels";
+    const url = "https://hotwheels.fandom.com/wiki/List_of_2024_Hot_Wheels";
 
     const { data } = await axios.get(url, {
       headers: {
@@ -60,7 +60,9 @@ async function scrapeHotWheels() {
       const columns = $(element).find("td");
 
       if (columns.length > 4) {
-        const name = $(columns[2]).find("a").text().trim() || $(columns[2]).text().trim();
+        let name = $(columns[2]).find("a").text().trim() || $(columns[2]).text().trim();
+        name = name.replace(/^'\d{2} /, ""); // Remove números no início do nome (ex: "'08 Ford Focus" → "Ford Focus")
+
 
         let imageElement = $(columns).find("img");
         let imageUrl = imageElement.attr("data-src") || imageElement.attr("src") || "";
@@ -78,7 +80,7 @@ async function scrapeHotWheels() {
         console.log(`🚗 Modelo: ${name}, 🖼️ Imagem: ${imageUrl}`);
 
         if (name) {
-          hotWheels.push({ name, imageUrl, year: 2025 });
+          hotWheels.push({ name, imageUrl, year: 2024 });
         }
       }
     }
