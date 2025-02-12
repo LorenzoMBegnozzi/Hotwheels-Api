@@ -9,19 +9,18 @@ const router = express.Router();
 router.post("/register", async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Verifica se o usuário já existe
     const userExists = await User.findOne({ email });
+
     if (userExists) return res.status(400).json({ message: "Usuário já cadastrado" });
 
-    // Criptografar senha
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Criar usuário
     const newUser = new User({ email, password: hashedPassword });
     await newUser.save();
 
-    res.status(201).json({ message: "Usuário cadastrado com sucesso!" });
+    // Criar token após o cadastro
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+    res.status(201).json({ message: "Usuário cadastrado com sucesso!", token });
   } catch (err) {
     res.status(500).json({ message: "Erro ao cadastrar usuário" });
   }

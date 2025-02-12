@@ -193,3 +193,42 @@
 .search-icon:hover {
   color: #0056b3;
 }
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between; /* Deixa o título na esquerda e o botão na direita */
+  align-items: center;
+  padding: 15px 20px;
+  z-index: 1000; /* Garante que fique sobre os outros elementos */
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.logout-button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-right: 50px; /* Ajuste esse valor para mover mais ou menos */
+}
+
+.logout-button:hover {
+  background-color: #cc0000;
+}
+
+
+/* Ajuste para o conteúdo não ficar escondido pelo cabeçalho fixo */
+.home-container {
+  padding-top: 70px; /* Compensa a altura do header fixo */
+}

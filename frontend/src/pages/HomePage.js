@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../css/HomePage.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   const [search, setSearch] = useState("");
@@ -9,6 +9,7 @@ const HomePage = () => {
   const [filteredResults, setFilteredResults] = useState([]);
   const [yearFilter, setYearFilter] = useState("");
 
+  const navigate = useNavigate();
   const years = Array.from({ length: 2025 - 1969 + 1 }, (_, i) => 2025 - i);
 
   useEffect(() => {
@@ -70,10 +71,21 @@ const HomePage = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   return (
     <div className="home-container">
+      {/* Cabeçalho com botão de logout */}
+      <div className="header">
+        <button className="logout-button" onClick={handleLogout}>🚪 Sair</button>
+      </div>
+
+
       <div className="search-section">
-        <h1>Buscar Hot Wheels</h1>
+        <h2>Buscar Hot Wheels</h2>
         <div className="search-filter-container">
           <div className="search-container">
             <div className="search-input-container">

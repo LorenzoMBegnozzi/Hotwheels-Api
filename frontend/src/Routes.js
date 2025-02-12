@@ -11,6 +11,7 @@ const AppRoutes = () => {
         <Route path="/" element={<LoginPage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/minha-colecao" element={<MyCollection />} /> {/* Nova rota */}
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
     </Router>
   );
