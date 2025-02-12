@@ -7,9 +7,8 @@ const HomePage = () => {
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
-  const [yearFilter, setYearFilter] = useState(""); // Filtro de ano
+  const [yearFilter, setYearFilter] = useState("");
 
-  // Lista fixa de anos (de 2025 a 1969)
   const years = Array.from({ length: 2025 - 1969 + 1 }, (_, i) => 2025 - i);
 
   useEffect(() => {
@@ -75,37 +74,29 @@ const HomePage = () => {
     <div className="home-container">
       <div className="search-section">
         <h1>Buscar Hot Wheels</h1>
-        <div className="search-container">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Digite o nome do modelo..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button className="search-button" onClick={handleSearch}>
-            Buscar
-          </button>
+        <div className="search-filter-container">
+          <div className="search-container">
+            <div className="search-input-container">
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Digite o nome do modelo..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <span className="search-icon">🔍</span>
+            </div>
+            <select id="yearFilter" value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
+              <option value="">Todos os anos</option>
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+            <button className="search-button" onClick={handleSearch}>Buscar</button>
+          </div>
         </div>
-
-        {/* Filtro por ano */}
-        <div className="filter-container">
-          <label htmlFor="yearFilter">Filtrar por ano:</label>
-          <select
-            id="yearFilter"
-            value={yearFilter}
-            onChange={(e) => setYearFilter(e.target.value)}
-          >
-            <option value="">Todos</option>
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Botão de "Ir para Minha Coleção" */}
         <div className="collection-button-container">
           <Link to="/minha-colecao" className="collection-button">
             🚗 Ir para Minha Coleção

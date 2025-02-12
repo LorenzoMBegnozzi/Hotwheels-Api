@@ -44,7 +44,7 @@ async function getGoogleImage(searchQuery) {
 // Função de raspagem
 async function scrapeHotWheels() {
   try {
-    const url = "https://hotwheels.fandom.com/wiki/List_of_2024_Hot_Wheels";
+    const url = "https://hotwheels.fandom.com/wiki/List_of_2019_Hot_Wheels";
 
     const { data } = await axios.get(url, {
       headers: {
@@ -80,7 +80,7 @@ async function scrapeHotWheels() {
         console.log(`🚗 Modelo: ${name}, 🖼️ Imagem: ${imageUrl}`);
 
         if (name) {
-          hotWheels.push({ name, imageUrl, year: 2024 });
+          hotWheels.push({ name, imageUrl, year: 2019 });
         }
       }
     }
