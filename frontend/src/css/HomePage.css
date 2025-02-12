@@ -158,3 +158,38 @@
 .filter-container select:hover {
   border-color: #0056b3;
 }
+
+
+/* Novo container para organizar a busca com ícone interno */
+.search-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 280px; /* Ajuste conforme necessário */
+}
+
+/* Input com espaço para o ícone à direita */
+.search-input {
+  width: 100%;
+  padding: 12px 40px 12px 12px; /* Padding extra na direita para o ícone */
+  border: 2px solid #007bff;
+  border-radius: 5px;
+  font-size: 16px;
+  outline: none;
+  transition: border 0.3s ease-in-out;
+}
+
+/* Ícone de busca dentro do input */
+.search-icon {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #007bff;
+}
+
+.search-icon:hover {
+  color: #0056b3;
+}
