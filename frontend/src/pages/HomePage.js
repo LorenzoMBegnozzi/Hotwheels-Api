@@ -1,13 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import '../css/HomePage.css';
+import "../css/HomePage.css";
 import { Link } from "react-router-dom";
-
 
 const HomePage = () => {
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
-  const userId = "ID_DO_USUÁRIO"; // Substitua pelo ID do usuário autenticado
+  const [filteredResults, setFilteredResults] = useState([]);
+  const [yearFilter, setYearFilter] = useState(""); // Filtro de ano
+
+  // Lista fixa de anos (de 2025 a 1969)
+  const years = Array.from({ length: 2025 - 1969 + 1 }, (_, i) => 2025 - i);
+
+  useEffect(() => {
+    if (yearFilter) {
+      setFilteredResults(results.filter((car) => car.year.toString() === yearFilter));
+    } else {
+      setFilteredResults(results);
+    }
+  }, [yearFilter, results]);
 
   const handleSearch = async () => {
     try {
@@ -20,20 +31,20 @@ const HomePage = () => {
 
   const addToCollection = async (hotWheelId) => {
     try {
-      const token = localStorage.getItem("token"); // Certifique-se de que o token está salvo no localStorage
+      const token = localStorage.getItem("token");
       if (!token) {
         alert("Token de autenticação não encontrado!");
         return;
       }
-  
+
       const response = await axios.post(
         "http://localhost:5000/api/collection/add",
-        { userId, hotWheelId }, // Payload enviado
+        { userId: "ID_DO_USUÁRIO", hotWheelId },
         {
-          headers: { "x-auth-token": token }, // Headers enviados
+          headers: { "x-auth-token": token },
         }
       );
-  
+
       if (response.status === 200) {
         alert("Adicionado à coleção com sucesso!");
       } else {
@@ -47,9 +58,13 @@ const HomePage = () => {
 
   const addToFavorites = async (hotWheelId) => {
     try {
-      await axios.post("http://localhost:5000/api/collection/favorite", { userId, hotWheelId }, {
-        headers: { "x-auth-token": localStorage.getItem("token") }
-      });
+      await axios.post(
+        "http://localhost:5000/api/collection/favorite",
+        { userId: "ID_DO_USUÁRIO", hotWheelId },
+        {
+          headers: { "x-auth-token": localStorage.getItem("token") },
+        }
+      );
       alert("Adicionado aos favoritos!");
     } catch (error) {
       console.error("Erro ao adicionar aos favoritos:", error);
@@ -68,9 +83,28 @@ const HomePage = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <button className="search-button" onClick={handleSearch}>Buscar</button>
+          <button className="search-button" onClick={handleSearch}>
+            Buscar
+          </button>
         </div>
-  
+
+        {/* Filtro por ano */}
+        <div className="filter-container">
+          <label htmlFor="yearFilter">Filtrar por ano:</label>
+          <select
+            id="yearFilter"
+            value={yearFilter}
+            onChange={(e) => setYearFilter(e.target.value)}
+          >
+            <option value="">Todos</option>
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Botão de "Ir para Minha Coleção" */}
         <div className="collection-button-container">
           <Link to="/minha-colecao" className="collection-button">
@@ -78,11 +112,13 @@ const HomePage = () => {
           </Link>
         </div>
       </div>
-  
+
       <div className="results-container">
-        {results.map((car) => (
+        {filteredResults.map((car) => (
           <div key={car._id} className="car-item">
-            <h3>{car.name} ({car.year})</h3>
+            <h3>
+              {car.name} ({car.year})
+            </h3>
             <img src={car.imageUrl} alt={car.name} className="car-image" />
             <div className="buttons">
               <button onClick={() => addToCollection(car._id)}>➕ Adicionar à Coleção</button>
@@ -92,7 +128,7 @@ const HomePage = () => {
         ))}
       </div>
     </div>
-  );  
+  );
 };
 
 export default HomePage;

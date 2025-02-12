@@ -132,3 +132,29 @@
 .collection-button:hover {
   background-color: #0056b3;
 }
+
+/* Estilização do filtro de ano */
+.filter-container {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-container label {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.filter-container select {
+  padding: 8px;
+  font-size: 16px;
+  border: 2px solid #007bff;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+}
+
+.filter-container select:hover {
+  border-color: #0056b3;
+}
