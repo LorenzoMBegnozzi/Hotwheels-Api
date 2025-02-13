@@ -1,3 +1,11 @@
+/* Importação da fonte */
+@font-face {
+  font-family: "Heavy Heap RG";
+  src: url("heavy\ heap\ rg.otf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* HomePage.css */
 
 /* A tela agora vai ter a busca e o título fixos no topo e rolagem para os carrinhos */
@@ -9,12 +17,21 @@
   justify-content: flex-start;
   padding: 20px;
   position: relative; /* Necessário para que o conteúdo fixo funcione */
+  padding-top: 10px; /* Compensa a altura do header fixo */
 }
 
 /* Título sem o retângulo, mas centralizado */
 .search-section {
   text-align: center;
   margin-top: 10vh; /* Deixe o título um pouco mais para baixo */
+}
+
+/* Aplica a fonte "Heavy Heap RG" ao título */
+.search-section h2 {
+  font-family: "Heavy Heap RG", sans-serif;
+  font-size: 50px;
+  color: #333;
+  text-align: center;
 }
 
 /* Ajustes para a barra de pesquisa */
@@ -29,10 +46,10 @@
 .search-input {
   padding: 12px;
   width: 250px;
-  border: 2px solid #007bff; /* Cor mais forte para combinar com o botão */
+  border: 2px solid #007bff;
   border-radius: 5px;
   font-size: 16px;
-  outline: none; /* Remove a borda de foco */
+  outline: none;
   transition: border 0.3s ease-in-out;
 }
 
@@ -59,15 +76,15 @@
 /* Área rolável para os carros - usando CSS Grid para organizar os itens */
 .results-container {
   width: 100%;
-  max-width: 1200px; /* Limita a largura máxima da área de resultados */
-  margin-top: 20px; /* Espaço entre a busca e os resultados */
+  max-width: 1200px;
+  margin-top: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Gera colunas de 250px que se adaptam conforme a tela */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
-  justify-items: center; /* Alinha os itens ao centro */
-  overflow-y: auto; /* Permite rolagem vertical */
-  max-height: calc(100vh - 250px); /* Ajusta a altura para que o conteúdo não ultrapasse a tela */
-  overflow-x: hidden; /* Garante que não haja rolagem horizontal */
+  justify-items: center;
+  overflow-y: auto;
+  max-height: calc(100vh - 250px);
+  overflow-x: hidden;
 }
 
 /* Estilização dos cards */
@@ -79,11 +96,11 @@
   text-align: center;
   width: 100%;
   max-width: 350px;
-  transition: transform 0.3s ease; /* Animação suave */
+  transition: transform 0.3s ease;
 }
 
 .car-item:hover {
-  transform: scale(1.05); /* Efeito de zoom suave no card quando o mouse passa por cima */
+  transform: scale(1.05);
 }
 
 .car-image {
@@ -159,19 +176,18 @@
   border-color: #0056b3;
 }
 
-
 /* Novo container para organizar a busca com ícone interno */
 .search-input-container {
   position: relative;
   display: flex;
   align-items: center;
-  width: 280px; /* Ajuste conforme necessário */
+  width: 280px;
 }
 
 /* Input com espaço para o ícone à direita */
 .search-input {
   width: 100%;
-  padding: 12px 40px 12px 12px; /* Padding extra na direita para o ícone */
+  padding: 12px 40px 12px 12px;
   border: 2px solid #007bff;
   border-radius: 5px;
   font-size: 16px;
@@ -194,16 +210,17 @@
   color: #0056b3;
 }
 
+/* Cabeçalho fixo no topo */
 .header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   display: flex;
-  justify-content: space-between; /* Deixa o título na esquerda e o botão na direita */
+  justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
-  z-index: 1000; /* Garante que fique sobre os outros elementos */
+  z-index: 1000;
 }
 
 .header h1 {
@@ -211,6 +228,7 @@
   font-size: 24px;
 }
 
+/* Botão de logout mais à esquerda */
 .logout-button {
   background-color: #ff4d4d;
   color: white;
@@ -220,15 +238,9 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-right: 50px; /* Ajuste esse valor para mover mais ou menos */
+  margin-left: 20px; /* Move o botão mais para a esquerda */
 }
 
 .logout-button:hover {
   background-color: #cc0000;
-}
-
-
-/* Ajuste para o conteúdo não ficar escondido pelo cabeçalho fixo */
-.home-container {
-  padding-top: 70px; /* Compensa a altura do header fixo */
 }
