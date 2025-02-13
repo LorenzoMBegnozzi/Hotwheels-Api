@@ -1,4 +1,4 @@
-/* Importação da fonte */
+
 @font-face {
   font-family: "Heavy Heap RG";
   src: url("heavy\ heap\ rg.otf") format("truetype");
@@ -6,9 +6,7 @@
   font-style: normal;
 }
 
-/* HomePage.css */
 
-/* A tela agora vai ter a busca e o título fixos no topo e rolagem para os carrinhos */
 .home-container {
   min-height: 100vh;
   display: flex;
@@ -16,17 +14,17 @@
   align-items: center;
   justify-content: flex-start;
   padding: 20px;
-  position: relative; /* Necessário para que o conteúdo fixo funcione */
-  padding-top: 10px; /* Compensa a altura do header fixo */
+  position: relative; 
+  padding-top: 10px; 
 }
 
-/* Título sem o retângulo, mas centralizado */
+
 .search-section {
   text-align: center;
-  margin-top: 10vh; /* Deixe o título um pouco mais para baixo */
+  margin-top: 10vh; 
 }
 
-/* Aplica a fonte "Heavy Heap RG" ao título */
+
 .search-section h2 {
   font-family: "Heavy Heap RG", sans-serif;
   font-size: 50px;
@@ -34,15 +32,15 @@
   text-align: center;
 }
 
-/* Ajustes para a barra de pesquisa */
+
 .search-container {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 15px; /* Dê um espaço agradável entre o título e a barra de pesquisa */
+  margin-top: 15px; 
 }
 
-/* Input de pesquisa mais bonito */
+
 .search-input {
   padding: 12px;
   width: 250px;
@@ -53,7 +51,7 @@
   transition: border 0.3s ease-in-out;
 }
 
-/* Estilo do botão de busca */
+
 .search-button {
   padding: 12px 18px;
   background-color: #007bff;
@@ -70,10 +68,10 @@
 }
 
 .search-input:focus {
-  border-color: #0056b3; /* Muda a borda para azul mais forte quando em foco */
+  border-color: #0056b3;
 }
 
-/* Área rolável para os carros - usando CSS Grid para organizar os itens */
+
 .results-container {
   width: 100%;
   max-width: 1200px;
@@ -87,7 +85,6 @@
   overflow-x: hidden;
 }
 
-/* Estilização dos cards */
 .car-item {
   background: rgb(255, 255, 255);
   padding: 15px;
@@ -150,7 +147,6 @@
   background-color: #0056b3;
 }
 
-/* Estilização do filtro de ano */
 .filter-container {
   margin-top: 15px;
   display: flex;
@@ -176,7 +172,6 @@
   border-color: #0056b3;
 }
 
-/* Novo container para organizar a busca com ícone interno */
 .search-input-container {
   position: relative;
   display: flex;
@@ -184,7 +179,6 @@
   width: 280px;
 }
 
-/* Input com espaço para o ícone à direita */
 .search-input {
   width: 100%;
   padding: 12px 40px 12px 12px;
@@ -195,7 +189,6 @@
   transition: border 0.3s ease-in-out;
 }
 
-/* Ícone de busca dentro do input */
 .search-icon {
   position: absolute;
   right: 10px;
@@ -210,7 +203,6 @@
   color: #0056b3;
 }
 
-/* Cabeçalho fixo no topo */
 .header {
   position: fixed;
   top: 0;
@@ -228,7 +220,6 @@
   font-size: 24px;
 }
 
-/* Botão de logout mais à esquerda */
 .logout-button {
   background-color: #ff4d4d;
   color: white;
@@ -238,7 +229,7 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-left: 20px; /* Move o botão mais para a esquerda */
+  margin-left: 20px; 
 }
 
 .logout-button:hover {

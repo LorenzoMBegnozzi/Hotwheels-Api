@@ -56,7 +56,7 @@ const removeFromCollection = async (carId) => {
       setCollection((prevCollection) =>
         prevCollection.filter((car) => car._id !== carId)
       );
-      console.log("Coleção atualizada:", collection); // Log para verificar atualização do estado
+      console.log("Coleção atualizada:", collection); 
     } else {
       alert("Erro ao remover o item.");
     }
