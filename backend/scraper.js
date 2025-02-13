@@ -16,9 +16,8 @@ const HotWheelSchema = new mongoose.Schema({
 
 const HotWheel = mongoose.model("HotWheel", HotWheelSchema);
 
-// Função para limpar URLs quebradas
 function cleanUrl(url) {
-  return url ? url.replace(/\s/g, "") : url; // Remove espaços extras
+  return url ? url.replace(/\s/g, "") : url; 
 }
 
 // Função para buscar imagem no Google caso não encontre na Fandom
@@ -31,17 +30,17 @@ async function getGoogleImage(searchQuery) {
     });
 
     const $ = cheerio.load(response.data);
-    let imageUrl = $("img").eq(1).attr("src"); // Pega a primeira imagem real
+    let imageUrl = $("img").eq(1).attr("src"); 
 
     if (!imageUrl || imageUrl.includes("/tia/tia.png")) {
       console.log(`⚠️ Nenhuma imagem válida encontrada para ${searchQuery}`);
-      return "https://via.placeholder.com/150"; // Imagem padrão caso não encontre
+      return "https://via.placeholder.com/150"; 
     }
 
     return cleanUrl(imageUrl);
   } catch (error) {
     console.error(`❌ Erro ao buscar imagem no Google para ${searchQuery}:`, error);
-    return "https://via.placeholder.com/150"; // Imagem padrão de fallback
+    return "https://via.placeholder.com/150"; 
   }
 }
 
@@ -70,7 +69,7 @@ async function scrapeHotWheels() {
       }
 
       let name = $(columns.eq(2)).text().trim() || $(columns.eq(1)).text().trim();
-      name = name.replace(/^'\d{2} /, ""); // Remove números no início do nome (ex: "'08 Ford Focus" → "Ford Focus")
+      name = name.replace(/^'\d{2} /, ""); 
 
       let imageElement = $(columns).find("img");
       let imageUrl = imageElement.attr("data-src") || imageElement.attr("src") || "";
