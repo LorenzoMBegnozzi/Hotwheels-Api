@@ -40,11 +40,10 @@ async function getGoogleImage(searchQuery) {
   }
 }
 
-
 // Função de raspagem
 async function scrapeHotWheels() {
   try {
-    const url = "https://hotwheels.fandom.com/wiki/List_of_2019_Hot_Wheels";
+    const url = "https://hotwheels.fandom.com/wiki/List_of_2024_Hot_Wheels";
 
     const { data } = await axios.get(url, {
       headers: {
@@ -54,38 +53,41 @@ async function scrapeHotWheels() {
 
     const $ = cheerio.load(data);
     const hotWheels = [];
-    const defaultImage = "https://via.placeholder.com/150";
 
-    for (const element of $("table.wikitable tbody tr").toArray()) {
+    // Itera sobre todas as linhas da tabela
+    $("table.wikitable tbody tr").each(async (index, element) => {
       const columns = $(element).find("td");
 
-      if (columns.length > 4) {
-        let name = $(columns[2]).find("a").text().trim() || $(columns[2]).text().trim();
-        name = name.replace(/^'\d{2} /, ""); // Remove números no início do nome (ex: "'08 Ford Focus" → "Ford Focus")
-
-
-        let imageElement = $(columns).find("img");
-        let imageUrl = imageElement.attr("data-src") || imageElement.attr("src") || "";
-
-        // Remove parâmetros extras da URL
-        if (imageUrl) {
-          imageUrl = imageUrl.split("/revision")[0];
-        }
-
-        // Se a imagem for inválida, busca no Google
-        if (!imageUrl || imageUrl.includes("/tia/tia.png") || imageUrl.includes("Image_Not_Available")) {
-          imageUrl = await getGoogleImage(`${name} Hot Wheels`);
-        }
-
-        console.log(`🚗 Modelo: ${name}, 🖼️ Imagem: ${imageUrl}`);
-
-        if (name) {
-          hotWheels.push({ name, imageUrl, year: 2019 });
-        }
+      // Se não houver colunas suficientes, ignora a linha
+      if (columns.length < 3) {
+        console.log(`⚠️ Linha ignorada (muito curta): ${$(element).text().trim().slice(0, 50)}...`);
+        return;
       }
-    }
 
-    console.log(`📦 Dados para salvar: ${JSON.stringify(hotWheels, null, 2)}`);
+      let name = $(columns.eq(2)).text().trim() || $(columns.eq(1)).text().trim();
+      name = name.replace(/^'\d{2} /, ""); // Remove números no início do nome (ex: "'08 Ford Focus" → "Ford Focus")
+
+      let imageElement = $(columns).find("img");
+      let imageUrl = imageElement.attr("data-src") || imageElement.attr("src") || "";
+
+      // Remove parâmetros extras da URL
+      if (imageUrl) {
+        imageUrl = imageUrl.split("/revision")[0];
+      }
+
+      // Se a imagem for inválida, busca no Google
+      if (!imageUrl || imageUrl.includes("/tia/tia.png") || imageUrl.includes("Image_Not_Available")) {
+        imageUrl = await getGoogleImage(`${name} Hot Wheels`);
+      }
+
+      console.log(`🚗 Modelo: ${name}, 🖼️ Imagem: ${imageUrl}`);
+
+      if (name) {
+        hotWheels.push({ name, imageUrl, year: 2024 });
+      }
+    });
+
+    console.log(`📦 Total de modelos extraídos: ${hotWheels.length}`);
 
     // Inserir ou atualizar no MongoDB
     for (const hotWheel of hotWheels) {

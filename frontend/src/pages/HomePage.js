@@ -85,7 +85,7 @@ const HomePage = () => {
 
 
       <div className="search-section">
-        <h2>Buscar Hot Wheels</h2>
+        <h2>Virtual collection</h2>
         <div className="search-filter-container">
           <div className="search-container">
             <div className="search-input-container">
