@@ -16,6 +16,11 @@ const HotWheelSchema = new mongoose.Schema({
 
 const HotWheel = mongoose.model("HotWheel", HotWheelSchema);
 
+// Função para limpar URLs quebradas
+function cleanUrl(url) {
+  return url ? url.replace(/\s/g, "") : url; // Remove espaços extras
+}
+
 // Função para buscar imagem no Google caso não encontre na Fandom
 async function getGoogleImage(searchQuery) {
   try {
@@ -33,7 +38,7 @@ async function getGoogleImage(searchQuery) {
       return "https://via.placeholder.com/150"; // Imagem padrão caso não encontre
     }
 
-    return imageUrl;
+    return cleanUrl(imageUrl);
   } catch (error) {
     console.error(`❌ Erro ao buscar imagem no Google para ${searchQuery}:`, error);
     return "https://via.placeholder.com/150"; // Imagem padrão de fallback
@@ -43,7 +48,7 @@ async function getGoogleImage(searchQuery) {
 // Função de raspagem
 async function scrapeHotWheels() {
   try {
-    const url = "https://hotwheels.fandom.com/wiki/List_of_2024_Hot_Wheels";
+    const url = "https://hotwheels.fandom.com/wiki/List_of_2023_Hot_Wheels";
 
     const { data } = await axios.get(url, {
       headers: {
@@ -70,9 +75,9 @@ async function scrapeHotWheels() {
       let imageElement = $(columns).find("img");
       let imageUrl = imageElement.attr("data-src") || imageElement.attr("src") || "";
 
-      // Remove parâmetros extras da URL
+      // Remove parâmetros extras da URL e limpa espaços
       if (imageUrl) {
-        imageUrl = imageUrl.split("/revision")[0];
+        imageUrl = cleanUrl(imageUrl.split("/revision")[0]);
       }
 
       // Se a imagem for inválida, busca no Google
@@ -83,7 +88,7 @@ async function scrapeHotWheels() {
       console.log(`🚗 Modelo: ${name}, 🖼️ Imagem: ${imageUrl}`);
 
       if (name) {
-        hotWheels.push({ name, imageUrl, year: 2024 });
+        hotWheels.push({ name, imageUrl, year: 2023 });
       }
     });
 
