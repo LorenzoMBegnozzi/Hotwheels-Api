@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import "../css/HomePage.css";
 import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import axios from "axios";
 
 const HomePage = () => {
   const [search, setSearch] = useState("");
@@ -28,15 +29,15 @@ const HomePage = () => {
       console.error("Erro ao buscar Hot Wheels:", error);
     }
   };
-
+  
   const addToCollection = async (hotWheelId) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Token de autenticação não encontrado!");
+        Swal.fire("Erro!", "Token de autenticação não encontrado!", "error");
         return;
       }
-
+  
       const response = await axios.post(
         "http://localhost:5000/api/collection/add",
         { userId: "ID_DO_USUÁRIO", hotWheelId },
@@ -44,18 +45,19 @@ const HomePage = () => {
           headers: { "x-auth-token": token },
         }
       );
-
+  
       if (response.status === 200) {
-        alert("Adicionado à coleção com sucesso!");
+        Swal.fire("Sucesso!", "Adicionado à coleção com sucesso!", "success");
       } else {
-        alert("Erro ao adicionar à coleção!");
+        Swal.fire("Erro!", "Erro ao adicionar à coleção!", "error");
       }
     } catch (error) {
       console.error("Erro ao adicionar à coleção:", error);
-      alert("Erro ao adicionar à coleção. Confira o console.");
+      Swal.fire("Erro!", "Erro ao adicionar à coleção. Confira o console.", "error");
     }
   };
-
+  
+  
   const addToFavorites = async (hotWheelId) => {
     try {
       await axios.post(
@@ -65,11 +67,25 @@ const HomePage = () => {
           headers: { "x-auth-token": localStorage.getItem("token") },
         }
       );
-      alert("Adicionado aos favoritos!");
+  
+      Swal.fire({
+        title: "Sucesso!",
+        text: "Adicionado aos favoritos!",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
     } catch (error) {
       console.error("Erro ao adicionar aos favoritos:", error);
+  
+      Swal.fire({
+        title: "Erro!",
+        text: "Não foi possível adicionar aos favoritos.",
+        icon: "error",
+        confirmButtonText: "Tentar novamente",
+      });
     }
   };
+  
 
   const handleLogout = () => {
     localStorage.removeItem("token");
