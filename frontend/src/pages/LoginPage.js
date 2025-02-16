@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2"; // Importação do SweetAlert2
 import "../css/LoginPage.css";
 
 const LoginPage = () => {
@@ -14,19 +15,44 @@ const LoginPage = () => {
       const res = await axios.post("http://localhost:5000/api/auth/login", { email, password });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.userId);
+
+      // Alerta pequeno no canto superior direito para login bem-sucedido
+      Swal.fire({
+        title: "Login realizado!",
+        text: "Bem-vindo de volta!",
+        icon: "success",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+      });
+
       navigate("/home");
     } catch (err) {
-      alert("Erro ao fazer login");
+      Swal.fire("Erro!", "Erro ao fazer login. Verifique suas credenciais.", "error");
     }
   };
 
   const handleRegister = async () => {
     try {
       await axios.post("http://localhost:5000/api/auth/register", { email, password });
-      alert("Usuário cadastrado com sucesso!");
+
+      // Alerta pequeno no canto superior direito para cadastro bem-sucedido
+      Swal.fire({
+        title: "Usuário cadastrado!",
+        text: "Agora você pode fazer login.",
+        icon: "success",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+      });
+
       setIsRegistering(false);
     } catch (err) {
-      alert("Erro ao cadastrar usuário");
+      Swal.fire("Erro!", "Erro ao cadastrar usuário.", "error");
     }
   };
 
