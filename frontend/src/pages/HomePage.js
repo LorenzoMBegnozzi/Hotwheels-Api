@@ -29,7 +29,7 @@ const HomePage = () => {
       console.error("Erro ao buscar Hot Wheels:", error);
     }
   };
-  
+
   const addToCollection = async (hotWheelId) => {
     try {
       const token = localStorage.getItem("token");
@@ -37,15 +37,13 @@ const HomePage = () => {
         Swal.fire("Erro!", "Token de autenticação não encontrado!", "error");
         return;
       }
-  
+
       const response = await axios.post(
         "http://localhost:5000/api/collection/add",
         { userId: "ID_DO_USUÁRIO", hotWheelId },
-        {
-          headers: { "x-auth-token": token },
-        }
+        { headers: { "x-auth-token": token } }
       );
-  
+
       if (response.status === 200) {
         Swal.fire("Sucesso!", "Adicionado à coleção com sucesso!", "success");
       } else {
@@ -56,52 +54,72 @@ const HomePage = () => {
       Swal.fire("Erro!", "Erro ao adicionar à coleção. Confira o console.", "error");
     }
   };
-  
-  
-  const addToFavorites = async (hotWheelId) => {
+
+  const addToWishList = async (hotWheelId) => {
     try {
-      await axios.post(
-        "http://localhost:5000/api/collection/favorite",
+      const token = localStorage.getItem("token");
+      if (!token) {
+        Swal.fire("Erro!", "Token de autenticação não encontrado!", "error");
+        return;
+      }
+
+      const response = await axios.post(
+        "http://localhost:5000/api/collection/wishlist",
         { userId: "ID_DO_USUÁRIO", hotWheelId },
-        {
-          headers: { "x-auth-token": localStorage.getItem("token") },
-        }
+        { headers: { "x-auth-token": token } }
       );
-  
-      Swal.fire({
-        title: "Sucesso!",
-        text: "Adicionado aos favoritos!",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
+
+      if (response.status === 200) {
+        Swal.fire("Sucesso!", "Adicionado à lista de desejos!", "success");
+      } else {
+        Swal.fire("Erro!", `Erro ao adicionar à lista de desejos! Código: ${response.status}`, "error");
+      }
     } catch (error) {
-      console.error("Erro ao adicionar aos favoritos:", error);
-  
-      Swal.fire({
-        title: "Erro!",
-        text: "Não foi possível adicionar aos favoritos.",
-        icon: "error",
-        confirmButtonText: "Tentar novamente",
-      });
+      console.error("Erro ao adicionar à lista de desejos:", error.response ? error.response.data : error.message);
+      Swal.fire("Erro!", `Erro ao adicionar à lista de desejos: ${error.response ? error.response.data : error.message}`, "error");
     }
   };
-  
+
+
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+    Swal.fire({
+      title: "Tem certeza?",
+      text: "Você será desconectado da sua conta.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sim, sair",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem("token");
+
+        Swal.fire({
+          title: "Desconectado!",
+          text: "Você saiu da sua conta.",
+          icon: "success",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+        });
+
+        navigate("/login");
+      }
+    });
   };
 
   return (
     <div className="home-container">
-      {/* Cabeçalho com botão de logout */}
       <div className="header">
         <button className="logout-button" onClick={handleLogout}>🚪 Sair</button>
       </div>
 
-
       <div className="search-section">
-        <h2>Virtual collection</h2>
+        <h2>Virtual Collection</h2>
         <div className="search-filter-container">
           <div className="search-container">
             <div className="search-input-container">
@@ -126,22 +144,19 @@ const HomePage = () => {
           </div>
         </div>
         <div className="collection-button-container">
-          <Link to="/minha-colecao" className="collection-button">
-            🚗 Ir para Minha Coleção
-          </Link>
+          <Link to="/minha-colecao" className="collection-button">🚗 Ir para Minha Coleção</Link>
+          <Link to="/lista-de-desejos" className="collection-button">💙 Ir para Lista de Desejos</Link>
         </div>
       </div>
 
       <div className="results-container">
         {filteredResults.map((car) => (
           <div key={car._id} className="car-item">
-            <h3>
-              {car.name} ({car.year})
-            </h3>
+            <h3>{car.name} ({car.year})</h3>
             <img src={car.imageUrl} alt={car.name} className="car-image" />
             <div className="buttons">
               <button onClick={() => addToCollection(car._id)}>➕ Adicionar à Coleção</button>
-              <button onClick={() => addToFavorites(car._id)}>⭐ Adicionar aos Favoritos</button>
+              <button onClick={() => addToWishList(car._id)}>💙 Adicionar à Lista de Desejos</button>
             </div>
           </div>
         ))}

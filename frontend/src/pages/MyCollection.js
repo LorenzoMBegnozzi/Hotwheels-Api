@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../css/MyCollection.css";
+import Swal from "sweetalert2";
+
 
 const MyCollection = () => {
   const [collection, setCollection] = useState([]);
@@ -41,36 +43,36 @@ const MyCollection = () => {
   const removeFromCollection = async (carId) => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
-
+  
     console.log("Tentando remover:", { userId, carId });
-
+  
     if (!token || !userId) {
-      alert("Usuário não autenticado!");
+      Swal.fire("Erro!", "Usuário não autenticado!", "error");
       return;
     }
-
+  
     if (!carId || carId.length !== 24 || userId.length !== 24) {
-      alert("ID inválido");
+      Swal.fire("Erro!", "ID inválido", "error");
       return;
     }
-
+  
     try {
       const response = await axios.delete(`http://localhost:5000/api/collection/${userId}/${carId}`, {
         headers: { "x-auth-token": token },
       });
-
+  
       if (response.status === 200) {
         setCollection((prevCollection) => prevCollection.filter((car) => car._id !== carId));
-        alert("Item removido com sucesso!");
+        Swal.fire("Sucesso!", "Item removido com sucesso!", "success");
       } else {
-        alert("Erro ao remover o item.");
+        Swal.fire("Erro!", "Erro ao remover o item!", "error");
       }
     } catch (error) {
       console.error("Erro ao remover item:", error.response?.data || error.message);
-      alert("Erro ao remover o item. Tente novamente.");
+      Swal.fire("Erro!", "Erro ao remover o item. Tente novamente.", "error");
     }
   };
-
+  
   return (
     <div className="my-collection-container">
       <h1>Minha Coleção</h1>
