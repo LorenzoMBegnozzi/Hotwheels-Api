@@ -76,7 +76,11 @@ const MyCollection = () => {
   return (
     <div className="my-collection-container">
       <h1>Minha Coleção</h1>
-
+  
+      <button className="back-button" onClick={() => navigate("/home")}>
+        🔙 Voltar para Home
+      </button>
+  
       {collection.length > 0 ? (
         <div className="car-list">
           {collection.map((car) => (
@@ -92,10 +96,6 @@ const MyCollection = () => {
       ) : (
         <p>📭 Sua coleção está vazia.</p>
       )}
-
-      <button className="back-button" onClick={() => navigate("/home")}>
-        🔙 Voltar para Home
-      </button>
     </div>
   );
 };

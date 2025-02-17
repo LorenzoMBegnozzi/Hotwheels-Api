@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import "../css/HomePage.css";
+import "../css/Wishlist.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const WishListPage = () => {
     const [wishlist, setWishlist] = useState([]);
@@ -37,19 +38,31 @@ const WishListPage = () => {
     }, []);
 
     const removeFromWishlist = async (carId) => {
-        try {
-            const response = await axios.delete(`http://localhost:5000/api/wishlist/${carId}`, {
-                headers: { "x-auth-token": localStorage.getItem("token") },
-            });
+        Swal.fire({
+            title: "Tem certeza?",
+            text: "Você deseja remover este item da sua lista de desejos?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Sim, remover!"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await axios.delete(`http://localhost:5000/api/wishlist/${carId}`, {
+                        headers: { "x-auth-token": localStorage.getItem("token") },
+                    });
 
-            if (response.status === 200) {
-                setWishlist((prevWishlist) => prevWishlist.filter((car) => car._id !== carId));
-                console.log("✅ Carro removido da wishlist:", carId);
+                    if (response.status === 200) {
+                        setWishlist((prevWishlist) => prevWishlist.filter((car) => car._id !== carId));
+                        Swal.fire("Removido!", "O item foi removido da sua lista de desejos.", "success");
+                    }
+                } catch (error) {
+                    console.error("❌ Erro ao remover item da wishlist:", error);
+                    Swal.fire("Erro!", "Erro ao remover o item. Tente novamente.", "error");
+                }
             }
-        } catch (error) {
-            console.error("❌ Erro ao remover item da wishlist:", error);
-            setError("Erro ao remover o item. Tente novamente.");
-        }
+        });
     };
 
     return (
@@ -67,7 +80,7 @@ const WishListPage = () => {
                         <div key={car._id} className="car-item">
                             <h3>{car.name} ({car.year})</h3>
                             <img src={car.imageUrl} alt={car.name} className="car-image" />
-                            <button onClick={() => removeFromWishlist(car._id)} className="remove-button">❌ Remover</button>
+                            <button onClick={() => removeFromWishlist(car._id)} className="remove-button">🗑️</button>
                         </div>
                     ))}
                 </div>
