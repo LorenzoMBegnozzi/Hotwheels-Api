@@ -27,7 +27,7 @@ const WishListPage = () => {
     return (
         <div className="home-container">
             <h2>Minha Lista de Desejos</h2>
-            <Link to="/" className="collection-button">🏠 Voltar para Home</Link>
+            <Link to="/home" className="collection-button">🏠 Voltar para Home</Link>
             <div className="results-container">
                 {wishlist.map((car) => (
                     <div key={car._id} className="car-item">
