@@ -21,7 +21,6 @@
 
 .search-section {
   text-align: center;
-  margin-top: 10vh; 
 }
 
 
@@ -211,20 +210,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
+  padding: 8px 20px;
   z-index: 1000;
 }
 
 .header h1 {
-  margin: 0;
-  font-size: 24px;
+  font-size: 20px; /* Antes: 24px */
 }
 
 .logout-button {
   background-color: #ff4d4d;
   color: white;
   border: none;
-  padding: 8px 15px;
+  padding: 6px 12px;
   font-size: 16px;
   border-radius: 5px;
   cursor: pointer;
