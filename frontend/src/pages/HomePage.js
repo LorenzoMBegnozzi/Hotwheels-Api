@@ -64,7 +64,7 @@ const HomePage = () => {
       }
 
       const response = await axios.post(
-        "http://localhost:5000/api/collection/wishlist",
+        "http://localhost:5000/api/wishlist/",
         { userId: "ID_DO_USUÁRIO", hotWheelId },
         { headers: { "x-auth-token": token } }
       );
