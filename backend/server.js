@@ -11,7 +11,8 @@ app.use(cors());
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/hotwheels", require("./routes/hotwheelsRoutes"));
 app.use("/api/collection", require("./routes/collectionRoutes"));
-app.use("/api/collection", require("./routes/collectionRoutes"));
+app.use("/api/wishlist", require("./routes/wishlistRoutes"));
+
 
 // Conectar ao MongoDB
 mongoose
