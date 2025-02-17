@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-
+const wishlistRoutes = require("./routes/wishlistRoutes");
 const app = express();
 
 // Middleware
@@ -10,6 +10,7 @@ app.use(express.json());
 app.use(cors());
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/hotwheels", require("./routes/hotwheelsRoutes"));
+app.use("/api/collection", require("./routes/collectionRoutes"));
 app.use("/api/collection", require("./routes/collectionRoutes"));
 
 // Conectar ao MongoDB
