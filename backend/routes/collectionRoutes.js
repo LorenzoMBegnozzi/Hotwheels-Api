@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const UserCollection = require("../models/UserCollection");
 const authMiddleware = require("../middlewares/auth");
 const router = express.Router();
+const HotWheel = require("../models/HotWheel");
+
 
 // Adicionar um Hot Wheel à coleção do usuário
 router.post("/add", authMiddleware, async (req, res) => {
@@ -37,34 +39,27 @@ const removeFromCollection = async (carId) => {
   const userId = localStorage.getItem("userId");
 
   if (!token || !userId) {
-    alert("Usuário não autenticado!");
-    return;
-  }
-
-  if (!carId || carId.length !== 24 || userId.length !== 24) {
-    alert("ID inválido");
+    Swal.fire("Erro!", "Usuário não autenticado!", "error");
     return;
   }
 
   try {
-    const response = await axios.delete(
-      `http://localhost:5000/api/collection/${userId}/${carId}`,
-      { headers: { "x-auth-token": token } }
-    );
+    const response = await axios.get(`http://localhost:5000/api/collection/${userId}`, {
+      headers: { "x-auth-token": token },
+    });
 
     if (response.status === 200) {
-      setCollection((prevCollection) =>
-        prevCollection.filter((car) => car._id !== carId)
-      );
-      console.log("Coleção atualizada:", collection);
+      setCollection((prevCollection) => prevCollection.filter((car) => car._id !== carId));
+      Swal.fire("Sucesso!", "Item removido com sucesso!", "success");
     } else {
-      alert("Erro ao remover o item.");
+      Swal.fire("Erro!", "Erro ao remover o item!", "error");
     }
   } catch (error) {
     console.error("Erro ao remover item:", error);
-    alert("Erro ao remover o item. Tente novamente.");
+    Swal.fire("Erro!", "Erro ao remover o item. Tente novamente.", "error");
   }
 };
+
 
 router.delete("/:userId/:carId", authMiddleware, async (req, res) => {
   try {
@@ -92,7 +87,6 @@ router.delete("/:userId/:carId", authMiddleware, async (req, res) => {
   }
 });
 
-// Obter a coleção do usuário
 router.get("/:userId", authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -101,11 +95,16 @@ router.get("/:userId", authMiddleware, async (req, res) => {
       return res.status(400).json({ msg: "ID inválido" });
     }
 
-    let userCollection = await UserCollection.findOne({ userId }).populate("collection");
+    let userCollection = await UserCollection.findOne({ userId }).populate({
+      path: "collection",
+      model: "HotWheel",
+    });
 
     if (!userCollection) {
       return res.status(404).json({ message: "Coleção não encontrada" });
     }
+
+    console.log("Dados enviados para o frontend:", userCollection.collection);
 
     res.json({ collection: userCollection.collection });
   } catch (error) {
@@ -113,7 +112,33 @@ router.get("/:userId", authMiddleware, async (req, res) => {
   }
 });
 
-;
+
+router.post("/add-custom", authMiddleware, async (req, res) => {
+  const { name, year, imageUrl } = req.body;
+  const userId = req.user.id;
+
+  if (!name || !year || !imageUrl) {
+    return res.status(400).json({ message: "Todos os campos são obrigatórios" });
+  }
+
+  try {
+    let userCollection = await UserCollection.findOne({ userId });
+    if (!userCollection) {
+      userCollection = new UserCollection({ userId, collection: [], favorites: [] });
+    }
+
+    // Criar um novo documento no banco para o carro personalizado
+    const newCar = await HotWheel.create({ name, year, imageUrl });
+
+    userCollection.collection.push(newCar._id);
+    await userCollection.save();
+
+    res.status(200).json({ message: "Carro adicionado!", car: newCar });
+  } catch (error) {
+    console.error("Erro ao adicionar carro personalizado:", error);
+    res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
 
 
 module.exports = router;
