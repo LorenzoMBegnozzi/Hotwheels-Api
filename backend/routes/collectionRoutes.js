@@ -4,8 +4,10 @@ const UserCollection = require("../models/UserCollection");
 const authMiddleware = require("../middlewares/auth");
 const router = express.Router();
 const HotWheel = require("../models/HotWheel");
+const multer = require("multer");
 
-
+const storage = multer.memoryStorage(); // Armazena a imagem na memória
+const upload = multer({ storage });
 // Adicionar um Hot Wheel à coleção do usuário
 router.post("/add", authMiddleware, async (req, res) => {
   console.log("Payload recebido no backend:", req.body);
@@ -113,22 +115,26 @@ router.get("/:userId", authMiddleware, async (req, res) => {
 });
 
 
-router.post("/add-custom", authMiddleware, async (req, res) => {
-  const { name, year, imageUrl } = req.body;
-  const userId = req.user.id;
+router.post("/add-custom", authMiddleware, upload.single("image"), async (req, res) => {
+  const { name, year } = req.body;
+  const image = req.file; // Pega a imagem do formulário
 
-  if (!name || !year || !imageUrl) {
+  if (!name || !year || !image) {
     return res.status(400).json({ message: "Todos os campos são obrigatórios" });
   }
 
   try {
-    let userCollection = await UserCollection.findOne({ userId });
+    let userCollection = await UserCollection.findOne({ userId: req.user.id });
     if (!userCollection) {
-      userCollection = new UserCollection({ userId, collection: [], favorites: [] });
+      userCollection = new UserCollection({ userId: req.user.id, collection: [], favorites: [] });
     }
 
-    // Criar um novo documento no banco para o carro personalizado
-    const newCar = await HotWheel.create({ name, year, imageUrl });
+    // Criar um novo documento para o carro
+    const newCar = await HotWheel.create({
+      name,
+      year,
+      imageUrl: `data:image/png;base64,${image.buffer.toString("base64")}` // Converte a imagem para base64
+    });
 
     userCollection.collection.push(newCar._id);
     await userCollection.save();
@@ -139,6 +145,8 @@ router.post("/add-custom", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Erro interno no servidor" });
   }
 });
+
+module.exports = router;
 
 
 module.exports = router;
