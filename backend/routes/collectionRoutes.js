@@ -114,39 +114,44 @@ router.get("/:userId", authMiddleware, async (req, res) => {
   }
 });
 
-
-router.post("/add-custom", authMiddleware, upload.single("image"), async (req, res) => {
-  const { name, year } = req.body;
-  const image = req.file; // Pega a imagem do formulário
-
-  if (!name || !year || !image) {
-    return res.status(400).json({ message: "Todos os campos são obrigatórios" });
+const handleAddCar = async () => {
+  if (!newCar.name || !newCar.year || !newCar.image) {
+    Swal.fire("Erro!", "Todos os campos são obrigatórios!", "error");
+    return;
   }
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    Swal.fire("Erro!", "Usuário não autenticado!", "error");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("name", newCar.name);
+  formData.append("year", newCar.year);
+  formData.append("image", newCar.image);
 
   try {
-    let userCollection = await UserCollection.findOne({ userId: req.user.id });
-    if (!userCollection) {
-      userCollection = new UserCollection({ userId: req.user.id, collection: [], favorites: [] });
-    }
-
-    // Criar um novo documento para o carro
-    const newCar = await HotWheel.create({
-      name,
-      year,
-      imageUrl: `data:image/png;base64,${image.buffer.toString("base64")}` // Converte a imagem para base64
+    const response = await axios.post("http://localhost:5000/api/collection/add-custom", formData, {
+      headers: { "x-auth-token": token, "Content-Type": "multipart/form-data" },
     });
 
-    userCollection.collection.push(newCar._id);
-    await userCollection.save();
-
-    res.status(200).json({ message: "Carro adicionado!", car: newCar });
+    setCollection([...collection, response.data.car]);
+    setShowModal(false);
+    setNewCar({ name: "", year: "", image: null });
+    Swal.fire("Sucesso!", "Carro adicionado à coleção!", "success");
   } catch (error) {
-    console.error("Erro ao adicionar carro personalizado:", error);
-    res.status(500).json({ message: "Erro interno no servidor" });
-  }
-});
+    console.error("Erro ao adicionar carro:", error);
 
-module.exports = router;
+    if (error.response && error.response.data && error.response.data.message === "Esse Hot Wheel já existe na coleção!") {
+      Swal.fire("Erro!", "Esse Hot Wheel já existe na coleção!", "warning");
+    } else {
+      Swal.fire("Erro!", "Não foi possível adicionar o carro.", "error");
+    }
+  }
+};
+
 
 
 module.exports = router;

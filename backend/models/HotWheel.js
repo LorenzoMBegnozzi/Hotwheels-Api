@@ -1,9 +1,17 @@
 const mongoose = require("mongoose");
 
-const hotWheelSchema = new mongoose.Schema({
+const HotWheelSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  imageUrl: { type: String },
-  year: { type: Number },
+  lowercaseName: { type: String, required: true, unique: true }, 
+  year: { type: Number, required: true },
+  imageUrl: { type: String, required: true }
 });
 
-module.exports = mongoose.model("HotWheel", hotWheelSchema);
+// Antes de salvar, garante que o nome seja salvo em minúsculas
+HotWheelSchema.pre("save", function (next) {
+  this.lowercaseName = this.name.toLowerCase();
+  next();
+});
+
+const HotWheel = mongoose.model("HotWheel", HotWheelSchema);
+module.exports = HotWheel;

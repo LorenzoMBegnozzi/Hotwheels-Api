@@ -44,33 +44,38 @@ const MyCollection = () => {
       Swal.fire("Erro!", "Todos os campos são obrigatórios!", "error");
       return;
     }
-
+  
     const token = localStorage.getItem("token");
-
+  
     if (!token) {
       Swal.fire("Erro!", "Usuário não autenticado!", "error");
       return;
     }
-
+  
     const formData = new FormData();
     formData.append("name", newCar.name);
     formData.append("year", newCar.year);
     formData.append("image", newCar.image);
-
+  
     try {
       const response = await axios.post("http://localhost:5000/api/collection/add-custom", formData, {
         headers: { "x-auth-token": token, "Content-Type": "multipart/form-data" },
       });
-
+  
       setCollection([...collection, response.data.car]);
       setShowModal(false);
       setNewCar({ name: "", year: "", image: null });
       Swal.fire("Sucesso!", "Carro adicionado à coleção!", "success");
     } catch (error) {
       console.error("Erro ao adicionar carro:", error);
-      Swal.fire("Erro!", "Não foi possível adicionar o carro.", "error");
+  
+      if (error.response && error.response.data && error.response.data.message === "Carro já existe na coleção") {
+        Swal.fire("Erro!", "Este carro já está na sua coleção!", "warning");
+      } else {
+        Swal.fire("Erro!", "Não foi possível adicionar o carro.", "error");
+      }
     }
-  };
+  };  
 
   const handleRemoveCar = async (carId) => {
     const token = localStorage.getItem("token");
