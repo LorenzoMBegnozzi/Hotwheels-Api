@@ -3,7 +3,7 @@ import { test, expect, request } from '@playwright/test';
 test.describe('Login', () => {
     let apiRequest = request.newContext({ baseURL: 'http://localhost:5000' });
 
-    test('Deve autenticar usuário', async () => {
+    test('Deve autenticar usuárioooo', async () => {
         const res = await (await apiRequest).post('/api/auth/login', {
             data: {
                 email: "teste.teste1@hotmail.com",
