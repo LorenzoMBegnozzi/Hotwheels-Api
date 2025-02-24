@@ -1,4 +1,3 @@
-
 @font-face {
   font-family: "Heavy Heap RG";
   src: url("heavy\ heap\ rg.otf") format("truetype");
@@ -14,8 +13,8 @@
   align-items: center;
   justify-content: flex-start;
   padding: 20px;
-  position: relative; 
-  padding-top: 10px; 
+  position: relative;
+  padding-top: 10px;
 }
 
 
@@ -36,7 +35,7 @@
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 15px; 
+  margin-top: 15px;
 }
 
 
@@ -215,7 +214,8 @@
 }
 
 .header h1 {
-  font-size: 20px; /* Antes: 24px */
+  font-size: 20px;
+  /* Antes: 24px */
 }
 
 .logout-button {
@@ -227,9 +227,35 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-left: 20px; 
+  margin-left: 20px;
 }
 
 .logout-button:hover {
   background-color: #cc0000;
+}
+
+.profile-section {
+  position: absolute;
+  top: 10px;
+  right: 60px; /* Ajuste para mover mais para a esquerda */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.profile-picture-small {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white; /* Adiciona a borda branca */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Opcional: adiciona um leve sombreamento */
+}
+
+.collection-wishlist-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }

@@ -16,19 +16,18 @@ const MyCollection = () => {
       const token = localStorage.getItem("token");
       const userId = localStorage.getItem("userId");
 
-      if (!userId || !token) {
-        console.error("❌ Erro: userId ou token não encontrados no localStorage");
-        return;
-      }
+      if (!token || !userId) return;
 
       try {
         const response = await axios.get(`http://localhost:5000/api/collection/${userId}`, {
           headers: { "x-auth-token": token },
         });
 
-        setCollection(response.data.collection || []);
+        if (response.status === 200) {
+          setCollection(response.data.collection); // Atualiza a coleção no estado
+        }
       } catch (error) {
-        console.error("❌ Erro ao buscar coleção:", error);
+        console.error("Erro ao buscar coleção:", error);
       }
     };
 
@@ -44,38 +43,38 @@ const MyCollection = () => {
       Swal.fire("Erro!", "Todos os campos são obrigatórios!", "error");
       return;
     }
-  
+
     const token = localStorage.getItem("token");
-  
+
     if (!token) {
       Swal.fire("Erro!", "Usuário não autenticado!", "error");
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("name", newCar.name);
     formData.append("year", newCar.year);
     formData.append("image", newCar.image);
-  
+
     try {
       const response = await axios.post("http://localhost:5000/api/collection/add-custom", formData, {
         headers: { "x-auth-token": token, "Content-Type": "multipart/form-data" },
       });
-  
+
       setCollection([...collection, response.data.car]);
       setShowModal(false);
       setNewCar({ name: "", year: "", image: null });
       Swal.fire("Sucesso!", "Carro adicionado à coleção!", "success");
     } catch (error) {
       console.error("Erro ao adicionar carro:", error);
-  
-      if (error.response && error.response.data && error.response.data.message === "Carro já existe na coleção") {
+
+      if (error.response?.data?.message === "Carro já existe na coleção") {
         Swal.fire("Erro!", "Este carro já está na sua coleção!", "warning");
       } else {
         Swal.fire("Erro!", "Não foi possível adicionar o carro.", "error");
       }
     }
-  };  
+  };
 
   const handleRemoveCar = async (carId) => {
     const token = localStorage.getItem("token");
@@ -88,7 +87,7 @@ const MyCollection = () => {
 
     Swal.fire({
       title: "Tem certeza?",
-      text: "Você deseja remover este item da sua lista de desejos?",
+      text: "Você deseja remover este item da sua coleção?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -97,14 +96,12 @@ const MyCollection = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`http://localhost:5000/api/collection/${userId}/${carId}`, {
+          await axios.delete(`http://localhost:5000/api/collection/${userId}/${carId}`, {
             headers: { "x-auth-token": token },
           });
 
-          if (response.status === 200) {
-            setCollection((prevCollection) => prevCollection.filter((car) => car._id !== carId));
-            Swal.fire("Removido!", "O item foi removido da sua coleção.", "success");
-          }
+          setCollection((prevCollection) => prevCollection.filter((car) => car._id !== carId));
+          Swal.fire("Removido!", "O item foi removido da sua coleção.", "success");
         } catch (error) {
           console.error("Erro ao remover item:", error);
           Swal.fire("Erro!", "Erro ao remover o item. Tente novamente.", "error");
@@ -112,7 +109,6 @@ const MyCollection = () => {
       }
     });
   };
-
 
   return (
     <div className="my-collection-container">
@@ -137,18 +133,8 @@ const MyCollection = () => {
         <div className="modal">
           <div className="modal-content">
             <h2>Adicionar Hot Wheel</h2>
-            <input
-              type="text"
-              placeholder="Nome do carro"
-              value={newCar.name}
-              onChange={(e) => setNewCar({ ...newCar, name: e.target.value })}
-            />
-            <input
-              type="number"
-              placeholder="Ano"
-              value={newCar.year}
-              onChange={(e) => setNewCar({ ...newCar, year: e.target.value })}
-            />
+            <input type="text" placeholder="Nome do carro" value={newCar.name} onChange={(e) => setNewCar({ ...newCar, name: e.target.value })} />
+            <input type="number" placeholder="Ano" value={newCar.year} onChange={(e) => setNewCar({ ...newCar, year: e.target.value })} />
             <input type="file" accept="image/*" onChange={handleFileChange} />
             <button onClick={handleAddCar}>Salvar</button>
             <button onClick={() => setShowModal(false)}>Cancelar</button>

@@ -1,13 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const multer = require("multer");
 const UserCollection = require("../models/UserCollection");
+const HotWheel = require("../models/HotWheel");
 const authMiddleware = require("../middlewares/auth");
 const router = express.Router();
-const HotWheel = require("../models/HotWheel");
-const multer = require("multer");
 
-const storage = multer.memoryStorage(); // Armazena a imagem na memória
+// Configuração do Multer para upload de imagens
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
+
 // Adicionar um Hot Wheel à coleção do usuário
 router.post("/add", authMiddleware, async (req, res) => {
   console.log("Payload recebido no backend:", req.body);
@@ -20,6 +22,7 @@ router.post("/add", authMiddleware, async (req, res) => {
 
   try {
     let userCollection = await UserCollection.findOne({ userId });
+    
     if (!userCollection) {
       userCollection = new UserCollection({ userId, collection: [], favorites: [] });
     }
@@ -29,6 +32,9 @@ router.post("/add", authMiddleware, async (req, res) => {
       await userCollection.save();
     }
 
+    // Popula os dados do HotWheel para retornar com detalhes
+    await userCollection.populate("collection");
+
     res.status(200).json({ message: "Adicionado à coleção!", collection: userCollection.collection });
   } catch (error) {
     console.error("Erro ao adicionar à coleção:", error);
@@ -36,33 +42,7 @@ router.post("/add", authMiddleware, async (req, res) => {
   }
 });
 
-const removeFromCollection = async (carId) => {
-  const token = localStorage.getItem("token");
-  const userId = localStorage.getItem("userId");
-
-  if (!token || !userId) {
-    Swal.fire("Erro!", "Usuário não autenticado!", "error");
-    return;
-  }
-
-  try {
-    const response = await axios.get(`http://localhost:5000/api/collection/${userId}`, {
-      headers: { "x-auth-token": token },
-    });
-
-    if (response.status === 200) {
-      setCollection((prevCollection) => prevCollection.filter((car) => car._id !== carId));
-      Swal.fire("Sucesso!", "Item removido com sucesso!", "success");
-    } else {
-      Swal.fire("Erro!", "Erro ao remover o item!", "error");
-    }
-  } catch (error) {
-    console.error("Erro ao remover item:", error);
-    Swal.fire("Erro!", "Erro ao remover o item. Tente novamente.", "error");
-  }
-};
-
-
+// Remover um Hot Wheel da coleção do usuário
 router.delete("/:userId/:carId", authMiddleware, async (req, res) => {
   try {
     const { userId, carId } = req.params;
@@ -79,7 +59,6 @@ router.delete("/:userId/:carId", authMiddleware, async (req, res) => {
 
     // Remove o carro da coleção
     userCollection.collection = userCollection.collection.filter((id) => id.toString() !== carId);
-
     await userCollection.save();
 
     res.status(200).json({ message: "Removido da coleção!", collection: userCollection.collection });
@@ -89,6 +68,7 @@ router.delete("/:userId/:carId", authMiddleware, async (req, res) => {
   }
 });
 
+// Buscar coleção do usuário
 router.get("/:userId", authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -97,10 +77,7 @@ router.get("/:userId", authMiddleware, async (req, res) => {
       return res.status(400).json({ msg: "ID inválido" });
     }
 
-    let userCollection = await UserCollection.findOne({ userId }).populate({
-      path: "collection",
-      model: "HotWheel",
-    });
+    let userCollection = await UserCollection.findOne({ userId }).populate("collection");
 
     if (!userCollection) {
       return res.status(404).json({ message: "Coleção não encontrada" });
@@ -114,44 +91,39 @@ router.get("/:userId", authMiddleware, async (req, res) => {
   }
 });
 
-const handleAddCar = async () => {
-  if (!newCar.name || !newCar.year || !newCar.image) {
-    Swal.fire("Erro!", "Todos os campos são obrigatórios!", "error");
-    return;
-  }
-
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    Swal.fire("Erro!", "Usuário não autenticado!", "error");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("name", newCar.name);
-  formData.append("year", newCar.year);
-  formData.append("image", newCar.image);
-
+router.post("/add-custom", authMiddleware, upload.single("image"), async (req, res) => {
   try {
-    const response = await axios.post("http://localhost:5000/api/collection/add-custom", formData, {
-      headers: { "x-auth-token": token, "Content-Type": "multipart/form-data" },
-    });
+    const { name, year } = req.body;
+    const userId = req.user.id; // Obtendo ID do usuário autenticado
+    const imageUrl = req.file ? `data:image/png;base64,${req.file.buffer.toString("base64")}` : null; 
 
-    setCollection([...collection, response.data.car]);
-    setShowModal(false);
-    setNewCar({ name: "", year: "", image: null });
-    Swal.fire("Sucesso!", "Carro adicionado à coleção!", "success");
-  } catch (error) {
-    console.error("Erro ao adicionar carro:", error);
-
-    if (error.response && error.response.data && error.response.data.message === "Esse Hot Wheel já existe na coleção!") {
-      Swal.fire("Erro!", "Esse Hot Wheel já existe na coleção!", "warning");
-    } else {
-      Swal.fire("Erro!", "Não foi possível adicionar o carro.", "error");
+    if (!name || !year || !imageUrl) {
+      return res.status(400).json({ message: "Todos os campos são obrigatórios!" });
     }
-  }
-};
 
+    const lowercaseName = name.toLowerCase();
+
+    // Criando um novo Hot Wheel
+    const newHotWheel = new HotWheel({ name, lowercaseName, year, imageUrl });
+    await newHotWheel.save();
+
+    // Buscando a coleção do usuário
+    let userCollection = await UserCollection.findOne({ userId });
+
+    if (!userCollection) {
+      userCollection = new UserCollection({ userId, collection: [], favorites: [] });
+    }
+
+    // Adicionando o carro na coleção do usuário
+    userCollection.collection.push(newHotWheel._id);
+    await userCollection.save();
+
+    res.status(201).json({ message: "Hot Wheel adicionado com sucesso!", car: newHotWheel });
+  } catch (error) {
+    console.error("Erro ao adicionar Hot Wheel personalizado:", error);
+    res.status(500).json({ message: "Erro interno no servidor", error });
+  }
+});
 
 
 module.exports = router;
