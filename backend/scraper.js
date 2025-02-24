@@ -1,6 +1,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const mongoose = require("mongoose");
+const HotWheel = require("./models/HotWheel"); // Certifique-se de importar corretamente o modelo
 require("dotenv").config();
 
 // Conectar ao MongoDB
@@ -8,16 +9,8 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
   .then(() => console.log("✅ Conectado ao MongoDB"))
   .catch(err => console.error("❌ Erro ao conectar ao MongoDB:", err));
 
-const HotWheelSchema = new mongoose.Schema({
-  name: { type: String, unique: true },
-  imageUrl: String,
-  year: Number,
-});
-
-const HotWheel = mongoose.model("HotWheel", HotWheelSchema);
-
 function cleanUrl(url) {
-  return url ? url.replace(/\s/g, "") : url; 
+  return url ? url.replace(/\s/g, "") : url;
 }
 
 // Função para buscar imagem no Google caso não encontre na Fandom
@@ -30,24 +23,24 @@ async function getGoogleImage(searchQuery) {
     });
 
     const $ = cheerio.load(response.data);
-    let imageUrl = $("img").eq(1).attr("src"); 
+    let imageUrl = $("img").eq(1).attr("src");
 
     if (!imageUrl || imageUrl.includes("/tia/tia.png")) {
       console.log(`⚠️ Nenhuma imagem válida encontrada para ${searchQuery}`);
-      return "https://via.placeholder.com/150"; 
+      return "https://via.placeholder.com/150";
     }
 
     return cleanUrl(imageUrl);
   } catch (error) {
     console.error(`❌ Erro ao buscar imagem no Google para ${searchQuery}:`, error);
-    return "https://via.placeholder.com/150"; 
+    return "https://via.placeholder.com/150";
   }
 }
 
 // Função de raspagem
 async function scrapeHotWheels() {
   try {
-    const url = "https://hotwheels.fandom.com/wiki/List_of_2019_Hot_Wheels";
+    const url = "https://hotwheels.fandom.com/wiki/List_of_2022_Hot_Wheels";
 
     const { data } = await axios.get(url, {
       headers: {
@@ -59,7 +52,7 @@ async function scrapeHotWheels() {
     const hotWheels = [];
 
     // Itera sobre todas as linhas da tabela
-    $("table.wikitable tbody tr").each(async (index, element) => {
+    const promises = $("table.wikitable tbody tr").map(async (index, element) => {
       const columns = $(element).find("td");
 
       // Se não houver colunas suficientes, ignora a linha
@@ -69,7 +62,12 @@ async function scrapeHotWheels() {
       }
 
       let name = $(columns.eq(2)).text().trim() || $(columns.eq(1)).text().trim();
-      name = name.replace(/^'\d{2} /, ""); 
+      name = name.replace(/^'\d{2} /, ""); // Remove números iniciais do nome
+
+      if (!name) {
+        console.warn(`⚠️ Modelo sem nome encontrado. Pulando...`);
+        return;
+      }
 
       let imageElement = $(columns).find("img");
       let imageUrl = imageElement.attr("data-src") || imageElement.attr("src") || "";
@@ -86,17 +84,22 @@ async function scrapeHotWheels() {
 
       console.log(`🚗 Modelo: ${name}, 🖼️ Imagem: ${imageUrl}`);
 
-      if (name) {
-        hotWheels.push({ name, imageUrl, year: 2019 });
-      }
-    });
+      hotWheels.push({
+        name,
+        lowercaseName: name.toLowerCase(),
+        imageUrl,
+        year: 2022
+      });
+    }).get();
+
+    await Promise.all(promises);
 
     console.log(`📦 Total de modelos extraídos: ${hotWheels.length}`);
 
     // Inserir ou atualizar no MongoDB
     for (const hotWheel of hotWheels) {
       await HotWheel.updateOne(
-        { name: hotWheel.name },
+        { lowercaseName: hotWheel.lowercaseName }, // Usa o nome em minúsculas para evitar duplicatas
         { $set: hotWheel },
         { upsert: true }
       );
