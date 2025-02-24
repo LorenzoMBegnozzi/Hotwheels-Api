@@ -2,31 +2,37 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const wishlistRoutes = require("./routes/wishlistRoutes");
+const path = require("path");
+
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(cors());
+
+// Servir a pasta uploads corretamente
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Rotas
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/hotwheels", require("./routes/hotwheelsRoutes"));
 app.use("/api/collection", require("./routes/collectionRoutes"));
 app.use("/api/wishlist", require("./routes/wishlistRoutes"));
-
+app.use("/api/user", require("./routes/authRoutes"));
 
 // Conectar ao MongoDB
 mongoose
   .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("MongoDB conectado"))
-  .catch((err) => console.log("Erro ao conectar ao MongoDB:", err));
+  .then(() => console.log("✅ MongoDB conectado"))
+  .catch((err) => console.log("❌ Erro ao conectar ao MongoDB:", err));
 
 // Rota inicial
 app.get("/", (req, res) => {
-  res.send("API do Hot Wheels funcionando!");
+  res.send("🚗 API do Hot Wheels funcionando!");
 });
 
 // Definir a porta do servidor
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });
