@@ -3,6 +3,7 @@ import "../css/HomePage.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { FaUserCircle } from "react-icons/fa";
 
 const HomePage = () => {
   const [search, setSearch] = useState("");
@@ -11,7 +12,7 @@ const HomePage = () => {
   const [yearFilter, setYearFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [user, setUser] = useState(null);
-  const itemsPerPage = 100;
+  const itemsPerPage = 100;  // Exibe 100 por página
   const navigate = useNavigate();
   const years = Array.from({ length: 2025 - 1969 + 1 }, (_, i) => 2025 - i);
 
@@ -34,11 +35,18 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-    setFilteredResults(
-      yearFilter ? results.filter((car) => car.year.toString() === yearFilter) : results
-    );
+    if (yearFilter === "") {
+      setFilteredResults([...results]); 
+    } else {
+      setFilteredResults(results.filter((car) => car.year.toString() === yearFilter));
+    }
     setCurrentPage(1);
   }, [yearFilter, results]);
+
+  // Forçar rolagem para o topo sempre que a página mudar
+  useEffect(() => {
+    window.scrollTo(0, 0);  // Rola para o topo da página
+  }, [currentPage]);
 
   const handleSearch = async () => {
     try {
@@ -91,17 +99,21 @@ const HomePage = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredResults.slice(indexOfFirstItem, indexOfLastItem);
 
+  const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
+
+  // Funções de navegação
+  const goToNextPage = () => setCurrentPage(Math.min(currentPage + 1, totalPages));
+  const goToPrevPage = () => setCurrentPage(Math.max(currentPage - 1, 1));
+  const goToFirstPage = () => setCurrentPage(1);
+  const goToLastPage = () => setCurrentPage(totalPages);
+
   return (
     <div className="home-container">
       <div className="header">
         <button className="logout-button" onClick={() => navigate("/login")}>🚪 Sair</button>
         {user && (
           <div className="profile-section" onClick={() => navigate("/profile")}>
-            <img 
-              src={user.profilePicture ? `http://localhost:5000${user.profilePicture}` : "/default-profile.png"} 
-              alt="Perfil" 
-              className="profile-picture-small" 
-            />
+            <FaUserCircle size={40} className="profile-icon" />
           </div>
         )}
       </div>
@@ -151,6 +163,22 @@ const HomePage = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="pagination">
+        <button onClick={goToFirstPage} disabled={currentPage === 1} className="pagination-button">
+          Primeira
+        </button>
+        <button onClick={goToPrevPage} disabled={currentPage === 1} className="pagination-button">
+          Anterior
+        </button>
+        <span>Página {currentPage} de {totalPages}</span>
+        <button onClick={goToNextPage} disabled={currentPage === totalPages} className="pagination-button">
+          Próxima
+        </button>
+        <button onClick={goToLastPage} disabled={currentPage === totalPages} className="pagination-button">
+          Última
+        </button>
       </div>
     </div>
   );
