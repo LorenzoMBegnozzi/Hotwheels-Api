@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import "../css/ProfilePage.css";
+import { FaUserCircle } from "react-icons/fa";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
-  const [profilePicture, setProfilePicture] = useState(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,40 +27,6 @@ const ProfilePage = () => {
     };
     fetchProfile();
   }, []);
-
-  // 🟢 Upload da Imagem de Perfil
-  const handleFileChange = (e) => {
-    setProfilePicture(e.target.files[0]);
-  };
-
-  const handleUpload = async () => {
-    if (!profilePicture) {
-      Swal.fire("Erro!", "Selecione uma imagem antes de enviar.", "error");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("profilePicture", profilePicture);
-
-    try {
-      let token = localStorage.getItem("token");
-      if (!token.startsWith("Bearer ")) {
-        token = `Bearer ${token}`;
-      }
-
-      const res = await axios.post("http://localhost:5000/api/auth/upload", formData, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      Swal.fire("Sucesso!", "Imagem de perfil atualizada!", "success");
-      setUser((prev) => ({ ...prev, profilePicture: res.data.imagePath }));
-    } catch (err) {
-      Swal.fire("Erro!", "Erro ao enviar imagem.", "error");
-    }
-  };
 
   // 🟠 Alteração de Senha
   const handleChangePassword = async () => {
@@ -98,23 +64,13 @@ const ProfilePage = () => {
     <div className="profile-container">
       <div className="profile-header">
         <h2>Perfil</h2>
-        {user.profilePicture && (
-          <img
-            src={`http://localhost:5000${user.profilePicture}`}
-            alt="Foto de Perfil"
-            className="profile-picture"
-          />
-        )}
+        <FaUserCircle className="profile-icon" size={150} color="#007bff" />
       </div>
       
       <div className="profile-card">
-        <p><strong>Nome:</strong> {user.name}</p>
-        <p><strong>Email:</strong> {user.email}</p>
-
-        {/* Upload de Imagem */}
-        <div className="upload-section">
-          <input type="file" onChange={handleFileChange} />
-          <button className="upload-button" onClick={handleUpload}>Atualizar Foto</button>
+        <div className="profile-info">
+          <p><strong>Nome:</strong> {user.name}</p>
+          <p><strong>Email:</strong> {user.email}</p>
         </div>
 
         {/* Alteração de Senha */}

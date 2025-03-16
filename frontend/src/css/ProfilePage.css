@@ -1,92 +1,111 @@
 @font-face {
-    font-family: "Heavy Heap RG";
-    src: url("heavy\ heap\ rg.otf") format("truetype");
-    font-weight: normal;
-    font-style: normal;
-  }
-  
-  .profile-container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 20px;
-    position: relative;
-    padding-top: 10px;
-  }
-  
-  .profile-header {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .profile-header h2 {
-    font-family: "Heavy Heap RG", sans-serif;
-    font-size: 50px;
-    color: #333;
-  }
-  
-  .profile-card {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 100%;
-    max-width: 400px;
-  }
-  
-  .profile-picture {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #007bff;
-    margin-bottom: 15px;
-  }
-  
-  .profile-info {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 10px;
-  }
-  
-  .upload-section {
-    margin-top: 15px;
-  }
-  
-  .upload-button {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease-in-out;
-  }
-  
-  .upload-button:hover {
-    background-color: #0056b3;
-  }
-  
-  .logout-container {
-    margin-top: 20px;
-  }
-  
-  .logout-button {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .logout-button:hover {
-    background-color: #cc0000;
-  }
-  
+  font-family: "Heavy Heap RG";
+  src: url("heavy\ heap\ rg.otf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.profile-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px 40px; /* Ajustei o padding para reduzir o espaço */
+  background-color: #f4f6f9;
+  position: relative;
+  border-radius: 20px; /* Borda arredondada para o container */
+  overflow: hidden; /* Garante que o conteúdo não ultrapasse o limite arredondado */
+  margin: 0; /* Remove margens */
+  width: 100%; /* Garante que a largura ocupe 100% da tela */
+  box-sizing: border-box; /* Para garantir que o padding não ultrapasse a largura total */
+}
+
+body, html {
+  height: 100%; /* Garante que o corpo e a tela ocupem 100% da altura */
+  margin: 0; /* Remove margens padrão do body */
+  overflow: hidden; /* Remove a rolagem da página */
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 15px; /* Reduzi o espaço inferior */
+}
+
+.profile-header h2 {
+  font-family: "Heavy Heap RG", sans-serif;
+  font-size: 40px; /* Reduzi o tamanho da fonte */
+  color: #333;
+}
+
+.profile-card {
+  background: rgb(190, 186, 186);
+  padding: 20px 30px; /* Ajustei o padding para dar um visual mais compacto */
+  border-radius: 15px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Reduzi o tamanho da sombra */
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+  margin-top: 20px; /* Reduzi o espaço superior */
+}
+
+.profile-icon {
+  margin-bottom: 15px; /* Reduzi a margem inferior */
+}
+
+.profile-info {
+  font-size: 16px; /* Reduzi o tamanho da fonte */
+  color: #333;
+  margin-bottom: 15px; /* Reduzi a margem inferior */
+}
+
+input {
+  width: 100%;
+  padding: 10px; /* Ajustei o padding para campos mais compactos */
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px; /* Reduzi o tamanho da fonte */
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.upload-button {
+  padding: 10px 14px; /* Ajustei o padding do botão */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px; /* Reduzi o tamanho da fonte */
+  border-radius: 8px;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 15px;
+}
+
+.upload-button:hover {
+  background-color: #0056b3;
+}
+
+.logout-container {
+  margin-top: 20px; /* Reduzi o espaço superior */
+}
+
+.logout-button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 12px; /* Ajustei o padding do botão */
+  font-size: 14px; /* Reduzi o tamanho da fonte */
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #cc0000;
+}
