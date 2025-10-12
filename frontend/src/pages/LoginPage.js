@@ -1,8 +1,10 @@
+// LoginPage.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../css/LoginPage.css";
+import Logo from "../css/pngwing.com.png"; 
 
 const LoginPage = () => {
   const [name, setName] = useState("");
@@ -14,7 +16,7 @@ const LoginPage = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  
+
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -93,6 +95,7 @@ const LoginPage = () => {
   return (
     <div className="login-container">
       <div className="login-box">
+        <img src={Logo} alt="Logo" className="login-logo" />
         <h2>{isRegistering ? "Criar Conta" : isUpdatingPassword ? "Atualizar Senha" : "Login"}</h2>
         {isRegistering && (
           <input type="text" placeholder="Nome" value={name} onChange={(e) => setName(e.target.value)} />
@@ -138,12 +141,15 @@ const LoginPage = () => {
         ) : isUpdatingPassword ? (
           <button onClick={handleChangePassword}>Atualizar Senha</button>
         ) : (
-          <button onClick={handleLogin}>Entrar</button>
+          <button onClick={handleLogin}>Login</button>
         )}
-        <p className="toggle-text" onClick={() => {
-          setIsRegistering(false);
-          setIsUpdatingPassword(!isUpdatingPassword);
-        }}>
+        <p
+          className="toggle-text"
+          onClick={() => {
+            setIsRegistering(false);
+            setIsUpdatingPassword(!isUpdatingPassword);
+          }}
+        >
           {isUpdatingPassword ? "Voltar para Login" : "Esqueceu a senha?"}
         </p>
         {!isUpdatingPassword && (

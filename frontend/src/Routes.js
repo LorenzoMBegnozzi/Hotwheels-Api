@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import MyCollection from "./pages/MyCollection";
 import WishListPage from "./pages/WishListPage";
 import ProfilePage from "./pages/ProfilePage";
+import RecognizerPage from "./pages/RecognizerPage";
 
 const AppRoutes = () => {
   return (
@@ -16,6 +17,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/lista-de-desejos" element={<WishListPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+         <Route path="/reconhecedor" element={<RecognizerPage />} />
       </Routes>
     </Router>
   );

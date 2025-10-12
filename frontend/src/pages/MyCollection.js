@@ -116,18 +116,39 @@ const MyCollection = () => {
       <button className="back-button" onClick={() => navigate("/home")}>🔙 Voltar para Home</button>
 
       <div className="car-list">
+        {/* Botão para adicionar novo carro */}
         <div className="add-car-button" onClick={() => setShowModal(true)}>
-          <span className="plus-icon">➕</span>
+          <div className="plus-icon">➕</div>
+          <p>Adicionar Hot Wheel</p>
         </div>
 
+        {/* Botão para o reconhecedor */}
+        <div className="add-car-button" onClick={() => navigate("/reconhecedor")}>
+          <div className="plus-icon">🔍</div>
+          <p>Reconhecer Imagem</p>
+        </div>
+
+        {/* Lista de carros */}
         {collection.map((car) => (
           <div key={car._id} className="car-item">
-            <img src={car.imageUrl || "https://via.placeholder.com/150"} alt={car.name} className="car-image" />
-            <h3>{car.name} ({car.year})</h3>
-            <button className="delete-button" onClick={() => handleRemoveCar(car._id)}>🗑️</button>
+            <img
+              src={car.imageUrl || "https://via.placeholder.com/150"}
+              alt={car.name}
+              className="car-image"
+            />
+            <h3>
+              {car.name} ({car.year})
+            </h3>
+            <button
+              className="delete-button"
+              onClick={() => handleRemoveCar(car._id)}
+            >
+              🗑️
+            </button>
           </div>
         ))}
       </div>
+
 
       {showModal && (
         <div className="modal">
