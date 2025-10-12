@@ -40,7 +40,7 @@ async function getGoogleImage(searchQuery) {
 // Função de raspagem
 async function scrapeHotWheels() {
   try {
-    const url = "https://hotwheels.fandom.com/wiki/List_of_2022_Hot_Wheels";
+    const url = "https://hotwheels.fandom.com/wiki/List_of_2025_Hot_Wheels";
 
     const { data } = await axios.get(url, {
       headers: {
@@ -88,7 +88,7 @@ async function scrapeHotWheels() {
         name,
         lowercaseName: name.toLowerCase(),
         imageUrl,
-        year: 2022
+        year: 2025
       });
     }).get();
 
