@@ -5,7 +5,6 @@
   font-style: normal;
 }
 
-
 .home-container {
   min-height: 100vh;
   display: flex;
@@ -17,11 +16,9 @@
   padding-top: 10px;
 }
 
-
 .search-section {
   text-align: center;
 }
-
 
 .search-section h2 {
   font-family: "Heavy Heap RG", sans-serif;
@@ -30,14 +27,12 @@
   text-align: center;
 }
 
-
 .search-container {
   display: flex;
   justify-content: center;
   gap: 10px;
   margin-top: 15px;
 }
-
 
 .search-input {
   padding: 12px;
@@ -49,10 +44,9 @@
   transition: border 0.3s ease-in-out;
 }
 
-
 .search-button {
   padding: 12px 18px;
-  background-color: #007bff;
+  background-color: #050607;
   color: white;
   border: none;
   cursor: pointer;
