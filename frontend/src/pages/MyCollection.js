@@ -113,7 +113,7 @@ const MyCollection = () => {
   return (
     <div className="my-collection-container">
       <h1>Minha Coleção</h1>
-      <button className="back-button" onClick={() => navigate("/home")}>🔙 Voltar para Home</button>
+      <button className="back-button" onClick={() => navigate("/home")}>Home</button>
 
       <div className="car-list">
         {/* Botão para adicionar novo carro */}
@@ -143,7 +143,7 @@ const MyCollection = () => {
               className="delete-button"
               onClick={() => handleRemoveCar(car._id)}
             >
-              🗑️
+              Excluir
             </button>
           </div>
         ))}

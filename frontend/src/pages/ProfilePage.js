@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 import "../css/ProfilePage.css";
 import { FaUserCircle } from "react-icons/fa";
 
 const ProfilePage = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -28,7 +30,6 @@ const ProfilePage = () => {
     fetchProfile();
   }, []);
 
-  // 🟠 Alteração de Senha
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
       Swal.fire("Erro!", "As senhas não coincidem.", "error");
@@ -56,15 +57,17 @@ const ProfilePage = () => {
     }
   };
 
-  if (!user) {
-    return <p>Carregando...</p>;
-  }
+  if (!user) return <p>Carregando...</p>;
 
-  return (
+  return (    
     <div className="profile-container">
+      <button className="back-button" onClick={() => navigate("/home")}>
+        Home
+      </button>
+
       <div className="profile-header">
         <h2>Perfil</h2>
-        <FaUserCircle className="profile-icon" size={150} color="#007bff" />
+        <FaUserCircle className="profile-icon" size={120} color="#007bff" />
       </div>
       
       <div className="profile-card">
@@ -73,7 +76,6 @@ const ProfilePage = () => {
           <p><strong>Email:</strong> {user.email}</p>
         </div>
 
-        {/* Alteração de Senha */}
         <h3>Alterar Senha</h3>
         <input
           type="password"
@@ -93,7 +95,9 @@ const ProfilePage = () => {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
-        <button className="upload-button" onClick={handleChangePassword}>Alterar Senha</button>
+        <button className="upload-button" onClick={handleChangePassword}>
+          Alterar Senha
+        </button>
       </div>
     </div>
   );
