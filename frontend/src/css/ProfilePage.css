@@ -5,107 +5,103 @@
   font-style: normal;
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background-color: #f4f6f9;
+}
+
 .profile-container {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 20px 40px; /* Ajustei o padding para reduzir o espaço */
-  background-color: #f4f6f9;
-  position: relative;
-  border-radius: 20px; /* Borda arredondada para o container */
-  overflow: hidden; /* Garante que o conteúdo não ultrapasse o limite arredondado */
-  margin: 0; /* Remove margens */
-  width: 100%; /* Garante que a largura ocupe 100% da tela */
-  box-sizing: border-box; /* Para garantir que o padding não ultrapasse a largura total */
-}
-
-body, html {
-  height: 100%; /* Garante que o corpo e a tela ocupem 100% da altura */
-  margin: 0; /* Remove margens padrão do body */
-  overflow: hidden; /* Remove a rolagem da página */
+  justify-content: center;
+  padding: 10px 20px;
+  box-sizing: border-box;
 }
 
 .profile-header {
   text-align: center;
-  margin-bottom: 15px; /* Reduzi o espaço inferior */
+  margin-bottom: 15px;
 }
 
 .profile-header h2 {
-  font-family: "Heavy Heap RG", sans-serif;
-  font-size: 40px; /* Reduzi o tamanho da fonte */
+  font-size: 42px;
   color: #333;
 }
 
 .profile-card {
-  background: rgb(190, 186, 186);
-  padding: 20px 30px; /* Ajustei o padding para dar um visual mais compacto */
-  border-radius: 15px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Reduzi o tamanho da sombra */
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   text-align: center;
   width: 100%;
-  max-width: 500px;
-  margin-top: 20px; /* Reduzi o espaço superior */
+  max-width: 350px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
 }
 
-.profile-icon {
-  margin-bottom: 15px; /* Reduzi a margem inferior */
+.profile-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .profile-info {
-  font-size: 16px; /* Reduzi o tamanho da fonte */
-  color: #333;
-  margin-bottom: 15px; /* Reduzi a margem inferior */
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.profile-info p {
+  margin: 6px 0;
 }
 
 input {
   width: 100%;
-  padding: 10px; /* Ajustei o padding para campos mais compactos */
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 14px; /* Reduzi o tamanho da fonte */
+  padding: 10px 12px;
+  margin: 8px 0;
+  border: 2px solid #e7e7e7;
+  border-radius: 6px;
+  font-size: 14px;
   box-sizing: border-box;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 input:focus {
-  border-color: #007bff;
+  border-color: #0056b3;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.4);
   outline: none;
 }
 
 .upload-button {
-  padding: 10px 14px; /* Ajustei o padding do botão */
+  padding: 10px 16px;
   background-color: #007bff;
-  color: white;
+  color: #fff;
   border: none;
+  font-size: 14px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px; /* Reduzi o tamanho da fonte */
-  border-radius: 8px;
-  transition: background-color 0.3s ease-in-out;
-  margin-top: 15px;
+  margin-top: 12px;
+  width: 100%;
+  transition: background-color 0.3s ease;
 }
 
 .upload-button:hover {
   background-color: #0056b3;
 }
 
-.logout-container {
-  margin-top: 20px; /* Reduzi o espaço superior */
-}
+/* Responsividade */
+@media (max-width: 500px) {
+  .profile-card {
+    padding: 15px;
+    max-width: 90%;
+  }
 
-.logout-button {
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 8px 12px; /* Ajustei o padding do botão */
-  font-size: 14px; /* Reduzi o tamanho da fonte */
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.logout-button:hover {
-  background-color: #cc0000;
+  .profile-header h2 {
+    font-size: 32px;
+  }
 }

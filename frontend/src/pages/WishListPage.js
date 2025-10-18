@@ -68,7 +68,7 @@ const WishListPage = () => {
     return (
         <div className="home-container">
             <h2>Minha Lista de Desejos</h2>
-            <Link to="/home" className="collection-button">🏠 Voltar para Home</Link>
+            <Link to="/home" className="collection-button">Home</Link>
 
             {loading ? (
                 <p>Carregando...</p>
@@ -80,7 +80,12 @@ const WishListPage = () => {
                         <div key={car._id} className="car-item">
                             <h3>{car.name} ({car.year})</h3>
                             <img src={car.imageUrl} alt={car.name} className="car-image" />
-                            <button onClick={() => removeFromWishlist(car._id)} className="remove-button">🗑️</button>
+                            <button
+                                onClick={() => removeFromWishlist(car._id)}
+                                className="delete-button"
+                            >
+                                Excluir
+                            </button>
                         </div>
                     ))}
                 </div>
