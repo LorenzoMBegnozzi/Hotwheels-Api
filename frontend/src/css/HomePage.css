@@ -21,7 +21,6 @@
 }
 
 .search-section h2 {
-  font-family: "Heavy Heap RG", sans-serif;
   font-size: 50px;
   color: #333;
   text-align: center;
@@ -63,6 +62,60 @@
   border-color: #0056b3;
 }
 
+.year-filter-select {
+  width: 80px;
+  /* largura menor */
+  height: 47px;
+  /* altura menor */
+  padding: 4px 8px;
+  /* padding interno reduzido */
+  font-size: 14px;
+  /* tamanho da fonte */
+  border-radius: 5px;
+  border: 2px solid #007bff;
+  cursor: pointer;
+  margin-top: 7px;
+}
+
+.year-filter-select:hover {
+  border-color: #0056b3;
+}
+
+@media (max-width: 480px) {
+  .year-filter-select {
+    width: 100px;
+    /* ainda menor em telas pequenas */
+    height: 28px;
+    font-size: 12px;
+  }
+}
+
+
+
+.buscar-button {
+  width: 80px;
+  height: 47px;
+  padding: 4px 8px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 2px solid #007bff;
+  cursor: pointer;
+  margin-top: 7px;
+  background-color: #000;
+  color: #fff;
+}
+
+.buscar-button:hover {
+  border-color: #0056b3;
+}
+
+@media (max-width: 480px) {
+  .buscar-button {
+    width: 100px;
+    height: 28px;
+    font-size: 12px;
+  }
+}
 
 .results-container {
   width: 100%;
@@ -212,26 +265,11 @@
   /* Antes: 24px */
 }
 
-.logout-button {
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-left: 20px;
-}
-
-.logout-button:hover {
-  background-color: #cc0000;
-}
-
 .profile-section {
   position: absolute;
   top: 10px;
-  right: 60px; /* Ajuste para mover mais para a esquerda */
+  right: 60px;
+  /* Ajuste para mover mais para a esquerda */
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -242,8 +280,10 @@
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid white; /* Adiciona a borda branca */
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Opcional: adiciona um leve sombreamento */
+  border: 2px solid white;
+  /* Adiciona a borda branca */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  /* Opcional: adiciona um leve sombreamento */
 }
 
 .collection-wishlist-buttons {
@@ -263,7 +303,7 @@
 
 .pagination-button {
   padding: 10px 20px;
-  background-color: #007BFF;
+  background-color: #000000;
   color: white;
   border: none;
   border-radius: 5px;

@@ -7,12 +7,9 @@ const RecognizerPage = () => {
 
   return (
     <div className="recognizer-container">
-      <h1>🔍 Reconhecedor de Imagens</h1>
-
-      <button className="back-button" onClick={() => navigate("/mycollection")}>
-        ⬅️ Voltar para Coleção
+      <button className="back-button" onClick={() => navigate("/minha-colecao")}>
+        Voltar para Coleção
       </button>
-
       <iframe
         src="http://localhost:8000/app"
         title="Reconhecedor de Imagens"
