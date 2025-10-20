@@ -36,7 +36,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if (yearFilter === "") {
-      setFilteredResults([...results]); 
+      setFilteredResults([...results]);
     } else {
       setFilteredResults(results.filter((car) => car.year.toString() === yearFilter));
     }
@@ -110,7 +110,6 @@ const HomePage = () => {
   return (
     <div className="home-container">
       <div className="header">
-        <button className="logout-button" onClick={() => navigate("/login")}>🚪 Sair</button>
         {user && (
           <div className="profile-section" onClick={() => navigate("/profile")}>
             <FaUserCircle size={40} className="profile-icon" />
@@ -119,7 +118,6 @@ const HomePage = () => {
       </div>
 
       <div className="search-section">
-        <h2>Virtual Collection</h2>
         <div className="search-filter-container">
           <div className="search-container">
             <div className="search-input-container">
@@ -132,13 +130,19 @@ const HomePage = () => {
               />
               <span className="search-icon">🔍</span>
             </div>
-            <select id="yearFilter" value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
-              <option value="">Todos os anos</option>
+            <select
+              id="yearFilter"
+              value={yearFilter}
+              onChange={(e) => setYearFilter(e.target.value)}
+              className="year-filter-select"
+            >
+              <option value="">Anos</option>
               {years.map((year) => (
                 <option key={year} value={year}>{year}</option>
               ))}
             </select>
-            <button className="search-button" onClick={handleSearch}>Buscar</button>
+
+            <button className="buscar-button" onClick={handleSearch}>Buscar</button>
           </div>
         </div>
       </div>

@@ -32,6 +32,14 @@ html, body {
   color: #333;
 }
 
+.top-buttons {
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  justify-content: space-between; 
+  margin-bottom: 3px; /* separação do card */
+}
+
 .profile-card {
   background: #ffffff;
   padding: 20px;

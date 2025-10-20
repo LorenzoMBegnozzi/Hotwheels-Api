@@ -1,35 +1,48 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: #f3f3f3;
+  font-family: Arial, sans-serif;
+}
+
+/* Container da página */
 .recognizer-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
   padding: 20px;
-  background-color: #f3f3f3;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
-.recognizer-container h1 {
-  margin-bottom: 10px;
-}
-
+/* Botão de voltar */
 .back-button {
-  margin-bottom: 10px;
-  padding: 10px 15px;
-  background: blue;
+  margin-bottom: 15px;
+  padding: 12px 20px;
+  background-color: #000000;
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  font-size: 16px;
   transition: background 0.3s ease;
 }
 
 .back-button:hover {
-  background: darkblue;
+  background-color: #0056b3;
 }
 
+/* Iframe retangular maior, proporcional */
 .recognizer-iframe {
-  width: 90%;
-  height: 80vh;
+  width: 500px;       /* maior largura */
+  max-width: 1200px; /* limite máximo */
+  height: 75vh;     /* altura grande, mas deixa espaço para botão/título */
   border: none;
-  border-radius: 10px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.recognizer-iframe:hover {
+  transform: scale(1.02);
 }

@@ -44,7 +44,7 @@ const ProfilePage = () => {
 
       await axios.put(
         "http://localhost:5000/api/auth/update-password",
-        { currentPassword, newPassword }, 
+        { currentPassword, newPassword },
         { headers: { Authorization: token } }
       );
 
@@ -59,17 +59,21 @@ const ProfilePage = () => {
 
   if (!user) return <p>Carregando...</p>;
 
-  return (    
+  return (
     <div className="profile-container">
-      <button className="back-button" onClick={() => navigate("/home")}>
-        Home
-      </button>
+      <div className="top-buttons">
+        <button className="back-button" onClick={() => navigate("/home")}>
+          Home
+        </button>
+        <button className="back-button" onClick={() => navigate("/login")}>
+          Sair
+        </button>
+      </div>
 
       <div className="profile-header">
-        <h2>Perfil</h2>
-        <FaUserCircle className="profile-icon" size={120} color="#007bff" />
+        <FaUserCircle className="profile-icon" size={120} color="#ffffffff" />
       </div>
-      
+
       <div className="profile-card">
         <div className="profile-info">
           <p><strong>Nome:</strong> {user.name}</p>
