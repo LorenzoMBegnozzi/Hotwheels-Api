@@ -318,3 +318,19 @@
 .pagination-button:hover:not(:disabled) {
   background-color: #0056b3;
 }
+
+.tabs {
+  display: flex;
+  justify-content: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+
+}
+
+/* Quando clicada/ativa */
+.tab-button.active {
+  background-color: #0056b3;
+  /* coloque a cor desejada aqui */
+}

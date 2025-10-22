@@ -18,7 +18,9 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/hotwheels", require("./routes/hotwheelsRoutes"));
 app.use("/api/collection", require("./routes/collectionRoutes"));
 app.use("/api/wishlist", require("./routes/wishlistRoutes"));
-app.use("/api/user", require("./routes/authRoutes"));
+app.use("/api/users", require("./routes/users"));
+app.use("/api/recognizer", require("./routes/recognizerRoutes"));
+
 
 // Conectar ao MongoDB
 mongoose
