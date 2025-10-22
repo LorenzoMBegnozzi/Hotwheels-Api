@@ -15,6 +15,15 @@ body, html {
   box-sizing: border-box;
 }
 
+/* Área de resultados com mesmo comportamento de scroll da home */
+/* Resultados: usar scroll da página inteira (sem max-height) */
+.recognizer-results-container {
+  width: 100%;
+}
+
+/* Ajuste visual dos botões dentro dos cards no reconhecedor */
+.recognizer-results-container .buttons button { min-width: 110px; }
+
 /* Botão de voltar */
 .back-button {
   margin-bottom: 15px;
