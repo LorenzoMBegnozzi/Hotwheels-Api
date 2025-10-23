@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../css/HomePage.css";
+import "../css/UserSearch.css"; // estilos específicos para busca de usuários
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";

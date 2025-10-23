@@ -1,0 +1,58 @@
+/* Estilos específicos para a aba de pesquisa de usuários */
+
+.user-item {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.user-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+.user-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #007bff;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  margin-bottom: 10px;
+}
+
+.user-item h3 {
+  margin: 8px 0 4px;
+  font-size: 18px;
+  color: #222;
+}
+
+.user-item p {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.user-item .search-button {
+  width: 100%;
+  max-width: 180px;
+}
+
+@media (max-width: 600px) {
+  .user-item {
+    max-width: 260px;
+  }
+  .user-image {
+    width: 90px;
+    height: 90px;
+  }
+}
