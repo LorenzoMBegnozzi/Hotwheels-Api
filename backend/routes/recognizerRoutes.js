@@ -10,21 +10,15 @@ const { getCache } = require('../utils/hotwheelHistogramCache');
 
 const router = express.Router();
 
-// Ensure uploads/recognizer exists
-const uploadDir = path.join(__dirname, '..', 'uploads', 'recognizer');
-fs.mkdirSync(uploadDir, { recursive: true });
+// Pasta não é mais necessária (usamos memoryStorage e não salvamos arquivos)
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname) || '.jpg';
-    cb(null, Date.now() + '-' + file.fieldname + ext);
-  }
-});
-
-const upload = multer({ storage });
+// Use memory storage so uploaded image is NOT persisted to disk.
+// Isto atende a requisição: não salvar a imagem enviada no servidor.
+const memoryStorage = multer.memoryStorage();
+const upload = multer({ storage: memoryStorage });
 
 // POST /api/recognizer/cadastrar
+// Cadastro mantém apenas o nome (sem armazenar a imagem). Pode ser removido se não fizer sentido.
 router.post('/cadastrar', upload.single('file'), async (req, res) => {
   try {
     console.log('[Recognizer] /cadastrar recebida');
@@ -32,9 +26,10 @@ router.post('/cadastrar', upload.single('file'), async (req, res) => {
     if (!nome) return res.status(400).json({ status: 'erro', mensagem: 'Nome é obrigatório' });
     if (!req.file) return res.status(400).json({ status: 'erro', mensagem: 'Arquivo não enviado' });
 
-    const relPath = path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/');
-  const created = await RecognizerImage.create({ name: nome, filePath: relPath });
-  return res.json({ status: 'ok', mensagem: `Imagem ${nome} cadastrada com sucesso!`, filePath: created.filePath, id: created._id });
+    // Previously this saved a file to disk and persisted path. Requirement: do not save file.
+    // If still need to register something, we can persist only the name and a timestamp.
+    const created = await RecognizerImage.create({ name: nome, filePath: 'memory' });
+    return res.json({ status: 'ok', mensagem: `Imagem ${nome} cadastrada (não salva em disco)`, id: created._id });
   } catch (e) {
     console.error(e);
     res.status(500).json({ status: 'erro', mensagem: 'Falha ao cadastrar' });
@@ -48,25 +43,33 @@ async function loadLocal(relPath) {
 }
 
 // POST /api/recognizer/reconhecer
+// Reconhecimento usando buffer em memória; nada é gravado em disco.
 router.post('/reconhecer', upload.single('file'), async (req, res) => {
   try {
     console.log('[Recognizer] /reconhecer recebida');
     if (!req.file) return res.status(400).json({ status: 'erro', mensagem: 'Arquivo não enviado', top3: [] });
-    const queryBuffer = await fs.promises.readFile(req.file.path);
+    // Debug detalhado para verificar se ainda há path sendo criado
+    console.log('[Recognizer] File keys:', Object.keys(req.file));
+    console.log('[Recognizer] File info => originalname:', req.file.originalname, 'mimetype:', req.file.mimetype, 'size:', req.file.size);
+    if (req.file.path) {
+      console.warn('[Recognizer][WARN] req.file.path existe. Isso indica uso de diskStorage em algum lugar. Valor:', req.file.path);
+    } else {
+      console.log('[Recognizer] Sem req.file.path (OK - memória).');
+    }
+    const queryBuffer = req.file.buffer; // already in memory
     const queryHist = await computeHistogram(queryBuffer);
-    console.log('[Recognizer] Histograma da imagem query calculado');
+    console.log('[Recognizer] Histograma da imagem query calculado (memória)');
     const cache = await getCache();
     console.log(`[Recognizer] Cache carregado com ${cache.items.length} itens`);
     const results = [];
     for (const item of cache.items) {
       try {
-        // correlationSimilarity expects two hist arrays
         const sim = correlationSimilarity(queryHist, item.hist); // [-1,1]
         const similarity = (sim + 1) / 2;
         results.push({
           id: item.id,
           nome: item.name,
-            url: item.imageUrl,
+          url: item.imageUrl,
           similaridade: Number(similarity.toFixed(3)),
           diferenca: Number((1 - similarity).toFixed(3))
         });
