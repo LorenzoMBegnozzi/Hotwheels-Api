@@ -76,6 +76,9 @@ Body: { userId, hotWheelId }
 ## 🎨 Ajuste de Formatação dos Nomes
 Para evitar que os nomes tenham números no início, foi feita uma normalização no backend antes de salvar no banco de dados.
 
+## 🧠 Reconhecimento de Imagem (Recognizer)
+O endpoint de reconhecimento (`/api/recognizer/reconhecer`) agora utiliza `multer.memoryStorage()`, processando a imagem diretamente em memória sem salvar arquivos no disco. Isso reduz uso de armazenamento e atende ao requisito de não persistir a imagem enviada. O cadastro (`/api/recognizer/cadastrar`) apenas registra o nome e marca `filePath` como `memory` (sem arquivo físico). Caso não queira cadastro, o endpoint pode ser removido.
+
 ## 📜 Licença
 Este projeto é de uso livre para fins educacionais e não comerciais.
 
