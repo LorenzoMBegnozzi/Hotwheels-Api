@@ -15,10 +15,25 @@ body, html {
   box-sizing: border-box;
 }
 
-/* Área de resultados com mesmo comportamento de scroll da home */
-/* Resultados: usar scroll da página inteira (sem max-height) */
 .recognizer-results-container {
   width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(200px, 1fr));
+  gap: 20px;
+  justify-items: center;
+}
+
+@media (max-width: 900px) {
+  .recognizer-results-container {
+    grid-template-columns: repeat(2, minmax(100px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .recognizer-results-container {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Ajuste visual dos botões dentro dos cards no reconhecedor */

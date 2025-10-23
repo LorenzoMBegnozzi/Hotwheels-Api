@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 const RecognizerPage = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
-  const [nome, setNome] = useState('');
+  // Campo de nome removido (cadastro desativado)
   const [loading, setLoading] = useState(false);
   const [mensagem, setMensagem] = useState('');
   const [top3, setTop3] = useState([]);
@@ -53,26 +53,7 @@ const RecognizerPage = () => {
     }
   }
 
-  async function cadastrar() {
-    if (!file || !nome) {
-      setMensagem('⚠️ Selecione uma imagem e informe o nome.');
-      return;
-    }
-    try {
-      setLoading(true);
-      const form = new FormData();
-      form.append('file', file);
-      form.append('nome', nome);
-      const { data } = await axios.post(`${backendBase}/cadastrar`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
-      setMensagem(data.mensagem || 'Cadastro efetuado');
-    } catch (err) {
-      console.error(err);
-      const serverMsg = err.response?.data?.mensagem || err.message;
-      setMensagem(`❌ Erro ao cadastrar imagem: ${serverMsg}`);
-    } finally {
-      setLoading(false);
-    }
-  }
+  // Função de cadastrar removida
 
   async function reconhecer() {
     if (!file) {
@@ -107,17 +88,9 @@ const RecognizerPage = () => {
       </div>
 
       <div className="form-section">
-        <input
-          type="text"
-          placeholder="Nome (para cadastrar)"
-          value={nome}
-          onChange={e => setNome(e.target.value)}
-          className="input-text"
-        />
         <input type="file" accept="image/*" onChange={onFileChange} className="input-file" />
         <div className="buttons-row">
-          <button disabled={loading} onClick={cadastrar} className="action-button">Cadastrar</button>
-          <button disabled={loading} onClick={reconhecer} className="action-button primary">Reconhecer</button>
+          <button disabled={loading || !file} onClick={reconhecer} className="action-button primary">Reconhecer</button>
         </div>
       </div>
 
