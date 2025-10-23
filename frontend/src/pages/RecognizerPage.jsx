@@ -81,10 +81,10 @@ const RecognizerPage = () => {
   const hasAttempt = mensagem && top3.length === 0 && !loading;
 
   return (
-    <div className="recognizer-container">
+  <div className="recognizer-container compact">
       <div className="header-bar">
-        <button className="back-button" onClick={() => navigate('/minha-colecao')}>Voltar</button>
         <h2>🔎 Reconhecedor de Hot Wheels</h2>
+        <button className="back-button" onClick={() => navigate('/minha-colecao')}>Voltar</button>
       </div>
 
       <div className="form-section">
@@ -96,7 +96,6 @@ const RecognizerPage = () => {
 
       {preview && (
         <div className="preview-section">
-          <h3>Imagem Selecionada</h3>
             {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
           <img src={preview} alt="Preview da imagem" className="preview-image" />
         </div>
@@ -106,7 +105,7 @@ const RecognizerPage = () => {
       {mensagem && <p className="mensagem">{mensagem}</p>}
 
       {top3.length > 0 && (
-        <div className="results-container recognizer-results-container">
+        <div className="recognizer-fixed-results">
           {top3.map(car => (
             <div key={car.id || car.url} className="car-item">
               <h3>{car.nome}</h3>

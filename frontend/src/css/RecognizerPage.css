@@ -1,8 +1,40 @@
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   background-color: #f3f3f3;
   font-family: Arial, sans-serif;
+  overflow-x: hidden;
+  /* impede scroll horizontal global */
+}
+
+/* Garante que nada gere largura maior que a viewport */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.recognizer-container,
+.recognizer-fixed-results {
+  width: 100%;
+}
+
+/* Previne que títulos/imagens gerem overflow lateral */
+.recognizer-fixed-results h3 {
+  word-break: break-word;
+  text-align: center;
+}
+
+.preview-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Se algum elemento interno tentar sair da largura, corta */
+.recognizer-container {
+  overflow-x: hidden;
 }
 
 /* Container da página */
@@ -10,34 +42,30 @@ body, html {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
   min-height: 100vh;
   box-sizing: border-box;
+  overflow-y: auto;
+  max-height: 100vh;
+
+
 }
 
-.recognizer-results-container {
+.header-bar {
+  position: sticky;
+  top: 0;
   width: 100%;
-  max-width: 1200px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(200px, 1fr));
-  gap: 20px;
-  justify-items: center;
+  padding: 10px 20px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-@media (max-width: 900px) {
-  .recognizer-results-container {
-    grid-template-columns: repeat(2, minmax(100px, 1fr));
-  }
+.header-bar .back-button {
+  margin-top: 1px;
+  margin-bottom: 0;
 }
-
-@media (max-width: 600px) {
-  .recognizer-results-container {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Ajuste visual dos botões dentro dos cards no reconhecedor */
-.recognizer-results-container .buttons button { min-width: 110px; }
 
 /* Botão de voltar */
 .back-button {
@@ -56,11 +84,10 @@ body, html {
   background-color: #0056b3;
 }
 
-/* Iframe retangular maior, proporcional */
 .recognizer-iframe {
-  width: 500px;       /* maior largura */
-  max-width: 1200px; /* limite máximo */
-  height: 75vh;     /* altura grande, mas deixa espaço para botão/título */
+  width: 500px;
+  max-width: 1200px;
+  height: 75vh;
   border: none;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -69,4 +96,96 @@ body, html {
 
 .recognizer-iframe:hover {
   transform: scale(1.02);
+}
+
+/* Área fixa para mostrar até 3 cards lado a lado sem scroll lateral */
+.recognizer-fixed-results {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  justify-items: center;
+  padding: 10px 0 25px;
+  overflow-x: hidden;
+  /* garante sem barra horizontal dentro */
+}
+
+@media (max-width: 900px) {
+  .recognizer-fixed-results {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .recognizer-fixed-results {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Garante que cada card não estoure a largura e nem gere scroll lateral */
+.recognizer-fixed-results .car-item {
+  width: 100%;
+  max-width: 350px;
+  box-sizing: border-box;
+}
+
+.recognizer-fixed-results .car-image {
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Layout compacto equivalente a ~90% zoom */
+.recognizer-container.compact {
+  font-size: 0.9rem;
+}
+
+.recognizer-container.compact .header-bar {
+  padding: 6px 16px;
+}
+
+.recognizer-container.compact .header-bar h2 {
+  font-size: 1.15rem;
+}
+
+.recognizer-container.compact .back-button {
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+}
+
+.recognizer-container.compact .form-section {
+  margin-top: 4px;
+}
+
+.recognizer-container.compact .preview-image {
+  max-width: 240px;
+}
+
+.recognizer-container.compact .recognizer-fixed-results {
+  gap: 14px;
+  padding: 8px 0 18px;
+}
+
+.recognizer-container.compact .car-item {
+  padding: 10px;
+}
+
+.recognizer-container.compact .car-item h3 {
+  font-size: 0.9rem;
+}
+
+.recognizer-container.compact .car-image {
+  max-width: 150px;
+}
+
+.recognizer-container.compact .buttons button {
+  padding: 6px 10px;
+  font-size: 0.7rem;
+}
+
+.recognizer-container.compact .mensagem {
+  font-size: 0.8rem;
 }
