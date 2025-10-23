@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../css/RecognizerPage.css';
@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 const RecognizerPage = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
+  const [selectedFileName, setSelectedFileName] = useState('');
   // Campo de nome removido (cadastro desativado)
   const [loading, setLoading] = useState(false);
   const [mensagem, setMensagem] = useState('');
@@ -36,12 +37,14 @@ const RecognizerPage = () => {
     }
   }
   const [preview, setPreview] = useState(null);
+  const fileInputRef = useRef(null);
 
   const backendBase = 'http://localhost:5000/api/recognizer';
 
   function onFileChange(e) {
     const f = e.target.files[0];
     setFile(f || null);
+    setSelectedFileName(f ? f.name : '');
     setTop3([]);
     setMensagem('');
     if (f) {
@@ -62,6 +65,8 @@ const RecognizerPage = () => {
     }
     try {
       setLoading(true);
+      // Oculta a imagem imediatamente
+      setPreview(null);
       const form = new FormData();
       form.append('file', file);
       const { data } = await axios.post(`${backendBase}/reconhecer`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
@@ -81,23 +86,30 @@ const RecognizerPage = () => {
   const hasAttempt = mensagem && top3.length === 0 && !loading;
 
   return (
-  <div className="recognizer-container compact">
+    // Removido 'compact' para usar tamanho normal padrão
+    <div className="recognizer-container">
       <div className="header-bar">
         <h2>🔎 Reconhecedor de Hot Wheels</h2>
         <button className="back-button" onClick={() => navigate('/minha-colecao')}>Voltar</button>
       </div>
 
       <div className="form-section">
-        <input type="file" accept="image/*" onChange={onFileChange} className="input-file" />
-        <div className="buttons-row">
-          <button disabled={loading || !file} onClick={reconhecer} className="action-button primary">Reconhecer</button>
-        </div>
+  <input ref={fileInputRef} type="file" accept="image/*" onChange={onFileChange} className="input-file" />
+        {selectedFileName && (
+          <p className="file-name" style={{ marginTop: '8px', fontSize: '0.9rem', fontWeight: '500' }}>
+          </p>
+        )}
       </div>
 
       {preview && (
         <div className="preview-section">
+          <div className="preview-card">
             {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
-          <img src={preview} alt="Preview da imagem" className="preview-image" />
+            <img src={preview} alt="Preview da imagem" className="preview-image fixed" />
+          </div>
+          <div className="buttons-row below-image">
+            <button disabled={loading || !file} onClick={reconhecer} className="action-button primary">Reconhecer</button>
+          </div>
         </div>
       )}
 
