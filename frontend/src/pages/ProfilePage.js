@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { getUserProfile, updatePassword } from "../utils/api";
+import { logout, isAuthenticated } from "../utils/auth";
 import "../css/ProfilePage.css";
 import { FaUserCircle } from "react-icons/fa";
 
@@ -13,22 +14,81 @@ const ProfilePage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
+    // Verificar se o usuário está autenticado
+    if (!isAuthenticated()) {
+      navigate("/login");
+      return;
+    }
+
     const fetchProfile = async () => {
       try {
-        let token = localStorage.getItem("token");
-        if (!token.startsWith("Bearer ")) {
-          token = `Bearer ${token}`;
-        }
-        const response = await axios.get("http://localhost:5000/api/auth/profile", {
-          headers: { Authorization: token },
-        });
-        setUser(response.data);
+        const userData = await getUserProfile();
+        setUser(userData);
       } catch (error) {
         console.error("Erro ao carregar perfil:", error);
+        // Se erro de autenticação, redirecionar para login
+        if (error.message.includes('autenticação') || error.message.includes('token')) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          navigate("/login");
+        }
       }
     };
     fetchProfile();
-  }, []);
+  }, [navigate]);
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Confirmar Logout",
+      text: "Você tem certeza que deseja sair?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sim, sair",
+      cancelButtonText: "Cancelar"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          console.log("Fazendo logout...");
+          
+          // Limpar dados do localStorage
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          
+          console.log("Dados removidos do localStorage");
+          
+          Swal.fire({
+            title: "Logout realizado!",
+            text: "Você foi desconectado com sucesso.",
+            icon: "success",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+          });
+          
+          // Aguardar um pouco antes de navegar
+          setTimeout(() => {
+            console.log("Navegando para login...");
+            navigate("/login");
+          }, 1000);
+          
+        } catch (error) {
+          console.error("Erro durante logout:", error);
+          // Mesmo com erro, tentar navegar
+          navigate("/login");
+        }
+      }
+    }).catch((error) => {
+      console.error("Erro no modal de logout:", error);
+      // Em caso de erro no modal, fazer logout direto
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      navigate("/login");
+    });
+  };
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
@@ -37,23 +97,14 @@ const ProfilePage = () => {
     }
 
     try {
-      let token = localStorage.getItem("token");
-      if (!token.startsWith("Bearer ")) {
-        token = `Bearer ${token}`;
-      }
-
-      await axios.put(
-        "http://localhost:5000/api/auth/update-password",
-        { currentPassword, newPassword },
-        { headers: { Authorization: token } }
-      );
+      await updatePassword(currentPassword, newPassword);
 
       Swal.fire("Sucesso!", "Senha alterada com sucesso!", "success");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
-      Swal.fire("Erro!", err.response?.data?.message || "Erro ao alterar senha.", "error");
+      Swal.fire("Erro!", err.message || "Erro ao alterar senha.", "error");
     }
   };
 
@@ -65,7 +116,7 @@ const ProfilePage = () => {
         <button className="back-button" onClick={() => navigate("/home")}>
           Home
         </button>
-        <button className="back-button" onClick={() => navigate("/login")}>
+        <button className="back-button" onClick={handleLogout}>
           Sair
         </button>
       </div>
