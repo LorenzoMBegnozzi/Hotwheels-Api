@@ -125,7 +125,7 @@ const HomePage = () => {
       <div className="header">
         {user && (
           <div className="profile-section" onClick={() => navigate("/profile")}>
-            <FaUserCircle size={40} className="profile-icon" />
+            <FaUserCircle size={60} className="profile-icon" />
           </div>
         )}
       </div>

@@ -4,7 +4,7 @@
   align-items: center;
   height: 100vh; 
   padding: 20px;
-  padding-top: 110px; /* Espaço para o header fixo */
+  padding-top: 10px; /* Espaço para o header fixo */
 }
 
 .car-list {
