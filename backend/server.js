@@ -35,6 +35,9 @@ app.get("/", (req, res) => {
 
 // Definir a porta do servidor
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚗 Servidor rodando na porta ${PORT}`);
+    console.log(`📱 Acesso local: http://localhost:${PORT}`);
+    console.log(`🌐 Acesso na rede: http://192.168.0.4:${PORT}`);
+    console.log(`📋 API disponível em: http://192.168.0.4:${PORT}/api`);
 });
