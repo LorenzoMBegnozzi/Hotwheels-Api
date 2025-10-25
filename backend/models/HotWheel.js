@@ -7,7 +7,6 @@ const HotWheelSchema = new mongoose.Schema({
   imageUrl: { type: String, required: true }
 });
 
-// Antes de salvar, garante que o nome seja salvo em minúsculas
 HotWheelSchema.pre("save", function (next) {
   this.lowercaseName = this.name.toLowerCase();
   next();

@@ -8,7 +8,51 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+
+// Headers para resolver problemas de cross-origin
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+  res.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
+  res.header('Cross-Origin-Opener-Policy', 'unsafe-none');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
+// Configuração CORS mais permissiva para desenvolvimento
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Permitir requisições sem origin (mobile apps, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Permitir localhost e IPs da rede local
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'http://192.168.0.4:3000'
+    ];
+    
+    // Permitir qualquer IP da rede local 192.168.x.x
+    if (origin.match(/^http:\/\/192\.168\.\d+\.\d+:3000$/)) {
+      return callback(null, true);
+    }
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Permitir tudo durante desenvolvimento
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 
 // Servir a pasta uploads corretamente
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

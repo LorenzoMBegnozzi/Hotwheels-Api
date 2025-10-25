@@ -1,7 +1,7 @@
-// LoginPage.jsx
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { loginUser, registerUser, updatePassword } from "../utils/api";
+import { isAuthenticated } from "../utils/auth";
 import Swal from "sweetalert2";
 import "../css/LoginPage.css";
 import Logo from "../css/pngwing.com.png"; 
@@ -19,83 +19,72 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("userId", res.data.userId);
-
-      Swal.fire({
-        title: "Login realizado!",
-        text: "Bem-vindo de volta!",
-        icon: "success",
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-      });
-
+  useEffect(() => {
+    if (isAuthenticated()) {
+      console.log("Usuário já está logado, redirecionando...");
       navigate("/home");
+    }
+  }, [navigate]);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Swal.fire("Erro", "Por favor, preencha todos os campos.", "error");
+      return;
+    }
+    try {
+      const res = await loginUser(email, password);
+      if (res.token && res.userId) {
+        localStorage.setItem("token", res.token);
+        localStorage.setItem("userId", res.userId);
+        await Swal.fire("Sucesso", "Login realizado com sucesso!", "success");
+        navigate("/home");
+      } else {
+        throw new Error("Resposta inválida do servidor");
+      }
     } catch (err) {
-      Swal.fire("Erro!", err.response?.data?.message || "Erro ao fazer login.", "error");
+      Swal.fire("Erro", err.message || "Erro ao fazer login.", "error");
     }
   };
 
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      return Swal.fire("Erro!", "As senhas não coincidem.", "error");
+    if (!name || !email || !password || !confirmPassword) {
+      Swal.fire("Erro", "Por favor, preencha todos os campos.", "error");
+      return;
     }
-
+    if (password !== confirmPassword) {
+      Swal.fire("Erro", "As senhas não coincidem.", "error");
+      return;
+    }
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
-        name,
-        email,
-        password,
-        confirmPassword,
-      });
-
-      Swal.fire({
-        title: "Usuário cadastrado!",
-        text: "Agora você pode fazer login.",
-        icon: "success",
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-      });
-
-      setIsRegistering(false);
+      await registerUser(name, email, password);
+      await Swal.fire("Sucesso", "Usuário cadastrado com sucesso! Agora você pode fazer login.", "success");
+      setName(""); setEmail(""); setPassword(""); setConfirmPassword(""); setIsRegistering(false);
     } catch (err) {
-      Swal.fire("Erro!", err.response?.data?.message || "Erro ao cadastrar usuário.", "error");
+      Swal.fire("Erro", err.message || "Erro ao cadastrar usuário.", "error");
     }
   };
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmNewPassword) {
-      return Swal.fire("Erro!", "As senhas não coincidem.", "error");
+      Swal.fire("Erro", "As senhas não coincidem.", "error");
+      return;
     }
-
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        "http://localhost:5000/api/auth/update-password",
-        { currentPassword, newPassword },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      Swal.fire("Sucesso!", "Senha alterada com sucesso!", "success");
+      await updatePassword(currentPassword, newPassword);
+      await Swal.fire("Sucesso", "Senha alterada com sucesso!", "success");
       setIsUpdatingPassword(false);
+      setCurrentPassword(""); setNewPassword(""); setConfirmNewPassword("");
     } catch (err) {
-      Swal.fire("Erro!", err.response?.data?.message || "Erro ao atualizar senha.", "error");
+      Swal.fire("Erro", err.message || "Erro ao atualizar senha.", "error");
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-box">
-        <img src={Logo} alt="Logo" className="login-logo" />
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <img src={Logo} alt="Hot Wheels Logo" style={{ width: '210px' }} />
+        </div>
         <h2>{isRegistering ? "Criar Conta" : isUpdatingPassword ? "Atualizar Senha" : "Login"}</h2>
         {isRegistering && (
           <input type="text" placeholder="Nome" value={name} onChange={(e) => setName(e.target.value)} />
@@ -107,33 +96,13 @@ const LoginPage = () => {
           <input type="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} />
         )}
         {isRegistering && (
-          <input
-            type="password"
-            placeholder="Confirmar Senha"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
+          <input type="password" placeholder="Confirmar Senha" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
         )}
         {isUpdatingPassword && (
           <>
-            <input
-              type="password"
-              placeholder="Senha Atual"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Nova Senha"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Confirmar Nova Senha"
-              value={confirmNewPassword}
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
-            />
+            <input type="password" placeholder="Senha Atual" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
+            <input type="password" placeholder="Nova Senha" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+            <input type="password" placeholder="Confirmar Nova Senha" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
           </>
         )}
         {isRegistering ? (
@@ -143,13 +112,7 @@ const LoginPage = () => {
         ) : (
           <button onClick={handleLogin}>Login</button>
         )}
-        <p
-          className="toggle-text"
-          onClick={() => {
-            setIsRegistering(false);
-            setIsUpdatingPassword(!isUpdatingPassword);
-          }}
-        >
+        <p className="toggle-text" onClick={() => { setIsRegistering(false); setIsUpdatingPassword(!isUpdatingPassword); }}>
           {isUpdatingPassword ? "Voltar para Login" : "Esqueceu a senha?"}
         </p>
         {!isUpdatingPassword && (
@@ -161,5 +124,4 @@ const LoginPage = () => {
     </div>
   );
 };
-
 export default LoginPage;

@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import '../css/RecognizerPage.css';
 import '../css/HomePage.css';
 import Swal from 'sweetalert2';
+import { addToCollection, addToWishlist } from '../utils/api';
 
 const RecognizerPage = () => {
   const navigate = useNavigate();
@@ -13,25 +13,25 @@ const RecognizerPage = () => {
   const [loading, setLoading] = useState(false);
   const [mensagem, setMensagem] = useState('');
   const [top3, setTop3] = useState([]);
-  async function addToCollection(id) {
+  async function addToCollectionHandler(id) {
     try {
-      const tokenRaw = localStorage.getItem('token');
-      if (!tokenRaw) return Swal.fire('Atenção','Faça login para adicionar à coleção','warning');
-      const token = tokenRaw.startsWith('Bearer ') ? tokenRaw : `Bearer ${tokenRaw}`;
-      const { data } = await axios.post('http://localhost:5000/api/collection/add', { hotWheelId: id }, { headers: { Authorization: token } });
-      Swal.fire('Sucesso', data.message || 'Adicionado à coleção', 'success');
+      const token = localStorage.getItem('token');
+      if (!token) return Swal.fire('Atenção','Faça login para adicionar à coleção','warning');
+      
+      const response = await addToCollection(id);
+      Swal.fire('Sucesso', response.message || 'Adicionado à coleção', 'success');
     } catch (e) {
       Swal.fire('Erro', 'Não foi possível adicionar à coleção', 'error');
     }
   }
 
-  async function addToWishlist(id) {
+  async function addToWishlistHandler(id) {
     try {
-      const tokenRaw = localStorage.getItem('token');
-      if (!tokenRaw) return Swal.fire('Atenção','Faça login para adicionar à wishlist','warning');
-      const token = tokenRaw.startsWith('Bearer ') ? tokenRaw : `Bearer ${tokenRaw}`;
-      const { data } = await axios.post('http://localhost:5000/api/wishlist', { hotWheelId: id }, { headers: { Authorization: token } });
-      Swal.fire('Sucesso', data.message || 'Adicionado à wishlist', 'success');
+      const token = localStorage.getItem('token');
+      if (!token) return Swal.fire('Atenção','Faça login para adicionar à wishlist','warning');
+      
+      const response = await addToWishlist(id);
+      Swal.fire('Sucesso', response.message || 'Adicionado à wishlist', 'success');
     } catch (e) {
       Swal.fire('Erro', 'Não foi possível adicionar à wishlist', 'error');
     }
@@ -39,7 +39,7 @@ const RecognizerPage = () => {
   const [preview, setPreview] = useState(null);
   const fileInputRef = useRef(null);
 
-  const backendBase = 'http://localhost:5000/api/recognizer';
+  const backendBase = 'http://192.168.0.4:5000/api/recognizer';
 
   function onFileChange(e) {
     const f = e.target.files[0];
@@ -69,14 +69,23 @@ const RecognizerPage = () => {
       setPreview(null);
       const form = new FormData();
       form.append('file', file);
-      const { data } = await axios.post(`${backendBase}/reconhecer`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
+      
+      const response = await fetch(`${backendBase}/reconhecer`, {
+        method: 'POST',
+        body: form
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.mensagem || 'Erro no servidor');
+      }
+      
       setMensagem(data.mensagem || '');
       setTop3(data.top3 || []);
     } catch (err) {
       console.error(err);
-      const status = err.response?.status;
-      const serverMsg = err.response?.data?.mensagem || err.message;
-      setMensagem(`❌ Erro ao reconhecer imagem${status ? ' (' + status + ')' : ''}: ${serverMsg}`);
+      setMensagem(`❌ Erro ao reconhecer imagem: ${err.message}`);
       setTop3([]);
     } finally {
       setLoading(false);
@@ -126,8 +135,8 @@ const RecognizerPage = () => {
               <div className="buttons">
                 {car.id && (
                   <>
-                    <button className="search-button" onClick={() => addToCollection(car.id)}>➕ Coleção</button>
-                    <button className="search-button" onClick={() => addToWishlist(car.id)}>💙 Wishlist</button>
+                    <button className="search-button" onClick={() => addToCollectionHandler(car.id)}>➕ Coleção</button>
+                    <button className="search-button" onClick={() => addToWishlistHandler(car.id)}>💙 Wishlist</button>
                   </>
                 )}
               </div>

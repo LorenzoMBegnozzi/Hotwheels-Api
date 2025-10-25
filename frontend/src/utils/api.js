@@ -185,6 +185,8 @@ export const removeFromWishlist = async (carId) => {
 // Auth related functions
 export const loginUser = async (email, password) => {
   try {
+    console.log("API: Tentando login para:", email);
+    
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
@@ -193,11 +195,22 @@ export const loginUser = async (email, password) => {
       body: JSON.stringify({ email, password })
     });
 
+    console.log("API: Resposta do login recebida:", response.status);
+
     if (!response.ok) {
-      throw new Error('Credenciais inválidas');
+      let errorMessage = 'Credenciais inválidas';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch (e) {
+        console.error("Erro ao ler resposta de erro:", e);
+      }
+      throw new Error(errorMessage);
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log("API: Dados do login:", data);
+    return data;
   } catch (error) {
     console.error('Erro no login:', error);
     throw error;
@@ -206,6 +219,8 @@ export const loginUser = async (email, password) => {
 
 export const registerUser = async (name, email, password) => {
   try {
+    console.log("API: Tentando registrar usuário:", email);
+    
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
@@ -214,12 +229,22 @@ export const registerUser = async (name, email, password) => {
       body: JSON.stringify({ name, email, password })
     });
 
+    console.log("API: Resposta do registro recebida:", response.status);
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Erro no registro');
+      let errorMessage = 'Erro no registro';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch (e) {
+        console.error("Erro ao ler resposta de erro:", e);
+      }
+      throw new Error(errorMessage);
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log("API: Registro bem-sucedido");
+    return data;
   } catch (error) {
     console.error('Erro no registro:', error);
     throw error;
@@ -240,6 +265,69 @@ export const searchUsers = async (name) => {
     return await response.json();
   } catch (error) {
     console.error('Erro ao buscar usuários:', error);
+    throw error;
+  }
+};
+
+// Update password
+export const updatePassword = async (currentPassword, newPassword) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/update-password`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ currentPassword, newPassword })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Erro ao atualizar senha');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao atualizar senha:', error);
+    throw error;
+  }
+};
+
+// Get user profile
+export const getUserProfile = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+      headers: getAuthHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao buscar perfil do usuário');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao buscar perfil:', error);
+    throw error;
+  }
+};
+
+// Add custom car to collection
+export const addCustomCar = async (formData) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/collection/add-custom`, {
+      method: 'POST',
+      headers: {
+        'x-auth-token': token
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Erro ao adicionar carro personalizado');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao adicionar carro personalizado:', error);
     throw error;
   }
 };

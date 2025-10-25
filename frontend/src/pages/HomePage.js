@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import "../css/HomePage.css";
 import "../css/UserSearch.css"; // estilos específicos para busca de usuários
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { FaUserCircle } from "react-icons/fa";
-import { searchHotWheels, searchUsers, addToCollection, addToWishlist } from "../utils/api";
+import { searchHotWheels, searchUsers, addToCollection, addToWishlist, getUserProfile } from "../utils/api";
 import { isAuthenticated } from "../utils/auth";
 
 const HomePage = () => {
@@ -23,20 +22,28 @@ const HomePage = () => {
 
   // Carregar perfil do usuário logado
   useEffect(() => {
+    // Verificar se o usuário está autenticado
+    if (!isAuthenticated()) {
+      navigate("/login");
+      return;
+    }
+
     const fetchProfile = async () => {
       try {
-        let token = localStorage.getItem("token");
-        if (token && !token.startsWith("Bearer ")) token = `Bearer ${token}`;
-        const response = await axios.get("http://localhost:5000/api/auth/profile", {
-          headers: { Authorization: token },
-        });
-        setUser(response.data);
+        const userData = await getUserProfile();
+        setUser(userData);
       } catch (error) {
         console.error("Erro ao carregar perfil:", error);
+        // Se erro de autenticação, redirecionar para login
+        if (error.message.includes('autenticação') || error.message.includes('token')) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          navigate("/login");
+        }
       }
     };
     fetchProfile();
-  }, []);
+  }, [navigate]);
 
   // Filtrar Hot Wheels por ano
   useEffect(() => {
