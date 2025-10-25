@@ -1,0 +1,36 @@
+.tabNavigation {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.tabButton {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s ease;
+}
+
+.tabButton:hover {
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+.tabButton.active {
+  color: #007bff;
+  border-bottom-color: #007bff;
+  background-color: #f0f8ff;
+}
+
+@media (max-width: 768px) {
+  .tabButton {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+}

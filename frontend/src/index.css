@@ -5,6 +5,16 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden; /* Evita scroll horizontal */
+}
+
+* {
+  box-sizing: border-box; /* Garante que padding/border não afetem o tamanho total */
+}
+
+html, body, #root {
+  height: 100%;
+  overflow-x: hidden;
 }
 
 code {

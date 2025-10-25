@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { FaUserCircle } from "react-icons/fa";
+import { searchHotWheels, searchUsers, addToCollection, addToWishlist } from "../utils/api";
+import { isAuthenticated } from "../utils/auth";
 
 const HomePage = () => {
   const [search, setSearch] = useState("");
@@ -52,26 +54,22 @@ const HomePage = () => {
   // ==================== Funções de Hot Wheels ====================
   const handleSearchHotWheels = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/hotwheels/search?name=${search}`);
-      setResults(response.data);
+      const hotWheels = await searchHotWheels(search);
+      setResults(hotWheels);
     } catch (error) {
       console.error("Erro ao buscar Hot Wheels:", error);
+      Swal.fire("Erro!", "Erro ao buscar Hot Wheels. Tente novamente.", "error");
     }
   };
 
   const handleAddToCollection = async (hotWheelId) => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
+      if (!isAuthenticated()) {
         Swal.fire("Atenção", "Você precisa estar logado para adicionar à coleção!", "warning");
         return;
       }
-      const response = await axios.post(
-        "http://localhost:5000/api/collection/add",
-        { hotWheelId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      Swal.fire("Sucesso", response.data.message, "success");
+      const response = await addToCollection(hotWheelId);
+      Swal.fire("Sucesso", response.message, "success");
     } catch (error) {
       console.error("Erro ao adicionar à coleção:", error);
       Swal.fire("Erro", "Erro ao adicionar à coleção. Tente novamente.", "error");
@@ -80,17 +78,12 @@ const HomePage = () => {
 
   const handleAddToWishlist = async (hotWheelId) => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
+      if (!isAuthenticated()) {
         Swal.fire("Atenção", "Você precisa estar logado para adicionar à lista de desejos!", "warning");
         return;
       }
-      const response = await axios.post(
-        "http://localhost:5000/api/wishlist",
-        { hotWheelId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      Swal.fire("Sucesso", response.data.message, "success");
+      const response = await addToWishlist(hotWheelId);
+      Swal.fire("Sucesso", response.message, "success");
     } catch (error) {
       console.error("Erro ao adicionar à lista de desejos:", error);
       Swal.fire("Erro", "Erro ao adicionar à lista de desejos. Tente novamente.", "error");
@@ -110,15 +103,16 @@ const HomePage = () => {
 
  const handleSearchUsers = async () => {
   try {
-    const response = await axios.get(`http://localhost:5000/api/users/search?name=${search}`);
+    const users = await searchUsers(search);
 
     // Filtra para não mostrar o usuário logado
-    const filteredUsers = response.data.filter(u => u._id !== user?._id);
+    const filteredUsers = users.filter(u => u._id !== user?._id);
 
     setUserResults(filteredUsers);
     setCurrentPage(1);
   } catch (error) {
     console.error("Erro ao buscar usuários:", error);
+    Swal.fire("Erro!", "Erro ao buscar usuários. Tente novamente.", "error");
   }
 };
 

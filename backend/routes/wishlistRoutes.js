@@ -4,6 +4,35 @@ const UserCollection = require("../models/UserCollection");
 const router = express.Router();
 const mongoose = require("mongoose");
 
+// Buscar wishlist de um usuário específico (sem autenticação necessária)
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log("🔍 Buscando wishlist para usuário:", userId);
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.error("❌ ID do usuário inválido:", userId);
+      return res.status(400).json({ msg: "ID inválido" });
+    }
+
+    let userCollection = await UserCollection.findOne({ userId }).populate({
+      path: "favorites",
+      model: "HotWheel",
+    });
+
+    if (!userCollection) {
+      console.warn("⚠️ Nenhuma coleção encontrada para o usuário:", userId);
+      return res.status(200).json({ favorites: [] });
+    }
+
+    console.log("✅ Enviando favoritos:", userCollection.favorites);
+    res.status(200).json({ favorites: userCollection.favorites || [] });
+  } catch (error) {
+    console.error("❌ Erro ao buscar wishlist:", error);
+    res.status(500).json({ message: "Erro no servidor." });
+  }
+});
+
 // Adicionar um Hot Wheel à lista de desejos (favoritos) do usuário
 router.post("/", authMiddleware, async (req, res) => {
   const { hotWheelId } = req.body;
