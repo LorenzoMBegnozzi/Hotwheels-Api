@@ -13,7 +13,8 @@
   justify-content: flex-start;
   padding: 20px;
   position: relative;
-  padding-top: 10px;
+  padding-top: 110px;
+  /* 90px do header + 20px de margem extra */
 }
 
 .search-section {
@@ -84,9 +85,41 @@
 @media (max-width: 480px) {
   .year-filter-select {
     width: 100px;
-    /* ainda menor em telas pequenas */
     height: 28px;
     font-size: 12px;
+  }
+
+  .buscar-button {
+    width: 100px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .home-container {
+    padding: 10px;
+    padding-top: 130px;
+    /* Mais espaço em dispositivos móveis */
+  }
+
+  .header {
+    height: 100px;
+    /* Header maior em móveis */
+    padding: 10px;
+  }
+
+  .results-container {
+    max-height: calc(100vh - 380px);
+    /* Ajustado para novo header */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .search-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .search-input-container {
+    width: 100%;
   }
 }
 
@@ -106,15 +139,7 @@
 }
 
 .buscar-button:hover {
-  border-color: #0056b3;
-}
-
-@media (max-width: 480px) {
-  .buscar-button {
-    width: 100px;
-    height: 28px;
-    font-size: 12px;
-  }
+  background-color: #0056b3;
 }
 
 .results-container {
@@ -126,8 +151,11 @@
   gap: 20px;
   justify-items: center;
   overflow-y: auto;
-  max-height: calc(100vh - 250px);
+  max-height: calc(100vh - 340px);
+  /* Ajustado para o novo header de 90px */
   overflow-x: hidden;
+  padding-bottom: 20px;
+  /* Espaço extra na parte inferior */
 }
 
 .car-item {
@@ -256,13 +284,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 20px;
+  background-color: #007bff;
+  /* Cor azul igual ao tema do projeto */
+  /* Removida a sombra para ficar mais integrado com o fundo */
   z-index: 1000;
 }
 
 .header h1 {
   font-size: 20px;
-  /* Antes: 24px */
+  color: white;
 }
 
 .profile-section {
@@ -273,6 +303,11 @@
   display: flex;
   align-items: center;
   cursor: pointer;
+}
+
+.profile-icon {
+  color: white;
+  /* Ícone branco para contrastar com o fundo azul */
 }
 
 .profile-picture-small {
@@ -326,11 +361,28 @@
   margin-bottom: 20px;
   margin-top: 10px;
   transition: background-color 0.3s ease;
+}
 
+.tab-button {
+  padding: 10px 20px;
+  background-color: transparent;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+  background-color: #f0f8ff;
+  color: #000000;
 }
 
 /* Quando clicada/ativa */
 .tab-button.active {
-  background-color: #0056b3;
-  /* coloque a cor desejada aqui */
+  background-color: #000000;
+  color: white;
+  border-color: #000000;
 }

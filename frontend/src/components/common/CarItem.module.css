@@ -1,0 +1,122 @@
+.carItem {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Variação para quando não há botões de ação (perfil de usuário) */
+.carItem.noActions {
+  padding-bottom: 16px; /* Padding uniforme quando não há botões */
+}
+
+.carItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.imageContainer {
+  width: 100%;
+  height: 180px; /* Reduzido de 200px para 180px */
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fafafa; /* Fundo mais claro para melhor contraste */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.carImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Mudado para 'contain' para mostrar a imagem inteira */
+  transition: transform 0.2s ease;
+}
+
+.carItem:hover .carImage {
+  transform: scale(1.05);
+}
+
+.carInfo {
+  flex: 1;
+  margin-bottom: 12px;
+}
+
+.carName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.carYear {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.actionButton {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.collectionButton {
+  background-color: #28a745;
+  color: white;
+}
+
+.collectionButton:hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+}
+
+.wishlistButton {
+  background-color: #007bff;
+  color: white;
+}
+
+.wishlistButton:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .carItem {
+    padding: 12px;
+  }
+
+  .imageContainer {
+    height: 130px; /* Reduzido de 150px para 130px */
+  }
+
+  .carName {
+    font-size: 14px;
+  }
+
+  .carYear {
+    font-size: 12px;
+  }
+
+  .actionButton {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+}

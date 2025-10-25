@@ -4,6 +4,7 @@
     align-items: center;
     height: 100vh;
     padding: 20px;
+    padding-top: 110px; /* Espaço para o header fixo */
   }
   
   .results-container {
@@ -15,7 +16,7 @@
     gap: 20px;
     justify-items: center;
     overflow-y: auto;
-    max-height: calc(100vh - 200px);
+    max-height: calc(100vh - 340px); /* Ajustado para o header de 90px */
     overflow-x: hidden;
     padding: 10px;
     background: rgba(255, 255, 255, 0.1);
@@ -68,7 +69,7 @@
   .collection-button {
     margin-top: 20px;
     padding: 10px;
-    background: blue;
+    background: rgb(0, 0, 0);
     color: white;
     border: none;
     cursor: pointer;
