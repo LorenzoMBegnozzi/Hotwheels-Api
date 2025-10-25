@@ -2,7 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  padding-top: 110px; /* Correspondente ao novo header */
+  padding-top: 10px;
   min-height: 100vh;
 }
 
@@ -108,7 +108,7 @@
 @media (max-width: 768px) {
   .userProfileContainer {
     padding: 1rem;
-    padding-top: 130px; /* Mais espaço em dispositivos móveis */
+    padding-top: 30px;
   }
   
   .userInfo {
