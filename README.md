@@ -79,6 +79,18 @@ Para evitar que os nomes tenham números no início, foi feita uma normalizaçã
 ## 🧠 Reconhecimento de Imagem (Recognizer)
 O endpoint de reconhecimento (`/api/recognizer/reconhecer`) agora utiliza `multer.memoryStorage()`, processando a imagem diretamente em memória sem salvar arquivos no disco. Isso reduz uso de armazenamento e atende ao requisito de não persistir a imagem enviada. O cadastro (`/api/recognizer/cadastrar`) apenas registra o nome e marca `filePath` como `memory` (sem arquivo físico). Caso não queira cadastro, o endpoint pode ser removido.
 
+### 🔧 Tuning de Performance do Reconhecedor
+Você pode ajustar variáveis de ambiente para equilibrar velocidade e precisão:
+
+```
+RECOGNIZER_IMG_SIZE=128        # Tamanho para resize da imagem (ex: 96, 128, 192). Menor = mais rápido.
+RECOGNIZER_BINS=8              # Bins por canal (ex: 6 ou 8). Menor = histograma menor e mais rápido.
+RECOGNIZER_THRESHOLD=0.6       # Limite de similaridade (cosine) para entrar no top3.
+RECOGNIZER_CACHE_CONCURRENCY=5 # Número de requisições paralelas ao construir cache.
+```
+
+Internamente utiliza histograma 3D + similaridade por cosseno (cosine). Tudo é calculado em memória sem salvar a imagem enviada.
+
 ## 📜 Licença
 Este projeto é de uso livre para fins educacionais e não comerciais.
 
