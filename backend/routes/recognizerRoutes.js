@@ -5,7 +5,7 @@ const fs = require('fs');
 const axios = require('axios');
 const RecognizerImage = require('../models/RecognizerImage');
 const HotWheel = require('../models/HotWheel');
-const { similarityFromBuffers, computeHistogram, correlationSimilarity } = require('../utils/imageSimilarity');
+const { similarityFromBuffers, computeHistogram, cosineSimilarity } = require('../utils/imageSimilarity');
 const { getCache } = require('../utils/hotwheelHistogramCache');
 
 const router = express.Router();
@@ -64,8 +64,7 @@ router.post('/reconhecer', upload.single('file'), async (req, res) => {
     const results = [];
     for (const item of cache.items) {
       try {
-        const sim = correlationSimilarity(queryHist, item.hist); // [-1,1]
-        const similarity = (sim + 1) / 2;
+  const similarity = cosineSimilarity(queryHist, item.hist); // [0,1] (histogram after L2 normalize)
         results.push({
           id: item.id,
           nome: item.name,
@@ -77,7 +76,9 @@ router.post('/reconhecer', upload.single('file'), async (req, res) => {
     }
 
     results.sort((a, b) => b.similaridade - a.similaridade);
-    const top3 = results.filter(r => r.similaridade > 0.4).slice(0, 3);
+  // Cosine similarity é geralmente mais alta; ajustar limite.
+  const threshold = parseFloat(process.env.RECOGNIZER_THRESHOLD || '0.6');
+  const top3 = results.filter(r => r.similaridade >= threshold).slice(0, 3);
 
     console.log(`[Recognizer] Reconhecimento concluído. Top3 length: ${top3.length}`);
     return res.json({
