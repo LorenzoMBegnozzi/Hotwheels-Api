@@ -1,55 +1,43 @@
 import React, { useState, useEffect } from "react";
 import "../css/Wishlist.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import axios from "axios";
 import Swal from "sweetalert2";
-import { fetchWishlist, removeFromWishlist as removeFromWishlistAPI } from "../utils/api";
-import { isAuthenticated } from "../utils/auth";
 
 const WishListPage = () => {
     const [wishlist, setWishlist] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
-        // Verificar se o usuário está autenticado
-        if (!isAuthenticated()) {
-            navigate("/login");
-            return;
-        }
-
-        const loadWishlist = async () => {
+        const fetchWishlist = async () => {
             try {
                 const token = localStorage.getItem("token");
                 if (!token) {
                     throw new Error("Usuário não autenticado. Faça login.");
                 }
 
-                const wishlistData = await fetchWishlist();
-                console.log("✅ Wishlist carregada:", wishlistData);
+                const response = await axios.get("http://localhost:5000/api/wishlist", {
+                    headers: { "x-auth-token": token },
+                });
 
-                if (Array.isArray(wishlistData)) {
-                    setWishlist(wishlistData);
+                console.log("✅ Wishlist carregada:", response.data);
+
+                if (response.data?.favorites && Array.isArray(response.data.favorites)) {
+                    setWishlist(response.data.favorites);
                 }
             } catch (error) {
                 console.error("❌ Erro ao buscar lista de desejos:", error);
                 setError("Erro ao carregar sua lista de desejos.");
-                
-                // Se erro de autenticação, redirecionar para login
-                if (error.message.includes('autenticação') || error.message.includes('token')) {
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("userId");
-                    navigate("/login");
-                }
             } finally {
                 setLoading(false);
             }
         };
 
-        loadWishlist();
-    }, [navigate]);
+        fetchWishlist();
+    }, []);
 
-    const handleRemoveFromWishlist = async (carId) => {
+    const removeFromWishlist = async (carId) => {
         Swal.fire({
             title: "Tem certeza?",
             text: "Você deseja remover este item da sua lista de desejos?",
@@ -61,10 +49,14 @@ const WishListPage = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    await removeFromWishlistAPI(carId);
+                    const response = await axios.delete(`http://localhost:5000/api/wishlist/${carId}`, {
+                        headers: { "x-auth-token": localStorage.getItem("token") },
+                    });
 
-                    setWishlist((prevWishlist) => prevWishlist.filter((car) => car._id !== carId));
-                    Swal.fire("Removido!", "O item foi removido da sua lista de desejos.", "success");
+                    if (response.status === 200) {
+                        setWishlist((prevWishlist) => prevWishlist.filter((car) => car._id !== carId));
+                        Swal.fire("Removido!", "O item foi removido da sua lista de desejos.", "success");
+                    }
                 } catch (error) {
                     console.error("❌ Erro ao remover item da wishlist:", error);
                     Swal.fire("Erro!", "Erro ao remover o item. Tente novamente.", "error");
@@ -89,7 +81,7 @@ const WishListPage = () => {
                             <h3>{car.name} ({car.year})</h3>
                             <img src={car.imageUrl} alt={car.name} className="car-image" />
                             <button
-                                onClick={() => handleRemoveFromWishlist(car._id)}
+                                onClick={() => removeFromWishlist(car._id)}
                                 className="delete-button"
                             >
                                 Excluir

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { getUserCollection, removeFromCollection, addCustomCar } from "../utils/api";
-import { isAuthenticated } from "../utils/auth";
 import "../css/MyCollection.css";
 
 const MyCollection = () => {
@@ -13,36 +12,27 @@ const MyCollection = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Verificar se o usuário está autenticado
-    if (!isAuthenticated()) {
-      navigate("/login");
-      return;
-    }
-
     const fetchCollection = async () => {
+      const token = localStorage.getItem("token");
       const userId = localStorage.getItem("userId");
 
-      if (!userId) {
-        navigate("/login");
-        return;
-      }
+      if (!token || !userId) return;
 
       try {
-        const userCollection = await getUserCollection(userId);
-        setCollection(userCollection);
+        const response = await axios.get(`http://localhost:5000/api/collection/${userId}`, {
+          headers: { "x-auth-token": token },
+        });
+
+        if (response.status === 200) {
+          setCollection(response.data.collection); // Atualiza a coleção no estado
+        }
       } catch (error) {
         console.error("Erro ao buscar coleção:", error);
-        // Se erro de autenticação, redirecionar para login
-        if (error.message.includes('autenticação') || error.message.includes('token')) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("userId");
-          navigate("/login");
-        }
       }
     };
 
     fetchCollection();
-  }, [navigate]);
+  }, []);
 
   const handleFileChange = (event) => {
     setNewCar({ ...newCar, image: event.target.files[0] });
@@ -54,22 +44,31 @@ const MyCollection = () => {
       return;
     }
 
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      Swal.fire("Erro!", "Usuário não autenticado!", "error");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", newCar.name);
     formData.append("year", newCar.year);
     formData.append("image", newCar.image);
 
     try {
-      const response = await addCustomCar(formData);
+      const response = await axios.post("http://localhost:5000/api/collection/add-custom", formData, {
+        headers: { "x-auth-token": token, "Content-Type": "multipart/form-data" },
+      });
 
-      setCollection([...collection, response.car]);
+      setCollection([...collection, response.data.car]);
       setShowModal(false);
       setNewCar({ name: "", year: "", image: null });
       Swal.fire("Sucesso!", "Carro adicionado à coleção!", "success");
     } catch (error) {
       console.error("Erro ao adicionar carro:", error);
 
-      if (error.message === "Carro já existe na coleção") {
+      if (error.response?.data?.message === "Carro já existe na coleção") {
         Swal.fire("Erro!", "Este carro já está na sua coleção!", "warning");
       } else {
         Swal.fire("Erro!", "Não foi possível adicionar o carro.", "error");
@@ -78,9 +77,10 @@ const MyCollection = () => {
   };
 
   const handleRemoveCar = async (carId) => {
+    const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
 
-    if (!userId) {
+    if (!token || !userId) {
       Swal.fire("Erro!", "Usuário não autenticado!", "error");
       return;
     }
@@ -96,7 +96,9 @@ const MyCollection = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await removeFromCollection(userId, carId);
+          await axios.delete(`http://localhost:5000/api/collection/${userId}/${carId}`, {
+            headers: { "x-auth-token": token },
+          });
 
           setCollection((prevCollection) => prevCollection.filter((car) => car._id !== carId));
           Swal.fire("Removido!", "O item foi removido da sua coleção.", "success");

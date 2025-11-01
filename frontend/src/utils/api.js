@@ -1,11 +1,4 @@
-// Determina a base da API de forma dinâmica:
-// 1. Usa REACT_APP_API_BASE_URL se definida.
-// 2. Caso contrário, usa '/api' (funciona com proxy em desenvolvimento).
-// 3. Fallback final para 'http://localhost:5000/api'.
-const API_BASE_URL = (process.env.REACT_APP_API_BASE_URL && process.env.REACT_APP_API_BASE_URL.replace(/\/$/, ''))
-  || '/api'
-  || 'http://localhost:5000/api';
-console.log('[api] Base URL resolvida:', API_BASE_URL);
+const API_BASE_URL = 'http://192.168.0.4:5000/api';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -192,8 +185,6 @@ export const removeFromWishlist = async (carId) => {
 // Auth related functions
 export const loginUser = async (email, password) => {
   try {
-    console.log("API: Tentando login para:", email);
-    
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
@@ -202,56 +193,33 @@ export const loginUser = async (email, password) => {
       body: JSON.stringify({ email, password })
     });
 
-    console.log("API: Resposta do login recebida:", response.status);
-
     if (!response.ok) {
-      let errorMessage = 'Credenciais inválidas';
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch (e) {
-        console.error("Erro ao ler resposta de erro:", e);
-      }
-      throw new Error(errorMessage);
+      throw new Error('Credenciais inválidas');
     }
 
-    const data = await response.json();
-    console.log("API: Dados do login:", data);
-    return data;
+    return await response.json();
   } catch (error) {
     console.error('Erro no login:', error);
     throw error;
   }
 };
 
-export const registerUser = async (name, email, password, confirmPassword) => {
+export const registerUser = async (name, email, password) => {
   try {
-    console.log("API: Tentando registrar usuário:", email);
-    
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ name, email, password, confirmPassword: confirmPassword ?? password })
+      body: JSON.stringify({ name, email, password })
     });
 
-    console.log("API: Resposta do registro recebida:", response.status);
-
     if (!response.ok) {
-      let errorMessage = 'Erro no registro';
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch (e) {
-        console.error("Erro ao ler resposta de erro:", e);
-      }
-      throw new Error(errorMessage);
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Erro no registro');
     }
 
-    const data = await response.json();
-    console.log("API: Registro bem-sucedido");
-    return data;
+    return await response.json();
   } catch (error) {
     console.error('Erro no registro:', error);
     throw error;
@@ -272,69 +240,6 @@ export const searchUsers = async (name) => {
     return await response.json();
   } catch (error) {
     console.error('Erro ao buscar usuários:', error);
-    throw error;
-  }
-};
-
-// Update password
-export const updatePassword = async (currentPassword, newPassword) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/update-password`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ currentPassword, newPassword })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Erro ao atualizar senha');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Erro ao atualizar senha:', error);
-    throw error;
-  }
-};
-
-// Get user profile
-export const getUserProfile = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/profile`, {
-      headers: getAuthHeaders()
-    });
-
-    if (!response.ok) {
-      throw new Error('Erro ao buscar perfil do usuário');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Erro ao buscar perfil:', error);
-    throw error;
-  }
-};
-
-// Add custom car to collection
-export const addCustomCar = async (formData) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE_URL}/collection/add-custom`, {
-      method: 'POST',
-      headers: {
-        'x-auth-token': token
-      },
-      body: formData
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Erro ao adicionar carro personalizado');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Erro ao adicionar carro personalizado:', error);
     throw error;
   }
 };
