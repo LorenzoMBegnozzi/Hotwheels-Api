@@ -36,4 +36,5 @@ export const MESSAGES = {
   NETWORK_ERROR: 'Erro de conexão. Tente novamente.'
 };
 
-export const DEFAULT_PROFILE_IMAGE = '/default-profile.png';
+// Imagem padrão única para todos os usuários (svg estilizado)
+export const DEFAULT_PROFILE_IMAGE = '/default-user.png';

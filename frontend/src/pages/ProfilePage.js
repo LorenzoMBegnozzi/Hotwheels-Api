@@ -4,6 +4,8 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import "../css/ProfilePage.css";
 import { FaUserCircle } from "react-icons/fa";
+// Imagem padrão única para todos os usuários
+const DEFAULT_USER_IMG = '/default-user.png';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -71,7 +73,8 @@ const ProfilePage = () => {
       </div>
 
       <div className="profile-header">
-        <FaUserCircle className="profile-icon" size={120} color="#ffffffff" />
+        {/* Força imagem padrão */}
+        <img src={DEFAULT_USER_IMG} alt={user.name} className="profile-icon" style={{ width:120, height:120 }} />
       </div>
 
       <div className="profile-card">

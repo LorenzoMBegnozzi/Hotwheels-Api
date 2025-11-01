@@ -218,7 +218,8 @@ const HomePage = () => {
           <div className="results-container">
             {currentUserItems.map((u) => (
               <div key={u._id} className="user-item">
-                <img src={u.profilePicture || "/default-profile.png"} alt={u.name} className="user-image" />
+                {/* Imagem padrão para todos os usuários */}
+                <img src={"/default-user.png"} alt={u.name} className="user-image" />
                 <h3>{u.name}</h3>
                 <p>📦 Coleção: {u.collection?.length || 0} | 💙 Favoritos: {u.favorites?.length || 0}</p>
                 <button className="search-button" onClick={() => navigate(`/user/${u._id}`)}>Ver Perfil</button>
