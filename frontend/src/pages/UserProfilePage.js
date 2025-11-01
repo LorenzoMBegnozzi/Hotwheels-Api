@@ -81,7 +81,7 @@ const UserProfilePage = () => {
 
       <div className={styles.userInfo}>
         <img 
-          src={user.profilePicture || DEFAULT_PROFILE_IMAGE} 
+          src={DEFAULT_PROFILE_IMAGE} 
           alt={user.name} 
           className={styles.userImage} 
         />

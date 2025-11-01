@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../css/LoginPage.css";
-import Logo from "../css/pngwing.com.png"; 
+import Logo from "../css/logo2.png"; 
 
 const LoginPage = () => {
   const [name, setName] = useState("");
