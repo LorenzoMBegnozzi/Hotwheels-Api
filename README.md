@@ -91,6 +91,48 @@ RECOGNIZER_CACHE_CONCURRENCY=5 # Número de requisições paralelas ao construir
 
 Internamente utiliza histograma 3D + similaridade por cosseno (cosine). Tudo é calculado em memória sem salvar a imagem enviada.
 
+### 🔤 Reconhecimento por Texto (Parte de Baixo do Carrinho)
+Além do reconhecimento por imagem, há um segundo modo que utiliza foto da parte inferior do carrinho para extrair o nome e ano estampados.
+
+Endpoint:
+```
+POST /api/recognizer/text
+Form-Data: file= (imagem underside)
+```
+Resposta típica:
+```json
+{
+	"status": "ok",
+	"mensagem": "Top 3 por texto",
+	"texto": "BATMAN & ROBIN BATMOBILE 2025",
+	"anoDetectado": 2025,
+	"top3": [ { "id": "...", "nome": "Batman and Robin Batmobile", "score": 0.92 } ]
+}
+```
+
+Pipeline:
+1. Pré-processa (grayscale, normalize, resize).
+2. Usa Tesseract OCR (tesseract.js) para extrair texto bruto.
+3. Limpa texto (remove ruído e caracteres estranhos).
+4. Detecta ano (regex (19|20)\d{2}).
+5. Faz fuzzy matching (Levenshtein) contra todos os nomes no banco e aplica bônus/penalidade pelo ano.
+
+Variáveis de ambiente:
+```
+OCR_VERBOSE=1  # Log detalhado do processo OCR
+```
+
+Testar via PowerShell:
+```powershell
+Invoke-RestMethod -Method POST -Uri "http://localhost:5000/api/recognizer/text" -Form @{ file = Get-Item .\underside.jpg }
+```
+
+Melhorias futuras sugeridas:
+- Whitelist de tokens (ex: BATMOBILE, CORVETTE) para correção automática.
+- Normalização de símbolos (& -> AND).
+- Suporte multi-idioma se necessário.
+
+
 ## 📜 Licença
 Este projeto é de uso livre para fins educacionais e não comerciais.
 

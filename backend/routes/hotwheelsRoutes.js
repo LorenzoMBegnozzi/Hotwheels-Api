@@ -32,7 +32,7 @@ router.get("/search", async (req, res) => {
 
 router.post("/add", async (req, res) => {
   try {
-    const { name, imageUrl, year } = req.body;
+    const { name, imageUrl, images, year } = req.body;
 
     // Verifica se o Hot Wheel já existe pelo nome
     const existingHotWheel = await HotWheel.findOne({ name });
@@ -40,8 +40,19 @@ router.post("/add", async (req, res) => {
       return res.status(400).json({ message: "Este Hot Wheel já existe!" });
     }
 
-    // Criar um novo Hot Wheel
-    const newHotWheel = new HotWheel({ name, imageUrl, year });
+    // Se não vier imageUrl mas vier lista de imagens, usa a primeira como principal
+    let finalImageUrl = imageUrl;
+    let finalImages = Array.isArray(images) ? images.filter(Boolean) : [];
+    if (!finalImageUrl && finalImages.length > 0) {
+      finalImageUrl = finalImages[0];
+    }
+    // Garante que imageUrl apareça também na lista, sem duplicar
+    if (finalImageUrl) {
+      if (!finalImages.includes(finalImageUrl)) finalImages.unshift(finalImageUrl);
+    }
+
+    // Criar um novo Hot Wheel com múltiplas imagens
+    const newHotWheel = new HotWheel({ name, imageUrl: finalImageUrl, images: finalImages, year });
     await newHotWheel.save();
 
     res.status(201).json({ message: "Hot Wheel criado!", hotWheel: newHotWheel });
