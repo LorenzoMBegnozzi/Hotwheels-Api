@@ -17,7 +17,13 @@ router.get("/", async (req, res) => {
 router.get("/search", async (req, res) => {
   try {
     const { name } = req.query;
-    const hotwheels = await HotWheel.find({ name: new RegExp(name, "i") });
+
+    // Se não for fornecido nome, retornar todos para facilitar UX.
+    const filter = name && name.trim() !== ''
+      ? { name: new RegExp(name.trim(), "i") }
+      : {};
+
+    const hotwheels = await HotWheel.find(filter);
     res.json(hotwheels);
   } catch (err) {
     res.status(500).json({ message: "Erro ao buscar Hot Wheels" });
