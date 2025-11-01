@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://192.168.0.4:5000/api';
+// Base da API. Usar localhost para evitar inconsistências se o IP da rede mudar.
+// Caso a API esteja em outro host, atualize esta constante.
+const API_BASE_URL = 'http://localhost:5000/api';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -87,10 +89,11 @@ export const fetchWishlist = async () => {
 // Hot Wheels related API functions
 export const searchHotWheels = async (query) => {
   try {
-    const url = query 
-      ? `${API_BASE_URL}/hotwheels/search?query=${encodeURIComponent(query)}`
-      : `${API_BASE_URL}/hotwheels/search`;
-      
+    // Se não houver termo de busca, usar a rota geral para trazer todos.
+    const url = query && query.trim() !== ''
+      ? `${API_BASE_URL}/hotwheels/search?name=${encodeURIComponent(query.trim())}`
+      : `${API_BASE_URL}/hotwheels`;
+
     const response = await fetch(url, {
       headers: getAuthHeaders()
     });
