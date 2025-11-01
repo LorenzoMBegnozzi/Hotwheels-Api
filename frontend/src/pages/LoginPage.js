@@ -56,7 +56,7 @@ const LoginPage = () => {
       return;
     }
     try {
-      await registerUser(name, email, password);
+      await registerUser(name, email, password, confirmPassword);
       await Swal.fire("Sucesso", "Usuário cadastrado com sucesso! Agora você pode fazer login.", "success");
       setName(""); setEmail(""); setPassword(""); setConfirmPassword(""); setIsRegistering(false);
     } catch (err) {

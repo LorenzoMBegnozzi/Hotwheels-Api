@@ -1,4 +1,11 @@
-const API_BASE_URL = 'http://192.168.0.4:5000/api';
+// Determina a base da API de forma dinâmica:
+// 1. Usa REACT_APP_API_BASE_URL se definida.
+// 2. Caso contrário, usa '/api' (funciona com proxy em desenvolvimento).
+// 3. Fallback final para 'http://localhost:5000/api'.
+const API_BASE_URL = (process.env.REACT_APP_API_BASE_URL && process.env.REACT_APP_API_BASE_URL.replace(/\/$/, ''))
+  || '/api'
+  || 'http://localhost:5000/api';
+console.log('[api] Base URL resolvida:', API_BASE_URL);
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -217,7 +224,7 @@ export const loginUser = async (email, password) => {
   }
 };
 
-export const registerUser = async (name, email, password) => {
+export const registerUser = async (name, email, password, confirmPassword) => {
   try {
     console.log("API: Tentando registrar usuário:", email);
     
@@ -226,7 +233,7 @@ export const registerUser = async (name, email, password) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ name, email, password })
+      body: JSON.stringify({ name, email, password, confirmPassword: confirmPassword ?? password })
     });
 
     console.log("API: Resposta do registro recebida:", response.status);
