@@ -7,12 +7,13 @@ import Swal from 'sweetalert2';
 
 const RecognizerPage = () => {
   const navigate = useNavigate();
-  const [file, setFile] = useState(null);
-  const [selectedFileName, setSelectedFileName] = useState('');
+  // ==== RECONHECIMENTO VISUAL DESATIVADO (comentado) =====
+  // const [file, setFile] = useState(null);
+  // const [selectedFileName, setSelectedFileName] = useState('');
   // Campo de nome removido (cadastro desativado)
-  const [loading, setLoading] = useState(false);
-  const [mensagem, setMensagem] = useState('');
-  const [top5, setTop5] = useState([]); // agora exibimos até 5 resultados
+  // const [loading, setLoading] = useState(false);
+  // const [mensagem, setMensagem] = useState('');
+  // const [top5, setTop5] = useState([]); // agora exibimos até 5 resultados
   const [ocrLoading, setOcrLoading] = useState(false);
   const [ocrTexto, setOcrTexto] = useState('');
   const [ocrAno, setOcrAno] = useState(null);
@@ -40,31 +41,31 @@ const RecognizerPage = () => {
       Swal.fire('Erro', 'Não foi possível adicionar à wishlist', 'error');
     }
   }
-  const [preview, setPreview] = useState(null);
+  // const [preview, setPreview] = useState(null);
   const [undersideFile, setUndersideFile] = useState(null);
   const [undersidePreview, setUndersidePreview] = useState(null);
-  const fileInputRef = useRef(null);
+  // const fileInputRef = useRef(null);
   const undersideInputRef = useRef(null);
 
   const backendBase = 'http://localhost:5000/api/recognizer';
 
-  function onFileChange(e) {
-    const f = e.target.files[0];
-    setFile(f || null);
-    setSelectedFileName(f ? f.name : '');
-    setTop5([]);
-    setMensagem('');
-    setOcrTexto('');
-    setOcrAno(null);
-    setOcrTop3([]);
-    if (f) {
-      const reader = new FileReader();
-      reader.onload = ev => setPreview(ev.target.result);
-      reader.readAsDataURL(f);
-    } else {
-      setPreview(null);
-    }
-  }
+  // function onFileChange(e) {
+  //   const f = e.target.files[0];
+  //   setFile(f || null);
+  //   setSelectedFileName(f ? f.name : '');
+  //   setTop5([]);
+  //   setMensagem('');
+  //   setOcrTexto('');
+  //   setOcrAno(null);
+  //   setOcrTop3([]);
+  //   if (f) {
+  //     const reader = new FileReader();
+  //     reader.onload = ev => setPreview(ev.target.result);
+  //     reader.readAsDataURL(f);
+  //   } else {
+  //     setPreview(null);
+  //   }
+  // }
 
   function onUndersideChange(e) {
     const f = e.target.files[0];
@@ -84,32 +85,32 @@ const RecognizerPage = () => {
 
   // Função de cadastrar removida
 
-  async function reconhecer() {
-    if (!file) {
-      setMensagem('⚠️ Selecione uma imagem para reconhecer.');
-      return;
-    }
-    try {
-      setLoading(true);
-      // Oculta a imagem imediatamente
-      setPreview(null);
-      const form = new FormData();
-      form.append('file', file);
-      const { data } = await axios.post(`${backendBase}/reconhecer`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
-      setMensagem(data.mensagem || '');
-      // API ainda retorna 'top3'. Para 5, ajustaremos backend; por enquanto aceita top5 ou top3.
-      const arr = data.top5 || data.top3 || [];
-      setTop5(arr);
-    } catch (err) {
-      console.error(err);
-      const status = err.response?.status;
-      const serverMsg = err.response?.data?.mensagem || err.message;
-      setMensagem(`❌ Erro ao reconhecer imagem${status ? ' (' + status + ')' : ''}: ${serverMsg}`);
-      setTop5([]);
-    } finally {
-      setLoading(false);
-    }
-  }
+  // async function reconhecer() {
+  //   if (!file) {
+  //     setMensagem('⚠️ Selecione uma imagem para reconhecer.');
+  //     return;
+  //   }
+  //   try {
+  //     setLoading(true);
+  //     // Oculta a imagem imediatamente
+  //     setPreview(null);
+  //     const form = new FormData();
+  //     form.append('file', file);
+  //     const { data } = await axios.post(`${backendBase}/reconhecer`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
+  //     setMensagem(data.mensagem || '');
+  //     // API ainda retorna 'top3'. Para 5, ajustaremos backend; por enquanto aceita top5 ou top3.
+  //     const arr = data.top5 || data.top3 || [];
+  //     setTop5(arr);
+  //   } catch (err) {
+  //     console.error(err);
+  //     const status = err.response?.status;
+  //     const serverMsg = err.response?.data?.mensagem || err.message;
+  //     setMensagem(`❌ Erro ao reconhecer imagem${status ? ' (' + status + ')' : ''}: ${serverMsg}`);
+  //     setTop5([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
 
   async function reconhecerPorTexto() {
     if (!undersideFile) {
@@ -139,7 +140,7 @@ const RecognizerPage = () => {
     }
   }
 
-  const hasAttempt = mensagem && top5.length === 0 && !loading;
+  // const hasAttempt = mensagem && top5.length === 0 && !loading;
 
   return (
     <div className="recognizer-container">
@@ -149,23 +150,22 @@ const RecognizerPage = () => {
       </div>
 
       <div className="form-section" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div>
+        {/* BLOCO VISUAL DESATIVADO */}
+        {/* <div>
           <label style={{ fontWeight: '600' }}>Imagem para Reconhecimento Visual:</label>
           <input ref={fileInputRef} type="file" accept="image/*" onChange={onFileChange} className="input-file" />
           {selectedFileName && (
             <p className="file-name" style={{ marginTop: '4px', fontSize: '0.85rem' }}>{selectedFileName}</p>
           )}
-        </div>
+        </div> */}
         <div>
           <label style={{ fontWeight: '600' }}>Imagem da Parte de Baixo (Texto/OCR):</label>
           <input ref={undersideInputRef} type="file" accept="image/*" onChange={onUndersideChange} className="input-file" />
-          {undersideFile && (
-            <p className="file-name" style={{ marginTop: '4px', fontSize: '0.85rem' }}>{undersideFile.name}</p>
-          )}
         </div>
       </div>
 
-      <div className="preview-section" style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginTop: '16px' }}>
+      {/* PREVIEW VISUAL DESATIVADO */}
+      {/* <div className="preview-section" style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginTop: '16px' }}>
         {preview && (
           <div className="preview-card">
             <img src={preview} alt="Preview visual" className="preview-image fixed" />
@@ -174,14 +174,13 @@ const RecognizerPage = () => {
             </div>
           </div>
         )}
-        {undersidePreview && (
-          <div className="preview-card">
-            <img src={undersidePreview} alt="Preview underside" className="preview-image fixed" />
-            <div className="buttons-row" style={{ marginTop: '8px' }}>
-            </div>
-          </div>
-        )}
-      </div>
+      </div> */}
+      {/* Mantém apenas preview underside para contexto do OCR */}
+      {undersidePreview && (
+        <div className="preview-card" style={{ marginTop: '16px' }}>
+          <img src={undersidePreview} alt="Preview underside" className="preview-image fixed" />
+        </div>
+      )}
       <button
         disabled={ocrLoading || !undersideFile}
         onClick={reconhecerPorTexto}
@@ -190,10 +189,11 @@ const RecognizerPage = () => {
       >
         <span>Scanear Texto</span>
       </button>
-      {(loading || ocrLoading) && <p>Processando... {loading && 'Visual'} {ocrLoading && 'Texto/OCR'}</p>}
-      {mensagem && <p className="mensagem">{mensagem}</p>}
+  {/* Loading visual removido, mantemos apenas OCR */}
+  {ocrLoading && <p>Processando OCR...</p>}
 
-      {top5.length > 0 && (
+      {/* RESULTADOS VISUAIS DESATIVADOS */}
+      {/* {top5.length > 0 && (
         <div className="recognizer-fixed-results">
           {top5.map(car => (
             <div key={car.id || car.url} className="car-item">
@@ -211,7 +211,7 @@ const RecognizerPage = () => {
             </div>
           ))}
         </div>
-      )}
+      )} */}
       {/* Resultados de OCR por texto */}
       {ocrTexto && (
         <div style={{ marginTop: '32px' }}>
@@ -233,9 +233,10 @@ const RecognizerPage = () => {
           {ocrTop3.length === 0 && <p>Nenhum match textual encontrado.</p>}
         </div>
       )}
-      {hasAttempt && !loading && !top5.length && (
+      {/* Mensagem de tentativa visual desativada */}
+      {/* {hasAttempt && !loading && !top5.length && (
         <p style={{ marginTop: '20px', fontWeight: 'bold' }}>Nenhum carrinho parecido encontrado. Tente outra imagem 👍</p>
-      )}
+      )} */}
     </div>
   );
 };
