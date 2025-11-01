@@ -5,8 +5,9 @@ const fs = require('fs');
 const axios = require('axios');
 const RecognizerImage = require('../models/RecognizerImage');
 const HotWheel = require('../models/HotWheel');
-const { similarityFromBuffers, computeHistogram, cosineSimilarity } = require('../utils/imageSimilarity');
+const { computeHistogram, cosineSimilarity, computeFeatures, combinedSimilarity } = require('../utils/imageSimilarity');
 const { getCache } = require('../utils/hotwheelHistogramCache');
+const { extractText, cleanText, findYear, similarityRatio } = require('../utils/textOcr');
 
 const router = express.Router();
 
@@ -57,38 +58,110 @@ router.post('/reconhecer', upload.single('file'), async (req, res) => {
       console.log('[Recognizer] Sem req.file.path (OK - memória).');
     }
     const queryBuffer = req.file.buffer; // already in memory
-    const queryHist = await computeHistogram(queryBuffer);
+  const queryFeatures = await computeFeatures(queryBuffer);
     console.log('[Recognizer] Histograma da imagem query calculado (memória)');
     const cache = await getCache();
     console.log(`[Recognizer] Cache carregado com ${cache.items.length} itens`);
-    const results = [];
-    for (const item of cache.items) {
-      try {
-  const similarity = cosineSimilarity(queryHist, item.hist); // [0,1] (histogram after L2 normalize)
-        results.push({
-          id: item.id,
-          nome: item.name,
-          url: item.imageUrl,
-          similaridade: Number(similarity.toFixed(3)),
-          diferenca: Number((1 - similarity).toFixed(3))
-        });
-      } catch (_) { /* ignore */ }
+    // Pré-filtragem por cor (opcional) usando apenas histogramas
+    const PREFILTER_ENABLE = (process.env.RECOGNIZER_COLOR_PREFILTER_ENABLE || '0') === '1';
+    const PREFILTER_TOP = parseInt(process.env.RECOGNIZER_COLOR_PREFILTER_TOP || '60', 10); // máximo de imagens candidatas após filtro
+    const PREFILTER_THRESHOLD = parseFloat(process.env.RECOGNIZER_COLOR_PREFILTER_THRESHOLD || '0'); // se >0, exige similaridade mínima
+    let candidateItems = cache.items;
+    if (PREFILTER_ENABLE) {
+      const scored = [];
+      for (const item of cache.items) {
+        try {
+          const colorSimOnly = cosineSimilarity(queryFeatures.hist, item.hist);
+          if (colorSimOnly >= PREFILTER_THRESHOLD) {
+            scored.push({ item, colorSimOnly });
+          }
+        } catch(_) {}
+      }
+      scored.sort((a,b)=> b.colorSimOnly - a.colorSimOnly);
+      candidateItems = scored.slice(0, PREFILTER_TOP).map(s => s.item);
+      console.log(`[Recognizer] Pré-filtro cor ativo. Restaram ${candidateItems.length} imagens de ${cache.items.length}.`);
     }
 
-    results.sort((a, b) => b.similaridade - a.similaridade);
-  // Cosine similarity é geralmente mais alta; ajustar limite.
-  const threshold = parseFloat(process.env.RECOGNIZER_THRESHOLD || '0.6');
-  const top3 = results.filter(r => r.similaridade >= threshold).slice(0, 3);
+    // Agrupa por id de HotWheel escolhendo melhor similaridade entre várias imagens (após pré-filtro)
+    const bestByCar = new Map();
+    const debugMode = req.query.debug === '1';
+    const rawComparisons = [];
+  for (const item of candidateItems) {
+      try {
+        const colorSim = cosineSimilarity(queryFeatures.hist, item.hist);
+        const aHashSim = require('../utils/imageSimilarity').ahashSimilarity(queryFeatures.ahash, item.ahash);
+        const dHashSim = require('../utils/imageSimilarity').dhashSimilarity(queryFeatures.dhash, item.dhash);
+        const edgeSim  = require('../utils/imageSimilarity').edgeSimilarity(queryFeatures.edgeHist, item.edgeHist);
+        const similarity = combinedSimilarity(queryFeatures, item); // [0,1] combinada
+        const existing = bestByCar.get(item.id);
+        if (!existing || similarity > existing.similaridade) {
+          bestByCar.set(item.id, {
+            id: item.id,
+            nome: item.name,
+            url: item.imageUrl,
+            sourceImage: item.sourceImage,
+            similaridade: Number(similarity.toFixed(3)),
+            diferenca: Number((1 - similarity).toFixed(3)),
+            ...(debugMode && { comps: { color: Number(colorSim.toFixed(3)), aHash: Number(aHashSim.toFixed(1)), dHash: Number(dHashSim.toFixed(3)), edge: Number(edgeSim.toFixed(3)) } })
+          });
+        }
+        if (debugMode) {
+          rawComparisons.push({ id: item.id, nome: item.name, sourceImage: item.sourceImage, similarity: Number(similarity.toFixed(4)), color: Number(colorSim.toFixed(4)), aHash: Number(aHashSim.toFixed(4)), dHash: Number(dHashSim.toFixed(4)), edge: Number(edgeSim.toFixed(4)) });
+        }
+      } catch (_) { /* ignore */ }
+    }
+    const aggregated = Array.from(bestByCar.values());
+    aggregated.sort((a, b) => b.similaridade - a.similaridade);
+    const threshold = parseFloat(process.env.RECOGNIZER_THRESHOLD || '0.6');
+    let top5 = aggregated.filter(r => r.similaridade >= threshold).slice(0, 5);
+    if (top5.length === 0) {
+      // fallback: retorna os 5 melhores mesmo abaixo do threshold
+      top5 = aggregated.slice(0,5);
+    }
 
-    console.log(`[Recognizer] Reconhecimento concluído. Top3 length: ${top3.length}`);
+    console.log(`[Recognizer] Reconhecimento concluído. Top5 length: ${top5.length}`);
     return res.json({
-      status: top3.length ? 'ok' : 'erro',
-      mensagem: top3.length ? 'As 3 imagens mais parecidas foram encontradas' : 'Nenhuma imagem parecida encontrada',
-      top3
+      status: top5.length ? 'ok' : 'erro',
+      mensagem: top5.length ? 'Os 5 carrinhos mais parecidos foram encontrados' : 'Nenhum carrinho parecido encontrado',
+      top5,
+      ...(debugMode && { debugTotal: aggregated.length, raw: rawComparisons.slice(0, 50) })
     });
   } catch (e) {
     console.error('[Recognizer] Erro interno /reconhecer:', e);
     return res.status(500).json({ status: 'erro', mensagem: e.message, stack: e.stack, top3: [] });
+  }
+});
+
+// POST /api/recognizer/text - reconhece por texto (foto da parte de baixo)
+router.post('/text', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ status: 'erro', mensagem: 'Arquivo não enviado', top3: [] });
+    const buffer = req.file.buffer;
+    const { raw, cleaned } = await extractText(buffer);
+    const year = findYear(cleaned);
+    console.log('[OCR] Texto bruto:', raw);
+    console.log('[OCR] Texto limpo:', cleaned, 'Ano detectado:', year);
+    // Obter todos HotWheels
+    const hotwheels = await HotWheel.find({}, { name: 1, year: 1, imageUrl: 1 });
+    const candidates = [];
+    for (const hw of hotwheels) {
+      // Se ano detectado existe e diverge muito, penaliza
+      let baseScore = similarityRatio(cleaned, hw.name);
+      if (year && hw.year) {
+        if (year === hw.year) {
+          baseScore += 0.05; // pequeno boost
+        } else if (Math.abs(year - hw.year) >= 2) {
+          baseScore -= 0.1; // penaliza diferença grande
+        }
+      }
+      candidates.push({ id: hw._id.toString(), nome: hw.name, ano: hw.year, url: hw.imageUrl, score: Number(baseScore.toFixed(3)) });
+    }
+    candidates.sort((a,b)=> b.score - a.score);
+    const top3 = candidates.slice(0,3);
+    return res.json({ status: top3.length ? 'ok' : 'erro', mensagem: top3.length ? 'Top 3 por texto' : 'Nenhum encontrado', texto: cleaned, textoBruto: raw, anoDetectado: year, top3 });
+  } catch (e) {
+    console.error('[OCR] Erro /text:', e);
+    return res.status(500).json({ status: 'erro', mensagem: e.message, top3: [] });
   }
 });
 

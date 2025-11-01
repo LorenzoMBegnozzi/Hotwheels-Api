@@ -65,17 +65,16 @@ html {
   overflow-x: hidden;
 }
 
-/* Container da página */
 .recognizer-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
+  min-height: 100dvh;
   box-sizing: border-box;
-  overflow-y: auto;
-  max-height: 100vh;
-
-
+  overflow-x: hidden;
+  overflow-y: visible;
+  padding-top: var(--header-h); 
+  width: 100%;
 }
 
 .header-bar {
@@ -216,4 +215,35 @@ html {
 
 .recognizer-container.compact .mensagem {
   font-size: 0.8rem;
+}
+
+/* ===== OCR Enhanced Button ===== */
+.ocr-button {
+  padding: 12px 20px;
+  background-color: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background .25s ease;
+}
+
+.ocr-button:hover:not(:disabled) {
+  background-color: #1f1f1f;
+}
+
+.ocr-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.recognizer-container.compact .ocr-button {
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  gap: 4px;
 }

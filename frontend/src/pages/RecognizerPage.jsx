@@ -12,11 +12,15 @@ const RecognizerPage = () => {
   // Campo de nome removido (cadastro desativado)
   const [loading, setLoading] = useState(false);
   const [mensagem, setMensagem] = useState('');
-  const [top3, setTop3] = useState([]);
+  const [top5, setTop5] = useState([]); // agora exibimos até 5 resultados
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrTexto, setOcrTexto] = useState('');
+  const [ocrAno, setOcrAno] = useState(null);
+  const [ocrTop3, setOcrTop3] = useState([]);
   async function addToCollection(id) {
     try {
       const tokenRaw = localStorage.getItem('token');
-      if (!tokenRaw) return Swal.fire('Atenção','Faça login para adicionar à coleção','warning');
+      if (!tokenRaw) return Swal.fire('Atenção', 'Faça login para adicionar à coleção', 'warning');
       const token = tokenRaw.startsWith('Bearer ') ? tokenRaw : `Bearer ${tokenRaw}`;
       const { data } = await axios.post('http://localhost:5000/api/collection/add', { hotWheelId: id }, { headers: { Authorization: token } });
       Swal.fire('Sucesso', data.message || 'Adicionado à coleção', 'success');
@@ -28,7 +32,7 @@ const RecognizerPage = () => {
   async function addToWishlist(id) {
     try {
       const tokenRaw = localStorage.getItem('token');
-      if (!tokenRaw) return Swal.fire('Atenção','Faça login para adicionar à wishlist','warning');
+      if (!tokenRaw) return Swal.fire('Atenção', 'Faça login para adicionar à wishlist', 'warning');
       const token = tokenRaw.startsWith('Bearer ') ? tokenRaw : `Bearer ${tokenRaw}`;
       const { data } = await axios.post('http://localhost:5000/api/wishlist', { hotWheelId: id }, { headers: { Authorization: token } });
       Swal.fire('Sucesso', data.message || 'Adicionado à wishlist', 'success');
@@ -37,7 +41,10 @@ const RecognizerPage = () => {
     }
   }
   const [preview, setPreview] = useState(null);
+  const [undersideFile, setUndersideFile] = useState(null);
+  const [undersidePreview, setUndersidePreview] = useState(null);
   const fileInputRef = useRef(null);
+  const undersideInputRef = useRef(null);
 
   const backendBase = 'http://localhost:5000/api/recognizer';
 
@@ -45,8 +52,11 @@ const RecognizerPage = () => {
     const f = e.target.files[0];
     setFile(f || null);
     setSelectedFileName(f ? f.name : '');
-    setTop3([]);
+    setTop5([]);
     setMensagem('');
+    setOcrTexto('');
+    setOcrAno(null);
+    setOcrTop3([]);
     if (f) {
       const reader = new FileReader();
       reader.onload = ev => setPreview(ev.target.result);
@@ -54,6 +64,22 @@ const RecognizerPage = () => {
     } else {
       setPreview(null);
     }
+  }
+
+  function onUndersideChange(e) {
+    const f = e.target.files[0];
+    setUndersideFile(f || null);
+    if (f) {
+      const reader = new FileReader();
+      reader.onload = ev => setUndersidePreview(ev.target.result);
+      reader.readAsDataURL(f);
+    } else {
+      setUndersidePreview(null);
+    }
+    // limpa resultados anteriores de OCR
+    setOcrTexto('');
+    setOcrAno(null);
+    setOcrTop3([]);
   }
 
   // Função de cadastrar removida
@@ -71,54 +97,105 @@ const RecognizerPage = () => {
       form.append('file', file);
       const { data } = await axios.post(`${backendBase}/reconhecer`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
       setMensagem(data.mensagem || '');
-      setTop3(data.top3 || []);
+      // API ainda retorna 'top3'. Para 5, ajustaremos backend; por enquanto aceita top5 ou top3.
+      const arr = data.top5 || data.top3 || [];
+      setTop5(arr);
     } catch (err) {
       console.error(err);
       const status = err.response?.status;
       const serverMsg = err.response?.data?.mensagem || err.message;
       setMensagem(`❌ Erro ao reconhecer imagem${status ? ' (' + status + ')' : ''}: ${serverMsg}`);
-      setTop3([]);
+      setTop5([]);
     } finally {
       setLoading(false);
     }
   }
 
-  const hasAttempt = mensagem && top3.length === 0 && !loading;
+  async function reconhecerPorTexto() {
+    if (!undersideFile) {
+      Swal.fire('Atenção', 'Selecione a imagem da parte de baixo do carrinho.', 'warning');
+      return;
+    }
+    try {
+      setOcrLoading(true);
+      const form = new FormData();
+      form.append('file', undersideFile);
+      const { data } = await axios.post(`${backendBase}/text`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
+      if (data.status === 'ok') {
+        setOcrTexto(data.texto || '');
+        setOcrAno(data.anoDetectado || null);
+        setOcrTop3(data.top3 || []);
+      } else {
+        setOcrTexto('');
+        setOcrAno(null);
+        setOcrTop3([]);
+        Swal.fire('Info', data.mensagem || 'Nada reconhecido', 'info');
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire('Erro', 'Falha no OCR de texto', 'error');
+    } finally {
+      setOcrLoading(false);
+    }
+  }
+
+  const hasAttempt = mensagem && top5.length === 0 && !loading;
 
   return (
-    // Removido 'compact' para usar tamanho normal padrão
     <div className="recognizer-container">
       <div className="header-bar">
         <h2>🔎 Reconhecedor de Hot Wheels</h2>
         <button className="back-button" onClick={() => navigate('/minha-colecao')}>Voltar</button>
       </div>
 
-      <div className="form-section">
-  <input ref={fileInputRef} type="file" accept="image/*" onChange={onFileChange} className="input-file" />
-        {selectedFileName && (
-          <p className="file-name" style={{ marginTop: '8px', fontSize: '0.9rem', fontWeight: '500' }}>
-          </p>
-        )}
+      <div className="form-section" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div>
+          <label style={{ fontWeight: '600' }}>Imagem para Reconhecimento Visual:</label>
+          <input ref={fileInputRef} type="file" accept="image/*" onChange={onFileChange} className="input-file" />
+          {selectedFileName && (
+            <p className="file-name" style={{ marginTop: '4px', fontSize: '0.85rem' }}>{selectedFileName}</p>
+          )}
+        </div>
+        <div>
+          <label style={{ fontWeight: '600' }}>Imagem da Parte de Baixo (Texto/OCR):</label>
+          <input ref={undersideInputRef} type="file" accept="image/*" onChange={onUndersideChange} className="input-file" />
+          {undersideFile && (
+            <p className="file-name" style={{ marginTop: '4px', fontSize: '0.85rem' }}>{undersideFile.name}</p>
+          )}
+        </div>
       </div>
 
-      {preview && (
-        <div className="preview-section">
+      <div className="preview-section" style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginTop: '16px' }}>
+        {preview && (
           <div className="preview-card">
-            {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
-            <img src={preview} alt="Preview da imagem" className="preview-image fixed" />
+            <img src={preview} alt="Preview visual" className="preview-image fixed" />
+            <div className="buttons-row" style={{ marginTop: '8px' }}>
+              <button disabled={loading || !file} onClick={reconhecer} className="action-button primary">Reconhecer (Visual)</button>
+            </div>
           </div>
-          <div className="buttons-row below-image">
-            <button disabled={loading || !file} onClick={reconhecer} className="action-button primary">Reconhecer</button>
+        )}
+        {undersidePreview && (
+          <div className="preview-card">
+            <img src={undersidePreview} alt="Preview underside" className="preview-image fixed" />
+            <div className="buttons-row" style={{ marginTop: '8px' }}>
+            </div>
           </div>
-        </div>
-      )}
-
-      {loading && <p>Processando...</p>}
+        )}
+      </div>
+      <button
+        disabled={ocrLoading || !undersideFile}
+        onClick={reconhecerPorTexto}
+        className="ocr-button"
+        title="Executa reconhecimento de texto (OCR) da parte inferior"
+      >
+        <span>Scanear Texto</span>
+      </button>
+      {(loading || ocrLoading) && <p>Processando... {loading && 'Visual'} {ocrLoading && 'Texto/OCR'}</p>}
       {mensagem && <p className="mensagem">{mensagem}</p>}
 
-      {top3.length > 0 && (
+      {top5.length > 0 && (
         <div className="recognizer-fixed-results">
-          {top3.map(car => (
+          {top5.map(car => (
             <div key={car.id || car.url} className="car-item">
               <h3>{car.nome}</h3>
               <img src={car.url} alt={car.nome} className="car-image" />
@@ -135,7 +212,28 @@ const RecognizerPage = () => {
           ))}
         </div>
       )}
-      {hasAttempt && !loading && !top3.length && (
+      {/* Resultados de OCR por texto */}
+      {ocrTexto && (
+        <div style={{ marginTop: '32px' }}>
+          {ocrTop3.length > 0 && (
+            <div className="recognizer-fixed-results">
+              {ocrTop3.map(c => (
+                <div key={c.id} className="car-item">
+                  <h4>{c.nome}</h4>
+                  <img src={c.url} alt={c.nome} className="car-image" />
+                  {/* Removido Score texto conforme solicitação */}
+                  <div className="buttons">
+                    <button className="search-button" onClick={() => addToCollection(c.id)}>➕ Coleção</button>
+                    <button className="search-button" onClick={() => addToWishlist(c.id)}>💙 Wishlist</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {ocrTop3.length === 0 && <p>Nenhum match textual encontrado.</p>}
+        </div>
+      )}
+      {hasAttempt && !loading && !top5.length && (
         <p style={{ marginTop: '20px', fontWeight: 'bold' }}>Nenhum carrinho parecido encontrado. Tente outra imagem 👍</p>
       )}
     </div>
