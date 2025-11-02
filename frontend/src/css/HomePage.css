@@ -90,7 +90,6 @@
 
   .results-container {
     max-height: calc(100vh - 380px);
-    /* Ajustado para novo header */
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
 
@@ -133,7 +132,6 @@
   justify-items: center;
   overflow-y: auto;
   max-height: calc(100vh - 340px);
-  /* Ajustado para o novo header de 90px */
   overflow-x: hidden;
   padding-bottom: 20px;
   /* Espaço extra na parte inferior */
@@ -265,9 +263,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #007bff;
-  /* Cor azul igual ao tema do projeto */
-  /* Removida a sombra para ficar mais integrado com o fundo */
   z-index: 1000;
 }
 
@@ -276,11 +271,45 @@
   color: white;
 }
 
+.recognizer-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 100px;
+  height: 70px;
+  padding: 10px;
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  cursor: pointer;
+  object-fit: contain;
+  transition: transform .25s ease, box-shadow .25s ease, background .3s ease;
+  border: 2px solid #ffffff33;
+  z-index: 1200;
+}
+
+.recognizer-fab:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.45);
+}
+
+.recognizer-fab:active {
+  transform: scale(.92);
+}
+
+@media (max-width: 600px) {
+  .recognizer-fab {
+    width: 58px;
+    height: 58px;
+    bottom: 16px;
+    right: 16px;
+    border-radius: 14px;
+  }
+}
+
 .profile-section {
   position: absolute;
   top: 10px;
   right: 60px;
-  /* Ajuste para mover mais para a esquerda */
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -288,7 +317,6 @@
 
 .profile-icon {
   color: white;
-  /* Ícone branco para contrastar com o fundo azul */
 }
 
 .profile-picture-small {
@@ -297,9 +325,7 @@
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid white;
-  /* Adiciona a borda branca */
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  /* Opcional: adiciona um leve sombreamento */
 }
 
 .collection-wishlist-buttons {

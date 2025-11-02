@@ -146,7 +146,7 @@ const RecognizerPage = () => {
     <div className="recognizer-container">
       <div className="header-bar">
         <h2>🔎 Reconhecedor de Hot Wheels</h2>
-        <button className="back-button" onClick={() => navigate('/minha-colecao')}>Voltar</button>
+        <button className="back-button" onClick={() => navigate('/home')}>Voltar</button>
       </div>
 
       <div className="form-section" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
