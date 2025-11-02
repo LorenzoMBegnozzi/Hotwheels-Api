@@ -101,34 +101,41 @@ const HomePage = () => {
   const goToFirstPage = () => setCurrentPage(1);
   const goToLastPage = () => setCurrentPage(totalPages);
 
- const handleSearchUsers = async () => {
-  try {
-    const users = await searchUsers(search);
+  const handleSearchUsers = async () => {
+    try {
+      const users = await searchUsers(search);
 
-    // Filtra para não mostrar o usuário logado
-    const filteredUsers = users.filter(u => u._id !== user?._id);
+      // Filtra para não mostrar o usuário logado
+      const filteredUsers = users.filter(u => u._id !== user?._id);
 
-    setUserResults(filteredUsers);
-    setCurrentPage(1);
-  } catch (error) {
-    console.error("Erro ao buscar usuários:", error);
-    Swal.fire("Erro!", "Erro ao buscar usuários. Tente novamente.", "error");
-  }
-};
+      setUserResults(filteredUsers);
+      setCurrentPage(1);
+    } catch (error) {
+      console.error("Erro ao buscar usuários:", error);
+      Swal.fire("Erro!", "Erro ao buscar usuários. Tente novamente.", "error");
+    }
+  };
 
   const currentUserItems = userResults.slice(indexOfFirstItem, indexOfLastItem);
   const totalUserPages = Math.ceil(userResults.length / itemsPerPage);
 
   // ==================== Renderização ====================
   return (
-    <div className="home-container">
-      <div className="header">
+    <div className="home-container" style={{ paddingTop: '55px' }}>
+      <div className="header" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '10px 20px' }}>
         {user && (
-          <div className="profile-section" onClick={() => navigate("/profile")}>
+          <div className="profile-section" onClick={() => navigate("/profile")}> 
             <FaUserCircle size={60} className="profile-icon" />
           </div>
         )}
       </div>
+      {/* Botão/flutuante do reconhecedor fora do header */}
+      <img
+        src="/reconhecedor.png"
+        alt="Reconhecer"
+        className="recognizer-fab"
+        onClick={() => navigate('/reconhecedor')}
+      />
 
       {/* ==================== Abas ==================== */}
       <div className="tabs">
@@ -219,7 +226,7 @@ const HomePage = () => {
             {currentUserItems.map((u) => (
               <div key={u._id} className="user-item">
                 {/* Imagem padrão para todos os usuários */}
-                <img src={"/default-user.png"} alt={u.name} className="user-image" />
+                <img src={"/default-user.svg"} alt={u.name} className="user-image" />
                 <h3>{u.name}</h3>
                 <p>📦 Coleção: {u.collection?.length || 0} | 💙 Favoritos: {u.favorites?.length || 0}</p>
                 <button className="search-button" onClick={() => navigate(`/user/${u._id}`)}>Ver Perfil</button>
