@@ -123,10 +123,10 @@ const MyCollection = () => {
         </div>
 
         {/* Botão para o reconhecedor */}
-        <div className="add-car-button" onClick={() => navigate("/reconhecedor")}>
+        {/* <div className="add-car-button" onClick={() => navigate("/reconhecedor")}>
           <div className="plus-icon">🔍</div>
           <p>Reconhecer Imagem</p>
-        </div>
+        </div> */}
 
         {/* Lista de carros */}
         {collection.map((car) => (
