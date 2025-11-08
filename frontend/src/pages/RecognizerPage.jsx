@@ -145,7 +145,7 @@ const RecognizerPage = () => {
   return (
     <div className="recognizer-container">
       <div className="header-bar">
-        <h2>🔎 Reconhecedor de Hot Wheels</h2>
+        <h2>Reconhecedor</h2>
         <button className="back-button" onClick={() => navigate('/home')}>Voltar</button>
       </div>
 
@@ -192,6 +192,15 @@ const RecognizerPage = () => {
   {/* Loading visual removido, mantemos apenas OCR */}
   {ocrLoading && <p>Processando OCR...</p>}
 
+      {/* Texto reconhecido em destaque
+      {ocrTexto && (
+        <div style={{ marginTop: '20px', padding: '12px', border: '1px solid #ddd', borderRadius: '8px', background: '#fafafa' }}>
+          <h3 style={{ marginTop: 0 }}>Texto reconhecido:</h3>
+          <p style={{ fontSize: '1.1rem', fontWeight: '600', letterSpacing: '0.5px' }}>{ocrTexto}</p>
+          {ocrAno && <p style={{ marginTop: '4px' }}>Ano detectado: <strong>{ocrAno}</strong></p>}
+        </div>
+      )} */}
+
       {/* RESULTADOS VISUAIS DESATIVADOS */}
       {/* {top5.length > 0 && (
         <div className="recognizer-fixed-results">
@@ -212,16 +221,16 @@ const RecognizerPage = () => {
           ))}
         </div>
       )} */}
-      {/* Resultados de OCR por texto */}
+      {/* Resultados de OCR por texto (match de carrinhos) */}
       {ocrTexto && (
-        <div style={{ marginTop: '32px' }}>
-          {ocrTop3.length > 0 && (
+        <div style={{ marginTop: '24px' }}>
+          <h3 style={{ marginBottom: '12px' }}>Possíveis correspondências</h3>
+          {ocrTop3.length > 0 ? (
             <div className="recognizer-fixed-results">
               {ocrTop3.map(c => (
                 <div key={c.id} className="car-item">
                   <h4>{c.nome}</h4>
                   <img src={c.url} alt={c.nome} className="car-image" />
-                  {/* Removido Score texto conforme solicitação */}
                   <div className="buttons">
                     <button className="search-button" onClick={() => addToCollection(c.id)}>➕ Coleção</button>
                     <button className="search-button" onClick={() => addToWishlist(c.id)}>💙 Wishlist</button>
@@ -229,8 +238,9 @@ const RecognizerPage = () => {
                 </div>
               ))}
             </div>
+          ) : (
+            <p>Nenhum match textual encontrado.</p>
           )}
-          {ocrTop3.length === 0 && <p>Nenhum match textual encontrado.</p>}
         </div>
       )}
       {/* Mensagem de tentativa visual desativada */}
