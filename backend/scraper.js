@@ -18,7 +18,7 @@ async function getGoogleImage(searchQuery) {
   try {
     console.log(`🔎 Buscando imagem no Google para: ${searchQuery}`);
 
-    const response = await axios.get(`https://www.google.com/search?hl=en&tbm=isch&q=${encodeURIComponent(searchQuery + " Hot Wheels 2025 diecast")}`, {
+    const response = await axios.get(`https://www.google.com/search?hl=en&tbm=isch&q=${encodeURIComponent(searchQuery + " Hot Wheels 2019 diecast")}`, {
       headers: { "User-Agent": "Mozilla/5.0" }
     });
 
@@ -40,7 +40,7 @@ async function getGoogleImage(searchQuery) {
 // Função de raspagem
 async function scrapeHotWheels() {
   try {
-    const url = "https://hotwheels.fandom.com/wiki/List_of_2025_Hot_Wheels";
+    const url = "https://hotwheels.fandom.com/wiki/List_of_2019_Hot_Wheels";
 
     const { data } = await axios.get(url, {
       headers: {
@@ -88,7 +88,7 @@ async function scrapeHotWheels() {
         name,
         lowercaseName: name.toLowerCase(),
         imageUrl,
-        year: 2025
+        year: 2019
       });
     }).get();
 
