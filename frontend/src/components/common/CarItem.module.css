@@ -104,7 +104,7 @@
   }
 
   .imageContainer {
-    height: 130px; /* Reduzido de 150px para 130px */
+    height: 120px; /* Reduzido de 150px para 120px para caber em telas menores */
   }
 
   .carName {
@@ -116,7 +116,7 @@
   }
 
   .actionButton {
-    padding: 6px 8px;
-    font-size: 11px;
+    padding: 8px 10px;
+    font-size: 12px;
   }
 }

@@ -121,13 +121,28 @@ const HomePage = () => {
 
   // ==================== Renderização ====================
   return (
-    <div className="home-container" style={{ paddingTop: '55px' }}>
-      <div className="header" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '10px 20px' }}>
+    <div className="home-container">
+      <div className="header" style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between' }}>
         {user && (
           <div className="profile-section" onClick={() => navigate("/profile")}> 
-            <FaUserCircle size={60} className="profile-icon" />
+            <FaUserCircle size={36} className="profile-icon" />
           </div>
         )}
+        {/* Abas dentro do header para não ficarem atrás */}
+        <div className="tabs" style={{ flex: 1, marginLeft: '8px' }}>
+          <button
+            className={`tab-button ${activeTab === "hotwheels" ? "active" : ""}`}
+            onClick={() => setActiveTab("hotwheels")}
+          >
+            Hot Wheels
+          </button>
+          <button
+            className={`tab-button ${activeTab === "users" ? "active" : ""}`}
+            onClick={() => setActiveTab("users")}
+          >
+            Pesquisar Usuários
+          </button>
+        </div>
       </div>
       {/* Botão/flutuante do reconhecedor fora do header */}
       <img
@@ -137,21 +152,7 @@ const HomePage = () => {
         onClick={() => navigate('/reconhecedor')}
       />
 
-      {/* ==================== Abas ==================== */}
-      <div className="tabs">
-        <button
-          className={`tab-button ${activeTab === "hotwheels" ? "active" : ""}`}
-          onClick={() => setActiveTab("hotwheels")}
-        >
-          Hot Wheels
-        </button>
-        <button
-          className={`tab-button ${activeTab === "users" ? "active" : ""}`}
-          onClick={() => setActiveTab("users")}
-        >
-          Pesquisar Usuários
-        </button>
-      </div>
+      {/* Abas movidas para dentro do header */}
 
       {/* ==================== Busca ==================== */}
       <div className="search-section">

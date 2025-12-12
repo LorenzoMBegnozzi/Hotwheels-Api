@@ -3,15 +3,16 @@
   gap: 10px;
   margin-bottom: 20px;
   border-bottom: 2px solid #e0e0e0;
+  flex-wrap: wrap;
 }
 
 .tabButton {
-  padding: 12px 24px;
+  padding: 12px 20px;
   background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   color: #666;
   transition: all 0.3s ease;
@@ -30,7 +31,9 @@
 
 @media (max-width: 768px) {
   .tabButton {
-    padding: 10px 16px;
+    flex: 1 1 auto;
+    min-width: 140px;
+    padding: 10px 14px;
     font-size: 14px;
   }
 }

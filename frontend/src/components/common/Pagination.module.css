@@ -8,17 +8,17 @@
 }
 
 .pageButton {
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: 1px solid #ddd;
   background-color: white;
   color: #333;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   transition: all 0.2s ease;
   min-width: 40px;
-  height: 40px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -55,17 +55,17 @@
 
 @media (max-width: 768px) {
   .pagination {
-    gap: 4px;
+    gap: 6px;
   }
   
   .pageButton {
-    padding: 6px 8px;
-    font-size: 12px;
-    min-width: 32px;
-    height: 32px;
+    padding: 8px 10px;
+    font-size: 14px;
+    min-width: 36px;
+    height: 36px;
   }
   
   .navButton {
-    padding: 6px 12px;
+    padding: 8px 12px;
   }
 }
