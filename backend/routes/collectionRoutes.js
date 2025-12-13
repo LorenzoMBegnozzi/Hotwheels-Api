@@ -103,8 +103,8 @@ router.post("/add-custom", authMiddleware, upload.single("image"), async (req, r
 
     const lowercaseName = name.toLowerCase();
 
-    // Criando um novo Hot Wheel
-    const newHotWheel = new HotWheel({ name, lowercaseName, year, imageUrl });
+    // Criando um novo Hot Wheel como privado para o usuário
+    const newHotWheel = new HotWheel({ name, lowercaseName, year, imageUrl, createdBy: userId, isPublic: false });
     await newHotWheel.save();
 
     // Buscando a coleção do usuário

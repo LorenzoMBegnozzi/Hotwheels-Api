@@ -6,7 +6,7 @@ const router = express.Router();
 // Rota para listar todos os Hot Wheels
 router.get("/", async (req, res) => {
   try {
-    const hotwheels = await HotWheel.find();
+    const hotwheels = await HotWheel.find({ isPublic: true });
     res.json(hotwheels);
   } catch (err) {
     res.status(500).json({ message: "Erro ao buscar Hot Wheels" });
@@ -19,9 +19,10 @@ router.get("/search", async (req, res) => {
     const { name } = req.query;
 
     // Se não for fornecido nome, retornar todos para facilitar UX.
+    const baseFilter = { isPublic: true };
     const filter = name && name.trim() !== ''
-      ? { name: new RegExp(name.trim(), "i") }
-      : {};
+      ? { ...baseFilter, name: new RegExp(name.trim(), "i") }
+      : baseFilter;
 
     const hotwheels = await HotWheel.find(filter);
     res.json(hotwheels);
