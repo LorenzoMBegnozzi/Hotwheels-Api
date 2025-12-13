@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  profilePicture: { type: String, default: "" },
+  profilePicture: { type: String, default: "/default-user.png" },
   collection: [{ type: mongoose.Schema.Types.ObjectId, ref: "HotWheel" }],
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "HotWheel" }],
 });

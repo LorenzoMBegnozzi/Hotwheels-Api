@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { FaUserCircle } from "react-icons/fa";
+import { DEFAULT_PROFILE_IMAGE } from "../utils/constants";
 import { searchHotWheels, searchUsers, addToCollection, addToWishlist } from "../utils/api";
 import { isAuthenticated } from "../utils/auth";
 
@@ -124,8 +125,13 @@ const HomePage = () => {
     <div className="home-container">
       <div className="header" style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between' }}>
         {user && (
-          <div className="profile-section" onClick={() => navigate("/profile")}> 
-            <FaUserCircle size={36} className="profile-icon" />
+          <div className="profile-section" onClick={() => navigate("/profile")}>
+            <img
+              src={user.profilePicture || DEFAULT_PROFILE_IMAGE}
+              alt={user.name}
+              className="profile-icon"
+              style={{ width: 36, height: 36, borderRadius: "50%" }}
+            />
           </div>
         )}
         {/* Abas dentro do header para não ficarem atrás */}
@@ -226,8 +232,7 @@ const HomePage = () => {
           <div className="results-container">
             {currentUserItems.map((u) => (
               <div key={u._id} className="user-item">
-                {/* Imagem padrão para todos os usuários */}
-                <img src={"/default-user.svg"} alt={u.name} className="user-image" />
+                <img src={u.profilePicture || DEFAULT_PROFILE_IMAGE} alt={u.name} className="user-image" />
                 <h3>{u.name}</h3>
                 <p>📦 Coleção: {u.collection?.length || 0} | 💙 Favoritos: {u.favorites?.length || 0}</p>
                 <button className="search-button" onClick={() => navigate(`/user/${u._id}`)}>Ver Perfil</button>
