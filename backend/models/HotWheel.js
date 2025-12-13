@@ -5,7 +5,9 @@ const HotWheelSchema = new mongoose.Schema({
   lowercaseName: { type: String, required: true, unique: true },
   year: { type: Number, required: true },
   imageUrl: { type: String, required: true },
-  images: { type: [String], default: [] }
+  images: { type: [String], default: [] },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+  isPublic: { type: Boolean, default: true }
 });
 
 HotWheelSchema.pre("save", function (next) {

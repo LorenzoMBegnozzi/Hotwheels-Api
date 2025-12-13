@@ -131,28 +131,28 @@ const WishListPage = () => {
                 <p>Carregando...</p>
             ) : error ? (
                 <p className="error-message">{error}</p>
-            ) : wishlist.length > 0 ? (
+            ) : (
                 <div className="results-container">
-                    {/* Botão para adicionar novo carro (visual idêntico ao da coleção) */}
+                    {/* Botão para adicionar novo carro (sempre visível) */}
                     <div className="add-car-button" onClick={() => setShowModal(true)}>
                         <div className="plus-icon">➕</div>
                         <p>Adicionar Hot Wheel</p>
                     </div>
-                    {wishlist.map((car) => (
-                        <div key={car._id} className="car-item">
-                            <h3>{car.name} ({car.year})</h3>
-                            <img src={car.imageUrl} alt={car.name} className="car-image" />
-                            <button
-                                onClick={() => removeFromWishlist(car._id)}
-                                className="delete-button"
-                            >
-                                Excluir
-                            </button>
-                        </div>
-                    ))}
+                    {wishlist.length > 0 && (
+                        wishlist.map((car) => (
+                            <div key={car._id} className="car-item">
+                                <h3>{car.name} ({car.year})</h3>
+                                <img src={car.imageUrl} alt={car.name} className="car-image" />
+                                <button
+                                    onClick={() => removeFromWishlist(car._id)}
+                                    className="delete-button"
+                                >
+                                    Excluir
+                                </button>
+                            </div>
+                        ))
+                    )}
                 </div>
-            ) : (
-                <p>Sua lista de desejos está vazia!</p>
             )}
 
             {showModal && (
