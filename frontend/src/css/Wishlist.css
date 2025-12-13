@@ -86,3 +86,33 @@
     font-weight: bold;
   }
   
+  /* Copiado da tela Minha Coleção para visual idêntico */
+  .add-car-button {
+    width: 100%;
+    max-width: 250px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    font-weight: bold;
+    color: gray;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .add-car-button:hover {
+    transform: scale(1.05);
+  }
+  
+  .add-car-button p {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: normal;
+    color: #333;
+  }
+  
