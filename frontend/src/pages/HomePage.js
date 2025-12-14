@@ -6,7 +6,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { FaUserCircle } from "react-icons/fa";
 import { DEFAULT_PROFILE_IMAGE } from "../utils/constants";
-import { searchHotWheels, searchUsers, addToCollection, addToWishlist } from "../utils/api";
+import { searchHotWheels, searchUsers, addToCollection, addToWishlist, fetchHotwheelCategories } from "../utils/api";
+import FIXED_CATEGORY_FILTERS from "../utils/categories";
 import { isAuthenticated } from "../utils/auth";
 
 const HomePage = () => {
@@ -14,6 +15,8 @@ const HomePage = () => {
   const [results, setResults] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
   const [yearFilter, setYearFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("hotwheels"); // nova aba
@@ -37,6 +40,29 @@ const HomePage = () => {
       }
     };
     fetchProfile();
+    // carregar categorias disponíveis (fixas no front, mesclando extras do backend se houver)
+    const loadCategories = async () => {
+      try {
+        // começa com a lista fixa na ordem desejada
+        const base = [...FIXED_CATEGORY_FILTERS];
+        setCategories(base);
+
+        // tenta buscar categorias do backend para incluir extras, sem alterar a ordem base
+        const cats = await fetchHotwheelCategories();
+        const seen = new Set(base);
+        const extras = [];
+        cats.forEach((c) => {
+          if (c && !seen.has(c)) {
+            seen.add(c);
+            extras.push(c);
+          }
+        });
+        if (extras.length) setCategories([...base, ...extras.sort((a, b) => a.localeCompare(b))]);
+      } catch (e) {
+        console.error("Erro ao carregar categorias:", e);
+      }
+    };
+    loadCategories();
   }, []);
 
   // Filtrar Hot Wheels por ano
@@ -55,7 +81,7 @@ const HomePage = () => {
   // ==================== Funções de Hot Wheels ====================
   const handleSearchHotWheels = async () => {
     try {
-      const hotWheels = await searchHotWheels(search);
+      const hotWheels = await searchHotWheels(search, { category: categoryFilter });
       setResults(hotWheels);
     } catch (error) {
       console.error("Erro ao buscar Hot Wheels:", error);
@@ -184,6 +210,20 @@ const HomePage = () => {
               <option value="">Anos</option>
               {years.map((year) => (
                 <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
+          )}
+
+          {activeTab === "hotwheels" && (
+            <select
+              id="categoryFilter"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="year-filter-select"
+            >
+              <option value="">Categorias</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
               ))}
             </select>
           )}
