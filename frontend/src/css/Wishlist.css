@@ -9,11 +9,11 @@
   
   .results-container {
     width: 100%;
-    max-width: 1200px;
-    margin-top: 20px;
+    max-width: 1600px;
+    margin: 20px auto;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
     justify-items: center;
     overflow-y: auto;
     max-height: calc(100vh - 340px); /* Ajustado para o header de 90px */
@@ -30,7 +30,7 @@
     border-radius: 10px;
     text-align: center;
     width: 100%;
-    max-width: 250px;
+    max-width: none;
     height: auto;
     display: flex;
     flex-direction: column;
@@ -46,7 +46,7 @@
   
   .car-image {
     width: 100%;
-    max-width: 200px;
+    max-width: 260px;
     height: auto;
     object-fit: contain;
     border-radius: 10px;

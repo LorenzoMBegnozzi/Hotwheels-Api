@@ -122,7 +122,7 @@ const HomePage = () => {
 
   // ==================== Renderização ====================
   return (
-    <div className="home-container">
+    <div className="home-page home-container">
       <div className="header" style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between' }}>
         {user && (
           <div className="profile-section" onClick={() => navigate("/profile")}>
@@ -199,10 +199,10 @@ const HomePage = () => {
         <>
           <div className="collection-wishlist-buttons">
             <button className="search-button" onClick={() => navigate("/minha-colecao")}>
-              📦 Ver Minha Coleção
+              Ver Minha Coleção
             </button>
             <button className="search-button" onClick={() => navigate("/lista-de-desejos")}>
-              💙 Ver Lista de Desejos
+              Ver Lista de Desejos
             </button>
           </div>
 
@@ -212,8 +212,8 @@ const HomePage = () => {
                 <h3>{car.name} ({car.year})</h3>
                 <img src={car.imageUrl} alt={car.name} className="car-image" />
                 <div className="buttons">
-                  <button className="search-button" onClick={() => handleAddToCollection(car._id)}>➕ Adicionar à Coleção</button>
-                  <button className="search-button" onClick={() => handleAddToWishlist(car._id)}>💙 Adicionar à Lista de Desejos</button>
+                  <button className="search-button" onClick={() => handleAddToCollection(car._id)}>Adicionar à Coleção</button>
+                  <button className="search-button" onClick={() => handleAddToWishlist(car._id)}>Adicionar à Lista de Desejos</button>
                 </div>
               </div>
             ))}
@@ -234,7 +234,7 @@ const HomePage = () => {
               <div key={u._id} className="user-item">
                 <img src={u.profilePicture || DEFAULT_PROFILE_IMAGE} alt={u.name} className="user-image" />
                 <h3>{u.name}</h3>
-                <p>📦 Coleção: {u.collection?.length || 0} | 💙 Favoritos: {u.favorites?.length || 0}</p>
+                <p>Coleção: {u.collection?.length || 0} | Favoritos: {u.favorites?.length || 0}</p>
                 <button className="search-button" onClick={() => navigate(`/user/${u._id}`)}>Ver Perfil</button>
               </div>
             ))}

@@ -26,8 +26,8 @@ const UserProfilePage = () => {
 
   // Tab configuration
   const tabs = [
-    { id: 'collection', label: `📦 Coleção (${collection.length})` },
-    { id: 'wishlist', label: `💙 Lista de Desejos (${wishlist.length})` }
+    { id: 'collection', label: `Coleção (${collection.length})` },
+    { id: 'wishlist', label: `Lista de Desejos (${wishlist.length})` }
   ];
 
   if (loading) {

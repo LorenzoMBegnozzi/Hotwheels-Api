@@ -123,7 +123,7 @@ const WishListPage = () => {
     };
 
     return (
-        <div className="home-container">
+        <div className="wishlist-page home-container">
             <h2>Minha Lista de Desejos</h2>
             <Link to="/home" className="collection-button">Home</Link>
 

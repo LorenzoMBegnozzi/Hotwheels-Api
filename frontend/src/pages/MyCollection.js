@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../css/MyCollection.css";
 
@@ -111,11 +111,13 @@ const MyCollection = () => {
   };
 
   return (
-    <div className="my-collection-container">
-      <h1>Minha Coleção</h1>
-      <button className="back-button" onClick={() => navigate("/home")}>Home</button>
+    <div className="collection-page my-collection-container home-container">
+      <div className="collection-header">
+        <h2>Minha Coleção</h2>
+        <Link to="/home" className="collection-button">Home</Link>
+      </div>
 
-      <div className="car-list">
+      <div className="results-container">
         {/* Botão para adicionar novo carro */}
         <div className="add-car-button" onClick={() => setShowModal(true)}>
           <div className="plus-icon">➕</div>
