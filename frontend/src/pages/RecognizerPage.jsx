@@ -232,8 +232,8 @@ const RecognizerPage = () => {
                   <h4>{c.nome}</h4>
                   <img src={c.url} alt={c.nome} className="car-image" />
                   <div className="buttons">
-                    <button className="search-button" onClick={() => addToCollection(c.id)}>➕ Coleção</button>
-                    <button className="search-button" onClick={() => addToWishlist(c.id)}>💙 Wishlist</button>
+                    <button className="search-button" onClick={() => addToCollection(c.id)}>Coleção</button>
+                    <button className="search-button" onClick={() => addToWishlist(c.id)}>Wishlist</button>
                   </div>
                 </div>
               ))}

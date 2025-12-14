@@ -85,44 +85,44 @@
 }
 
 @media (max-width: 480px) {
-  .year-filter-select {
+  .home-page .year-filter-select {
     width: 100%;
     max-width: 120px;
     height: 36px;
     font-size: 13px;
   }
 
-  .buscar-button {
+  .home-page .buscar-button {
     width: 100%;
     max-width: 140px;
     height: 40px;
     font-size: 14px;
   }
 
-  .header {
+  .home-page .header {
     height: auto;
     padding: 12px;
   }
 
-  .results-container {
+  .home-page .results-container {
     max-height: none;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .search-container {
+  .home-page .search-container {
     flex-direction: column;
     gap: 12px;
     align-items: stretch;
   }
 
-  .search-input-container {
+  .home-page .search-input-container {
     width: 100%;
   }
 }
 
 
 
-.buscar-button {
+.home-page .buscar-button {
   width: 100%;
   max-width: 110px;
   height: 38px;
@@ -140,13 +140,13 @@
   background-color: #0056b3;
 }
 
-.results-container {
+.home-page .results-container {
   width: 100%;
-  max-width: 1200px;
-  margin-top: 8px;
+  max-width: 1600px; /* limita um pouco a largura total ocupada */
+  margin: 8px auto; /* centraliza a grade no viewport */
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px; /* um pouco mais de respiro entre cards */
   justify-items: center;
   overflow-y: auto;
   max-height: calc(100vh - 340px);
@@ -154,33 +154,36 @@
   padding-bottom: 24px;
 }
 
-.car-item {
+.home-page .car-item {
   background: rgb(255, 255, 255);
-  padding: 15px;
+  padding: 18px; /* reduz altura visual do card */
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
   width: 100%;
-  max-width: 350px;
+  max-width: none;
   transition: transform 0.3s ease;
 }
 
-.car-item:hover {
+.home-page .car-item:hover {
   transform: scale(1.05);
 }
 
-.car-image {
+.home-page .car-image {
   width: 100%;
-  max-width: 200px;
-  border-radius: 5px;
+  max-width: 260px; /* imagem um pouco menor */
+  border-radius: 6px;
+  margin-top: 10px;
+}
+.home-page .car-item h3 {
+  font-size: 16px; /* nome um pouco menor */
+}
+
+.home-page .buttons {
   margin-top: 10px;
 }
 
-.buttons {
-  margin-top: 10px;
-}
-
-.buttons button {
+.home-page .buttons button {
   padding: 8px 12px;
   margin: 5px;
   background-color: #007bff;
@@ -192,16 +195,16 @@
   transition: background-color 0.3s ease;
 }
 
-.buttons button:hover {
+.home-page .buttons button:hover {
   background-color: #0056b3;
 }
 
-.collection-button-container {
+.home-page .collection-button-container {
   margin-top: 20px;
   text-align: center;
 }
 
-.collection-button {
+.home-page .collection-button {
   display: inline-block;
   padding: 12px 20px;
   background-color: #007bff;
@@ -212,23 +215,23 @@
   transition: background-color 0.3s ease;
 }
 
-.collection-button:hover {
+.home-page .collection-button:hover {
   background-color: #0056b3;
 }
 
-.filter-container {
+.home-page .filter-container {
   margin-top: 15px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.filter-container label {
+.home-page .filter-container label {
   font-size: 16px;
   font-weight: bold;
 }
 
-.filter-container select {
+.home-page .filter-container select {
   padding: 8px;
   font-size: 16px;
   border: 2px solid #007bff;
@@ -237,11 +240,11 @@
   outline: none;
 }
 
-.filter-container select:hover {
+.home-page .filter-container select:hover {
   border-color: #0056b3;
 }
 
-.search-input-container {
+.home-page .search-input-container {
   position: relative;
   display: flex;
   align-items: center;
@@ -249,7 +252,7 @@
   max-width: none;
 }
 
-.search-input {
+.home-page .search-input {
   width: 220px;
   padding: 10px 36px 10px 10px;
   border: 2px solid #007bff;
@@ -259,7 +262,7 @@
   transition: border 0.3s ease-in-out;
 }
 
-.search-icon {
+.home-page .search-icon {
   position: absolute;
   right: 10px;
   background: none;
@@ -269,11 +272,11 @@
   color: #007bff;
 }
 
-.search-icon:hover {
+.home-page .search-icon:hover {
   color: #0056b3;
 }
 
-.header {
+.home-page .header {
   position: fixed;
   top: 0;
   left: 0;
@@ -288,12 +291,12 @@
   background: #0b0b0b; /* sólido para evitar borrado */
 }
 
-.header h1 {
+.home-page .header h1 {
   font-size: 16px;
   color: white;
 }
 
-.recognizer-fab {
+.home-page .recognizer-fab {
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -309,17 +312,17 @@
   z-index: 1200;
 }
 
-.recognizer-fab:hover {
+.home-page .recognizer-fab:hover {
   transform: translateY(-4px) scale(1.05);
   box-shadow: 0 10px 26px rgba(0,0,0,0.45);
 }
 
-.recognizer-fab:active {
+.home-page .recognizer-fab:active {
   transform: scale(.92);
 }
 
 @media (max-width: 600px) {
-  .recognizer-fab {
+  .home-page .recognizer-fab {
     width: 58px;
     height: 58px;
     bottom: 16px;
@@ -328,7 +331,7 @@
   }
 }
 
-.profile-section {
+.home-page .profile-section {
   position: absolute;
   top: 6px;
   right: 10px;
@@ -338,11 +341,11 @@
   cursor: pointer;
 }
 
-.profile-icon {
+.home-page .profile-icon {
   color: white;
 }
 
-.profile-picture-small {
+.home-page .profile-picture-small {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -351,7 +354,7 @@
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
-.collection-wishlist-buttons {
+.home-page .collection-wishlist-buttons {
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -359,14 +362,14 @@
   margin-bottom: 15px;
 }
 
-.pagination {
+.home-page .pagination {
   display: flex;
   justify-content: center;
   gap: 10px;
   margin-top: 20px;
 }
 
-.pagination-button {
+.home-page .pagination-button {
   padding: 10px 20px;
   background-color: #000000;
   color: white;
@@ -375,16 +378,16 @@
   cursor: pointer;
 }
 
-.pagination-button:disabled {
+.home-page .pagination-button:disabled {
   background-color: #ddd;
   cursor: not-allowed;
 }
 
-.pagination-button:hover:not(:disabled) {
+.home-page .pagination-button:hover:not(:disabled) {
   background-color: #0056b3;
 }
 
-.tabs {
+.home-page .tabs {
   display: flex;
   justify-content: flex-start;
   gap: 8px;
@@ -395,7 +398,7 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.tab-button {
+.home-page .tab-button {
   padding: 8px 12px; /* reduzir altura dos botões de aba */
   background-color: transparent;
   color: #ffffff;
@@ -407,10 +410,10 @@
   transition: all 0.3s ease;
 }
 @media (max-width: 480px) {
-  .tabs {
+  .home-page .tabs {
     gap: 8px;
   }
-  .tab-button {
+  .home-page .tab-button {
     flex: 1 1 auto;
     min-width: 140px;
     padding: 10px 12px;
@@ -418,13 +421,13 @@
   }
 }
 
-.tab-button:hover {
+.home-page .tab-button:hover {
   background-color: #f0f8ff;
   color: #000000;
 }
 
 /* Quando clicada/ativa */
-.tab-button.active {
+.home-page .tab-button.active {
   background-color: #000000;
   color: white;
   border-color: #000000;

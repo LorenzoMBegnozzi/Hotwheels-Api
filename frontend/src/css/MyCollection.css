@@ -1,4 +1,4 @@
-.my-collection-container {
+.collection-page .my-collection-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -7,12 +7,37 @@
   padding-top: 10px; /* Espaço para o header fixo */
 }
 
-.car-list {
+/* Cabeçalho separado para título e botão */
+.collection-page .collection-header {
   width: 100%;
-  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.collection-page .collection-header h2 {
+  text-align: center;
+  margin: 12px 0 12px 0; /* desce um pouco o título */
+}
+
+.collection-page .collection-header .back-button {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px;
+  background: #000000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.collection-page .results-container {
+  width: 100%;
+  max-width: 1600px;
   margin-top: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 20px;
   justify-items: center; 
   overflow-y: auto; 
@@ -23,14 +48,14 @@
   border-radius: 10px;
 }
 
-.car-item {
+.collection-page .car-item {
   background: rgba(255, 255, 255, 0.9); 
   color: black;
   padding: 15px;
   border-radius: 10px;
   text-align: center;
   width: 100%;
-  max-width: 250px;
+  max-width: none;
   height: auto;
   display: flex;
   flex-direction: column;
@@ -40,13 +65,13 @@
   transition: transform 0.3s ease;
 }
 
-.car-item:hover {
+.collection-page .car-item:hover {
   transform: scale(1.05);
 }
 
-.car-image {
+.collection-page .car-image {
   width: 100%;
-  max-width: 200px;
+  max-width: 260px;
   height: auto;
   object-fit: contain;
   border-radius: 10px;
