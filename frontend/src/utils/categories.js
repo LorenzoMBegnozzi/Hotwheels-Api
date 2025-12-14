@@ -1,0 +1,25 @@
+export const FIXED_CATEGORY_FILTERS = [
+  "Temáticos",
+  "Picapes",
+  "Antigos",
+  "Premium",
+  "Modelos Premium",
+  "Matchbox",
+  "Japoneses / JDM",
+  "T-Hunt",
+  "Super T-Hunt",
+  "Character Cars",
+  "Caminhões",
+  "Fast & Furious",
+  "First Editions",
+  "Car Culture",
+  "Star Wars",
+  "Disney",
+  "Marvel",
+  "Volkswagen",
+  "City",
+  "Stars",
+  "Motos",
+];
+
+export default FIXED_CATEGORY_FILTERS;

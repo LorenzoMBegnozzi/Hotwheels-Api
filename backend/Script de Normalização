@@ -1,0 +1,39 @@
+// Normalização das categorias no MongoDB
+const normalizationMap = {
+  "Fast Furious": "Fast & Furious",
+  "Picape": "Picapes",
+  "Temático": "Temáticos",
+  "Super_T_Hunt": "Super T-Hunt",
+  "T_Hunt": "T-Hunt"
+};
+
+const REMOVE_CATEGORIES = [
+  "Recém-chegados",
+  "Todos os Produtos",
+  "Mais Procurados"
+];
+
+// Função para normalizar e filtrar as categorias
+function normalizeCategories(categories) {
+  return categories
+    .map((cat) => {
+      // Corrige se a categoria estiver na map de normalização
+      return normalizationMap[cat] || cat;
+    })
+    .filter((cat) => !REMOVE_CATEGORIES.includes(cat)); // Remove categorias indesejadas
+}
+
+// Atualiza os documentos no MongoDB
+db.hotwheels.find({}).forEach((doc) => {
+  // Normaliza as categorias e atribui de volta ao documento
+  const normalizedCategories = normalizeCategories(doc.categories);
+  
+  // Se houver alguma mudança, faz a atualização no banco
+  if (normalizedCategories.length !== doc.categories.length) {
+    db.hotwheels.updateOne(
+      { _id: doc._id },
+      { $set: { categories: normalizedCategories } }
+    );
+    print(`Documento ${doc._id} atualizado`);
+  }
+});

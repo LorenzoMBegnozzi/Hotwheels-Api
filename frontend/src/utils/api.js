@@ -87,11 +87,18 @@ export const fetchWishlist = async () => {
 };
 
 // Hot Wheels related API functions
-export const searchHotWheels = async (query) => {
+export const searchHotWheels = async (query, options = {}) => {
   try {
-    // Se não houver termo de busca, usar a rota geral para trazer todos.
-    const url = query && query.trim() !== ''
-      ? `${API_BASE_URL}/hotwheels/search?name=${encodeURIComponent(query.trim())}`
+    const params = new URLSearchParams();
+    if (query && query.trim() !== '') {
+      params.append('name', query.trim());
+    }
+    if (options.category && options.category.trim() !== '') {
+      params.append('category', options.category.trim());
+    }
+
+    const url = params.toString()
+      ? `${API_BASE_URL}/hotwheels/search?${params.toString()}`
       : `${API_BASE_URL}/hotwheels`;
 
     const response = await fetch(url, {
@@ -105,6 +112,22 @@ export const searchHotWheels = async (query) => {
     return await response.json();
   } catch (error) {
     console.error('Erro ao buscar Hot Wheels:', error);
+    throw error;
+  }
+};
+
+export const fetchHotwheelCategories = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/hotwheels/categories`, {
+      headers: getAuthHeaders()
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao buscar categorias');
+    }
+    const data = await response.json();
+    return data.categories || [];
+  } catch (error) {
+    console.error('Erro ao buscar categorias:', error);
     throw error;
   }
 };
