@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../css/LoginPage.css";
 import Logo from "../css/logo2.png"; 
+import { API_BASE_URL } from "../utils/constants";
 
 const LoginPage = () => {
   const [name, setName] = useState("");
@@ -24,7 +25,7 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", { email, password });
+      const res = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.userId);
 
@@ -53,7 +54,7 @@ const LoginPage = () => {
       return Swal.fire("Erro!", "As senhas não coincidem.", "error");
     }
     try {
-      await axios.post("http://localhost:5000/api/auth/register", { name, email, password, confirmPassword });
+      await axios.post(`${API_BASE_URL}/auth/register`, { name, email, password, confirmPassword });
       setRegisterCodeSent(true);
       Swal.fire("Verificação", "Código enviado ao seu email.", "success");
     } catch (err) {
@@ -64,7 +65,7 @@ const LoginPage = () => {
   const handleConfirmSignup = async () => {
     if (!signupCode) return Swal.fire("Erro!", "Informe o código recebido.", "error");
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/confirm-signup", { name, email, password, code: signupCode });
+      const res = await axios.post(`${API_BASE_URL}/auth/confirm-signup`, { name, email, password, code: signupCode });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.userId);
       Swal.fire("Sucesso!", "Conta criada.", "success");
@@ -79,7 +80,7 @@ const LoginPage = () => {
   const handleRequestResetCode = async () => {
     if (!email) return Swal.fire("Erro!", "Informe o email da conta.", "error");
     try {
-      await axios.post("http://localhost:5000/api/auth/request-reset-code", { email });
+      await axios.post(`${API_BASE_URL}/auth/request-reset-code`, { email });
       setResetCodeSent(true);
       Swal.fire("Verificação", "Código enviado ao seu email.", "success");
     } catch (err) {
@@ -93,7 +94,7 @@ const LoginPage = () => {
       return Swal.fire("Erro!", "As senhas não coincidem.", "error");
     }
     try {
-      await axios.post("http://localhost:5000/api/auth/confirm-reset", { email, code: resetCode, newPassword, confirmPassword: confirmNewPassword });
+      await axios.post(`${API_BASE_URL}/auth/confirm-reset`, { email, code: resetCode, newPassword, confirmPassword: confirmNewPassword });
       Swal.fire("Sucesso!", "Senha alterada.", "success");
       setIsResetting(false);
       setResetCodeSent(false);

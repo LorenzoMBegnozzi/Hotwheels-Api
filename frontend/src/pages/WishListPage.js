@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../css/Wishlist.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "../utils/constants";
 import Swal from "sweetalert2";
 
 const WishListPage = () => {
@@ -19,7 +20,7 @@ const WishListPage = () => {
                     throw new Error("Usuário não autenticado. Faça login.");
                 }
 
-                const response = await axios.get("http://localhost:5000/api/wishlist", {
+                const response = await axios.get(`${API_BASE_URL}/wishlist`, {
                     headers: { "x-auth-token": token },
                 });
 
@@ -51,7 +52,7 @@ const WishListPage = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const response = await axios.delete(`http://localhost:5000/api/wishlist/${carId}`, {
+                    const response = await axios.delete(`${API_BASE_URL}/wishlist/${carId}`, {
                         headers: { "x-auth-token": localStorage.getItem("token") },
                     });
 
@@ -91,7 +92,7 @@ const WishListPage = () => {
         try {
             // 1) Cria um carro customizado (mesmo fluxo da coleção)
             const createRes = await axios.post(
-                "http://localhost:5000/api/collection/add-custom",
+                `${API_BASE_URL}/collection/add-custom`,
                 formData,
                 { headers: { "x-auth-token": token, "Content-Type": "multipart/form-data" } }
             );
@@ -100,7 +101,7 @@ const WishListPage = () => {
 
             // 2) Adiciona o carro criado à wishlist
             const wishlistRes = await axios.post(
-                "http://localhost:5000/api/wishlist",
+                `${API_BASE_URL}/wishlist`,
                 { hotWheelId: createdCar._id },
                 { headers: { "x-auth-token": token, "Content-Type": "application/json" } }
             );

@@ -4,6 +4,7 @@ import axios from 'axios';
 import '../css/RecognizerPage.css';
 import '../css/HomePage.css';
 import Swal from 'sweetalert2';
+import { API_BASE_URL } from '../utils/constants';
 
 const RecognizerPage = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const RecognizerPage = () => {
       const tokenRaw = localStorage.getItem('token');
       if (!tokenRaw) return Swal.fire('Atenção', 'Faça login para adicionar à coleção', 'warning');
       const token = tokenRaw.startsWith('Bearer ') ? tokenRaw : `Bearer ${tokenRaw}`;
-      const { data } = await axios.post('http://localhost:5000/api/collection/add', { hotWheelId: id }, { headers: { Authorization: token } });
+      const { data } = await axios.post(`${API_BASE_URL}/collection/add`, { hotWheelId: id }, { headers: { Authorization: token } });
       Swal.fire('Sucesso', data.message || 'Adicionado à coleção', 'success');
     } catch (e) {
       Swal.fire('Erro', 'Não foi possível adicionar à coleção', 'error');
@@ -35,7 +36,7 @@ const RecognizerPage = () => {
       const tokenRaw = localStorage.getItem('token');
       if (!tokenRaw) return Swal.fire('Atenção', 'Faça login para adicionar à wishlist', 'warning');
       const token = tokenRaw.startsWith('Bearer ') ? tokenRaw : `Bearer ${tokenRaw}`;
-      const { data } = await axios.post('http://localhost:5000/api/wishlist', { hotWheelId: id }, { headers: { Authorization: token } });
+      const { data } = await axios.post(`${API_BASE_URL}/wishlist`, { hotWheelId: id }, { headers: { Authorization: token } });
       Swal.fire('Sucesso', data.message || 'Adicionado à wishlist', 'success');
     } catch (e) {
       Swal.fire('Erro', 'Não foi possível adicionar à wishlist', 'error');
@@ -47,7 +48,7 @@ const RecognizerPage = () => {
   // const fileInputRef = useRef(null);
   const undersideInputRef = useRef(null);
 
-  const backendBase = 'http://localhost:5000/api/recognizer';
+  const backendBase = `${API_BASE_URL}/recognizer`;
 
   // function onFileChange(e) {
   //   const f = e.target.files[0];

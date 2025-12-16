@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { FaUserCircle } from "react-icons/fa";
-import { DEFAULT_PROFILE_IMAGE } from "../utils/constants";
+import { DEFAULT_PROFILE_IMAGE, API_BASE_URL } from "../utils/constants";
 import CarItem from "../components/common/CarItem";
 import { searchHotWheels, searchUsers, addToCollection, addToWishlist, fetchHotwheelCategories } from "../utils/api";
 import FIXED_CATEGORY_FILTERS from "../utils/categories";
@@ -32,7 +32,7 @@ const HomePage = () => {
       try {
         let token = localStorage.getItem("token");
         if (token && !token.startsWith("Bearer ")) token = `Bearer ${token}`;
-        const response = await axios.get("http://localhost:5000/api/auth/profile", {
+        const response = await axios.get(`${API_BASE_URL}/auth/profile`, {
           headers: { Authorization: token },
         });
         setUser(response.data);
