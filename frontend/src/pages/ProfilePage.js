@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import "../css/ProfilePage.css";
 import { DEFAULT_PROFILE_IMAGE } from "../utils/constants";
+import { API_BASE_URL } from "../utils/constants";
 // Imagem padrão única para todos os usuários
 const DEFAULT_USER_IMG = DEFAULT_PROFILE_IMAGE; // '/default-user.png'
 
@@ -33,7 +34,7 @@ const ProfilePage = () => {
         if (!token.startsWith("Bearer ")) {
           token = `Bearer ${token}`;
         }
-        const response = await axios.get("http://localhost:5000/api/auth/profile", {
+        const response = await axios.get(`${API_BASE_URL}/auth/profile`, {
           headers: { Authorization: token },
         });
         setUser(response.data);
@@ -58,7 +59,7 @@ const ProfilePage = () => {
       }
 
       await axios.put(
-        "http://localhost:5000/api/auth/update-password",
+        `${API_BASE_URL}/auth/update-password`,
         { currentPassword, newPassword },
         { headers: { Authorization: token } }
       );
@@ -118,7 +119,7 @@ const ProfilePage = () => {
                   let token = localStorage.getItem('token');
                   if (token && !token.startsWith('Bearer ')) token = `Bearer ${token}`;
                   await axios.put(
-                    `http://localhost:5000/api/users/${user._id}/avatar`,
+                    `${API_BASE_URL}/users/${user._id}/avatar`,
                     { profilePicture: selectedAvatar },
                     { headers: { Authorization: token } }
                   );

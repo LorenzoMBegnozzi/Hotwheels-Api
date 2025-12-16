@@ -1,5 +1,6 @@
 // Application constants
-export const API_BASE_URL = 'http://localhost:5000/api';
+// Use env when provided (e.g., ngrok), fallback to relative '/api' for CRA proxy/dev
+export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 export const ROUTES = {
   HOME: '/',

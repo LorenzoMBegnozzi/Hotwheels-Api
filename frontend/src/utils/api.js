@@ -1,6 +1,4 @@
-// Base da API. Usar localhost para evitar inconsistências se o IP da rede mudar.
-// Caso a API esteja em outro host, atualize esta constante.
-const API_BASE_URL = 'http://localhost:5000/api';
+import { API_BASE_URL } from './constants';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
