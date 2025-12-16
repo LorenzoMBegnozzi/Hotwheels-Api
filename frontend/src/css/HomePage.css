@@ -104,9 +104,9 @@
     padding: 12px;
   }
 
+  /* results-container: responsivo via auto-fill; sem forçar colunas fixas em mobile */
   .home-page .results-container {
     max-height: none;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .home-page .search-container {
@@ -145,13 +145,19 @@
   max-width: 1600px; /* limita um pouco a largura total ocupada */
   margin: 8px auto; /* centraliza a grade no viewport */
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 12px; /* um pouco mais de respiro entre cards */
-  justify-items: center;
-  overflow-y: auto;
-  max-height: calc(100vh - 340px);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem; /* mesmo espaçamento da tela de outro usuário */
+  justify-items: stretch; /* estica como no perfil de outro usuário */
   overflow-x: hidden;
   padding-bottom: 24px;
+}
+
+/* Tornar o grid mais compacto em tablets/celulares, igual UserProfile */
+@media (max-width: 768px) {
+  .home-page .results-container {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
 }
 
 .home-page .car-item {
