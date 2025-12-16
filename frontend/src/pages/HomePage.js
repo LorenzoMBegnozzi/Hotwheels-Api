@@ -6,6 +6,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { FaUserCircle } from "react-icons/fa";
 import { DEFAULT_PROFILE_IMAGE } from "../utils/constants";
+import CarItem from "../components/common/CarItem";
 import { searchHotWheels, searchUsers, addToCollection, addToWishlist, fetchHotwheelCategories } from "../utils/api";
 import FIXED_CATEGORY_FILTERS from "../utils/categories";
 import { isAuthenticated } from "../utils/auth";
@@ -248,14 +249,13 @@ const HomePage = () => {
 
           <div className="results-container">
             {currentItems.map((car) => (
-              <div key={car._id} className="car-item">
-                <h3>{car.name} ({car.year})</h3>
-                <img src={car.imageUrl} alt={car.name} className="car-image" />
-                <div className="buttons">
-                  <button className="search-button" onClick={() => handleAddToCollection(car._id)}>Adicionar à Coleção</button>
-                  <button className="search-button" onClick={() => handleAddToWishlist(car._id)}>Adicionar à Lista de Desejos</button>
-                </div>
-              </div>
+              <CarItem
+                key={car._id}
+                car={car}
+                onAddToCollection={handleAddToCollection}
+                onAddToWishlist={handleAddToWishlist}
+                showActions={true}
+              />
             ))}
           </div>
 
