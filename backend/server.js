@@ -13,7 +13,7 @@ app.use(cors());
 // Servir a pasta uploads corretamente
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Rotas
+// Rotas API
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/hotwheels", require("./routes/hotwheelsRoutes"));
 app.use("/api/collection", require("./routes/collectionRoutes"));
@@ -28,9 +28,13 @@ mongoose
   .then(() => console.log("✅ MongoDB conectado"))
   .catch((err) => console.log("❌ Erro ao conectar ao MongoDB:", err));
 
-// Rota inicial
-app.get("/", (req, res) => {
-  res.send("🚗 API do Hot Wheels funcionando!");
+// Servir frontend (build) quando disponível, mantendo /api separado
+const FRONTEND_BUILD = path.join(__dirname, "..", "frontend", "build");
+app.use(express.static(FRONTEND_BUILD));
+
+// SPA fallback para qualquer rota que não seja /api/*
+app.get(/^\/(?!api\/).*/, (req, res) => {
+  res.sendFile(path.join(FRONTEND_BUILD, "index.html"));
 });
 
 // Definir a porta do servidor
