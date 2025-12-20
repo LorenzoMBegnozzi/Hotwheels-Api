@@ -448,7 +448,7 @@ const HomePage = () => {
                 <div className="card-content">
                   <div
                     className="card-title"
-                    style={{ color: "#000000ff" }}
+                    style={{ color: "#ffffffff" }}
                     title={car.name || car.modelName || car.title}
                   >
                     {car.name || car.modelName || car.title || "Modelo"}
@@ -485,7 +485,7 @@ const HomePage = () => {
                 <div className="card-content">
                   <div
                     className="card-title"
-                    style={{ color: "#000000ff" }}
+                    style={{ color: "#ffffffff" }}
                     title={u.name || u.email}
                   >
                     {u.name || u.email || 'Usuário'}
