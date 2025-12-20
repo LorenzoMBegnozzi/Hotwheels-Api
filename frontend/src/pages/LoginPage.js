@@ -1,31 +1,38 @@
-// LoginPage.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../css/LoginPage.css";
-import Logo from "../css/logo2.png"; 
-import { API_BASE_URL } from "../utils/constants";
+import Logo from "../css/logo2.png";
 
 const LoginPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
   const [isRegistering, setIsRegistering] = useState(false);
   const [registerCodeSent, setRegisterCodeSent] = useState(false);
   const [signupCode, setSignupCode] = useState("");
+
   const [isResetting, setIsResetting] = useState(false);
   const [resetCodeSent, setResetCodeSent] = useState(false);
   const [resetCode, setResetCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password,
+      });
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.userId);
 
@@ -54,7 +61,12 @@ const LoginPage = () => {
       return Swal.fire("Erro!", "As senhas não coincidem.", "error");
     }
     try {
-      await axios.post(`${API_BASE_URL}/auth/register`, { name, email, password, confirmPassword });
+      await axios.post("http://localhost:5000/api/auth/register", {
+        name,
+        email,
+        password,
+        confirmPassword,
+      });
       setRegisterCodeSent(true);
       Swal.fire("Verificação", "Código enviado ao seu email.", "success");
     } catch (err) {
@@ -65,9 +77,16 @@ const LoginPage = () => {
   const handleConfirmSignup = async () => {
     if (!signupCode) return Swal.fire("Erro!", "Informe o código recebido.", "error");
     try {
-      const res = await axios.post(`${API_BASE_URL}/auth/confirm-signup`, { name, email, password, code: signupCode });
+      const res = await axios.post("http://localhost:5000/api/auth/confirm-signup", {
+        name,
+        email,
+        password,
+        code: signupCode,
+      });
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.userId);
+
       Swal.fire("Sucesso!", "Conta criada.", "success");
       setIsRegistering(false);
       setRegisterCodeSent(false);
@@ -80,7 +99,7 @@ const LoginPage = () => {
   const handleRequestResetCode = async () => {
     if (!email) return Swal.fire("Erro!", "Informe o email da conta.", "error");
     try {
-      await axios.post(`${API_BASE_URL}/auth/request-reset-code`, { email });
+      await axios.post("http://localhost:5000/api/auth/request-reset-code", { email });
       setResetCodeSent(true);
       Swal.fire("Verificação", "Código enviado ao seu email.", "success");
     } catch (err) {
@@ -94,7 +113,13 @@ const LoginPage = () => {
       return Swal.fire("Erro!", "As senhas não coincidem.", "error");
     }
     try {
-      await axios.post(`${API_BASE_URL}/auth/confirm-reset`, { email, code: resetCode, newPassword, confirmPassword: confirmNewPassword });
+      await axios.post("http://localhost:5000/api/auth/confirm-reset", {
+        email,
+        code: resetCode,
+        newPassword,
+        confirmPassword: confirmNewPassword,
+      });
+
       Swal.fire("Sucesso!", "Senha alterada.", "success");
       setIsResetting(false);
       setResetCodeSent(false);
@@ -103,73 +128,249 @@ const LoginPage = () => {
     }
   };
 
+  const title = isRegistering
+    ? registerCodeSent
+      ? "Confirmar Cadastro"
+      : "Criar Conta"
+    : isResetting
+      ? resetCodeSent
+        ? "Confirmar Redefinição"
+        : "Redefinir Senha"
+      : "Login";
+
+  const subtitle = isRegistering
+    ? "Crie sua conta para começar!"
+    : isResetting
+      ? "Recupere o acesso à sua conta"
+      : "Bem-vindo de volta!";
+
+  const onPrimaryAction = () => {
+    if (isRegistering) {
+      if (registerCodeSent) return handleConfirmSignup();
+      return handleRequestSignupCode();
+    }
+    if (isResetting) {
+      if (resetCodeSent) return handleConfirmReset();
+      return handleRequestResetCode();
+    }
+    return handleLogin();
+  };
+
+  const primaryText = isRegistering
+    ? registerCodeSent
+      ? "Confirmar Cadastro"
+      : "Enviar Código"
+    : isResetting
+      ? resetCodeSent
+        ? "Confirmar Redefinição"
+        : "Enviar Código"
+      : "Entrar";
+
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <img src={Logo} alt="Logo" className="login-logo" />
-        <h2>
-          {isRegistering ? (registerCodeSent ? "Confirmar Cadastro" : "Criar Conta") : isResetting ? (resetCodeSent ? "Confirmar Redefinição" : "Redefinir Senha") : "Login"}
-        </h2>
-        {isRegistering && (
-          <input type="text" placeholder="Nome" value={name} onChange={(e) => setName(e.target.value)} />
-        )}
-        {!isResetting && (
-          <input type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
-        )}
-        {!isResetting && !registerCodeSent && (
-          <input type="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} />
-        )}
-        {isRegistering && (
-          registerCodeSent ? (
-            <input type="text" placeholder="Código recebido" value={signupCode} onChange={(e) => setSignupCode(e.target.value)} />
+    <div className="login-root">
+      <div className="login-background" aria-hidden="true" />
+
+      <div className="login-container">
+        <div className="logo-section">
+          <div className="logo-icon">
+            <img src={Logo} alt="Logo" className="logo-image" />
+          </div>
+
+          <h1 className="logo-title">
+            Hot Wheels <span className="logo-accent">Collector</span>
+          </h1>
+          <p className="logo-subtitle">{subtitle}</p>
+        </div>
+
+        <div className="login-form">
+          {/* Cadastro: Nome */}
+          {isRegistering && !registerCodeSent && (
+            <div className="form-group">
+              <label className="form-label">Nome</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Seu nome"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+          )}
+
+          {/* Email (não aparece no passo 2 do reset, como você já fazia) */}
+          {!isResetting && (
+            <div className="form-group">
+              <label className="form-label">E-mail</label>
+              <input
+                type="email"
+                className="form-input"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+          )}
+
+          {/* Senha (Login e passo 1 do cadastro) */}
+          {!isResetting && !registerCodeSent && (
+            <div className="form-group">
+              <label className="form-label">Senha</label>
+              <div className="password-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="form-input"
+                  placeholder="••••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="toggle-password"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label="Mostrar/ocultar senha"
+                >
+                  {showPassword ? "👁️‍🗨️" : "👁️"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Cadastro: confirmar senha (passo 1) OU código (passo 2) */}
+          {isRegistering && (
+            <div className="form-group">
+              {registerCodeSent ? (
+                <>
+                  <label className="form-label">Código</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Código recebido"
+                    value={signupCode}
+                    onChange={(e) => setSignupCode(e.target.value)}
+                  />
+                </>
+              ) : (
+                <>
+                  <label className="form-label">Confirmar senha</label>
+                  <input
+                    type="password"
+                    className="form-input"
+                    placeholder="••••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Reset: passo 1 (texto) / passo 2 (código e novas senhas) */}
+          {isResetting && (
+            <div className="form-group">
+              {resetCodeSent ? (
+                <>
+                  <label className="form-label">Código</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Código recebido"
+                    value={resetCode}
+                    onChange={(e) => setResetCode(e.target.value)}
+                  />
+
+                  <label className="form-label">Nova senha</label>
+                  <div className="password-wrapper">
+                    <input
+                      type={showNewPassword ? "text" : "password"}
+                      className="form-input"
+                      placeholder="••••••••••"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="toggle-password"
+                      onClick={() => setShowNewPassword((v) => !v)}
+                      aria-label="Mostrar/ocultar nova senha"
+                    >
+                      {showNewPassword ? "👁️‍🗨️" : "👁️"}
+                    </button>
+                  </div>
+
+                  <label className="form-label">Confirmar nova senha</label>
+                  <input
+                    type="password"
+                    className="form-input"
+                    placeholder="••••••••••"
+                    value={confirmNewPassword}
+                    onChange={(e) => setConfirmNewPassword(e.target.value)}
+                  />
+                </>
+              ) : (
+                <p className="info-text">Informe seu email no campo acima para receber o código.</p>
+              )}
+            </div>
+          )}
+
+          {/* Linha lembrar/esqueci senha (só no login normal) */}
+          {!isRegistering && !isResetting && (
+            <div className="remember-forgot">
+              <div className="remember-me">
+                <input type="checkbox" id="remember" />
+                <label htmlFor="remember">Lembrar de mim</label>
+              </div>
+
+              <span
+                className="forgot-password"
+                onClick={() => {
+                  setIsRegistering(false);
+                  setRegisterCodeSent(false);
+                  setIsResetting(true);
+                  setResetCodeSent(false);
+                }}
+              >
+                Esqueceu a senha?
+              </span>
+            </div>
+          )}
+
+          <button type="button" className="login-btn" onClick={onPrimaryAction}>
+            {primaryText}
+          </button>
+
+          {/* Links inferiores */}
+          {isResetting ? (
+            <p
+              className="toggle-text"
+              onClick={() => {
+                setIsResetting(false);
+                setResetCodeSent(false);
+              }}
+            >
+              <strong>Voltar para Login</strong>
+            </p>
           ) : (
-            <input type="password" placeholder="Confirmar Senha" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-          )
-        )}
-        {isResetting && (
-          <>
-            {resetCodeSent ? (
-              <>
-                <input type="text" placeholder="Código recebido" value={resetCode} onChange={(e) => setResetCode(e.target.value)} />
-                <input type="password" placeholder="Nova Senha" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-                <input type="password" placeholder="Confirmar Nova Senha" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
-              </>
-            ) : (
-              <p className="info-text">Informe seu email para receber o código.</p>
-            )}
-          </>
-        )}
-        {isRegistering ? (
-          registerCodeSent ? (
-            <button onClick={handleConfirmSignup}>Confirmar Cadastro</button>
-          ) : (
-            <button onClick={handleRequestSignupCode}>Enviar Código</button>
-          )
-        ) : isResetting ? (
-          resetCodeSent ? (
-            <button onClick={handleConfirmReset}>Confirmar Redefinição</button>
-          ) : (
-            <button onClick={handleRequestResetCode}>Enviar Código</button>
-          )
-        ) : (
-          <button onClick={handleLogin}>Login</button>
-        )}
-        <p
-          className="toggle-text"
-          onClick={() => {
-            setIsRegistering(false);
-            setRegisterCodeSent(false);
-            setIsResetting(!isResetting);
-            setResetCodeSent(false);
-          }}
-        >
-          {isResetting ? "Voltar para Login" : "Esqueceu a senha?"}
-        </p>
-        {!isResetting && (
-          <p className="toggle-text" onClick={() => setIsRegistering(!isRegistering)}>
-            {isRegistering ? "Já tem uma conta? Faça login." : "Não tem conta? Cadastre-se."}
-          </p>
-        )}
+            <p
+              className="toggle-text"
+              onClick={() => {
+                setIsRegistering((v) => !v);
+                setRegisterCodeSent(false);
+                setIsResetting(false);
+                setResetCodeSent(false);
+              }}
+            >
+              {isRegistering ? (
+                <>
+                  Já tem uma conta? <strong>Faça login</strong>
+                </>
+              ) : (
+                <>
+                  Não tem conta? <strong>Cadastre-se</strong>
+                </>
+              )}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
