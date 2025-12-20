@@ -37,14 +37,36 @@ const HomePage = () => {
 
   // ==================== Perfil + categorias ====================
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchProfileAndCollection = async () => {
       try {
         let token = localStorage.getItem("token");
         if (token && !token.startsWith("Bearer ")) token = `Bearer ${token}`;
         const response = await axios.get(`${API_BASE_URL}/auth/profile`, {
           headers: { Authorization: token },
         });
-        setUser(response.data);
+        const userData = response.data;
+        // Buscar coleção real do usuário
+        let collection = [];
+        let favorites = [];
+        if (userData?._id) {
+          try {
+            const colRes = await axios.get(`${API_BASE_URL}/collection/${userData._id}`, {
+              headers: { Authorization: token },
+            });
+            collection = colRes.data?.collection || [];
+          } catch (e) {
+            // Se der erro, ignora e segue
+          }
+          try {
+            const favRes = await axios.get(`${API_BASE_URL}/wishlist/user/${userData._id}`, {
+              headers: { Authorization: token },
+            });
+            favorites = favRes.data?.favorites || [];
+          } catch (e) {
+            // Se der erro, ignora e segue
+          }
+        }
+        setUser({ ...userData, collection, favorites });
       } catch (error) {
         // se não estiver logado, só ignora
       }
@@ -70,7 +92,7 @@ const HomePage = () => {
       }
     };
 
-    fetchProfile();
+    fetchProfileAndCollection();
     loadCategories();
   }, []);
 
