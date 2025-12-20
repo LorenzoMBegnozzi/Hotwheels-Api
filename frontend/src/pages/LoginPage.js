@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../utils/constants";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../css/LoginPage.css";
@@ -28,7 +29,7 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      const res = await axios.post(`${API_BASE_URL}/auth/login`, {
         email,
         password,
       });
@@ -61,7 +62,7 @@ const LoginPage = () => {
       return Swal.fire("Erro!", "As senhas não coincidem.", "error");
     }
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
+      await axios.post(`${API_BASE_URL}/auth/register`, {
         name,
         email,
         password,
@@ -77,7 +78,7 @@ const LoginPage = () => {
   const handleConfirmSignup = async () => {
     if (!signupCode) return Swal.fire("Erro!", "Informe o código recebido.", "error");
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/confirm-signup", {
+      const res = await axios.post(`${API_BASE_URL}/auth/confirm-signup`, {
         name,
         email,
         password,
@@ -99,7 +100,7 @@ const LoginPage = () => {
   const handleRequestResetCode = async () => {
     if (!email) return Swal.fire("Erro!", "Informe o email da conta.", "error");
     try {
-      await axios.post("http://localhost:5000/api/auth/request-reset-code", { email });
+      await axios.post(`${API_BASE_URL}/auth/request-reset-code`, { email });
       setResetCodeSent(true);
       Swal.fire("Verificação", "Código enviado ao seu email.", "success");
     } catch (err) {
@@ -113,7 +114,7 @@ const LoginPage = () => {
       return Swal.fire("Erro!", "As senhas não coincidem.", "error");
     }
     try {
-      await axios.post("http://localhost:5000/api/auth/confirm-reset", {
+      await axios.post(`${API_BASE_URL}/auth/confirm-reset`, {
         email,
         code: resetCode,
         newPassword,
