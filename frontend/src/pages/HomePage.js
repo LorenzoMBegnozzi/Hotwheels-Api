@@ -209,7 +209,7 @@ const HomePage = () => {
       {/* Header igual ao template */}
 
       <header className="hw-header">
-        <div className="logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
+        <div className="logo" style={{ cursor: "default" }}>
           <div className="logo-text">
             Hot Wheels <span className="logo-accent">Collector</span>
           </div>
