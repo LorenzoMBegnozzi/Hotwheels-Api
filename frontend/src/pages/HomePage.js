@@ -15,6 +15,7 @@ import FIXED_CATEGORY_FILTERS from "../utils/categories";
 import { isAuthenticated } from "../utils/auth";
 
 const HomePage = () => {
+  const [popupImage, setPopupImage] = useState(null);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
@@ -26,7 +27,7 @@ const HomePage = () => {
   const [activeTab, setActiveTab] = useState("hotwheels");
   const [userResults, setUserResults] = useState([]);
 
-  const itemsPerPage = 24; // no template fica melhor 12/24 ao invés de 100
+  const itemsPerPage = 24;
   const navigate = useNavigate();
 
   const currentYear = new Date().getFullYear();
@@ -41,34 +42,35 @@ const HomePage = () => {
       try {
         let token = localStorage.getItem("token");
         if (token && !token.startsWith("Bearer ")) token = `Bearer ${token}`;
+
         const response = await axios.get(`${API_BASE_URL}/auth/profile`, {
           headers: { Authorization: token },
         });
+
         const userData = response.data;
-        // Buscar coleção real do usuário
+
         let collection = [];
         let favorites = [];
+
         if (userData?._id) {
           try {
             const colRes = await axios.get(`${API_BASE_URL}/collection/${userData._id}`, {
               headers: { Authorization: token },
             });
             collection = colRes.data?.collection || [];
-          } catch (e) {
-            // Se der erro, ignora e segue
-          }
+          } catch (e) {}
+
           try {
             const favRes = await axios.get(`${API_BASE_URL}/wishlist/user/${userData._id}`, {
               headers: { Authorization: token },
             });
             favorites = favRes.data?.favorites || [];
-          } catch (e) {
-            // Se der erro, ignora e segue
-          }
+          } catch (e) {}
         }
+
         setUser({ ...userData, collection, favorites });
       } catch (error) {
-        // se não estiver logado, só ignora
+        // não logado -> ignora
       }
     };
 
@@ -80,12 +82,14 @@ const HomePage = () => {
         const cats = await fetchHotwheelCategories();
         const seen = new Set(base);
         const extras = [];
+
         (cats || []).forEach((c) => {
           if (c && !seen.has(c)) {
             seen.add(c);
             extras.push(c);
           }
         });
+
         if (extras.length) setCategories([...base, ...extras.sort((a, b) => a.localeCompare(b))]);
       } catch (e) {
         console.error("Erro ao carregar categorias:", e);
@@ -110,6 +114,7 @@ const HomePage = () => {
     try {
       const hotWheels = await searchHotWheels(search, { category: categoryFilter });
       setResults(hotWheels || []);
+
       if (showAlert) {
         Swal.fire({
           icon: "success",
@@ -121,9 +126,7 @@ const HomePage = () => {
       }
     } catch (error) {
       console.error("Erro ao buscar Hot Wheels:", error);
-      if (showAlert) {
-        Swal.fire("Erro!", "Erro ao buscar Hot Wheels. Tente novamente.", "error");
-      }
+      if (showAlert) Swal.fire("Erro!", "Erro ao buscar Hot Wheels. Tente novamente.", "error");
     }
   };
 
@@ -180,11 +183,11 @@ const HomePage = () => {
   const goToFirstPage = () => setCurrentPage(1);
   const goToLastPage = () => setCurrentPage(totalPages);
 
-  // ==================== Stats (igual template) ====================
+  // ==================== Stats ====================
   const stats = useMemo(() => {
-    const totalModels = results.length; // você pode trocar por total global se tiver endpoint
+    const totalModels = results.length;
     const myCollection = user?.collection?.length ?? 0;
-    const wishlist = user?.favorites?.length ?? 0; // se no seu backend wishlist tiver outro nome, troca aqui
+    const wishlist = user?.favorites?.length ?? 0;
     const lastAdds = Math.min(myCollection, 15);
     return { totalModels, myCollection, wishlist, lastAdds };
   }, [results.length, user]);
@@ -194,20 +197,14 @@ const HomePage = () => {
     else handleSearchUsers();
   };
 
-  // Buscar Hot Wheels ou Usuários automaticamente ao trocar de aba
   useEffect(() => {
-    if (activeTab === "hotwheels") {
-      handleSearchHotWheels(false); // não mostrar alerta na busca inicial
-    } else if (activeTab === "users") {
-      handleSearchUsers(); // busca usuários automaticamente
-    }
+    if (activeTab === "hotwheels") handleSearchHotWheels(false);
+    else if (activeTab === "users") handleSearchUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   return (
     <div className="hw-page">
-      {/* Header igual ao template */}
-
       <header className="hw-header">
         <div className="logo" style={{ cursor: "default" }}>
           <div className="logo-text">
@@ -238,18 +235,12 @@ const HomePage = () => {
             </button>
           )}
 
-          {/* Perfil */}
-          <div
-            className="profile-icon"
-            title="Meu perfil"
-            onClick={() => navigate("/profile")}
-          >
+          <div className="profile-icon" title="Meu perfil" onClick={() => navigate("/profile")}>
             {user?.name?.[0]?.toUpperCase() || "U"}
           </div>
         </div>
       </header>
 
-      {/* Stats Bar igual template */}
       <div className="stats-bar">
         <div className="stat-card">
           <div className="stat-value">{stats.totalModels}</div>
@@ -269,7 +260,6 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Search Container igual template */}
       <div className="search-container">
         <div className="search-bar">
           <input
@@ -280,125 +270,120 @@ const HomePage = () => {
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && onSearchClick()}
           />
-
-          {activeTab === "hotwheels" && (
-            <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
-              <option value="">Todos os Anos</option>
-              {years.map((y) => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
-          )}
-
-          {activeTab === "hotwheels" && (
-            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
-              <option value="">Todas Categorias</option>
-              {categories.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-          )}
-
-          <button className="search-btn" onClick={onSearchClick}>
-            Buscar
-          </button>
         </div>
       </div>
 
-      {/* Action Buttons igual template (só pra hotwheels) */}
-      {activeTab === "hotwheels" && (
-        <div className="action-buttons">
-          <button className="action-btn collection-btn" onClick={() => navigate("/minha-colecao")}>
-            Minha Coleção
-          </button>
-          <button className="action-btn wishlist-btn" onClick={() => navigate("/lista-de-desejos")}>
-            Lista de Desejos
-          </button>
+      <div className="cards-grid">
+        {activeTab === "hotwheels"
+          ? currentItems.map((car) => (
+              <div className="card" key={car._id}>
+                <div
+                  className="card-image"
+                  onClick={() => car.imageUrl && setPopupImage(car.imageUrl)}
+                  style={{ cursor: car.imageUrl ? "pointer" : "default" }}
+                >
+                  {car.imageUrl ? (
+                    <img
+                      src={car.imageUrl}
+                      alt={car.name || car.modelName || "Hot Wheels"}
+                      className="card-img"
+                    />
+                  ) : (
+                    <div className="card-placeholder">🏎️</div>
+                  )}
+                </div>
+
+                <div className="card-content">
+                  <div className="card-title">
+                    {car.name || car.modelName || car.title || "Modelo"}
+                  </div>
+                  <div className="card-year">Ano: {car.year ?? "-"}</div>
+
+                  <div className="card-buttons">
+                    <button
+                      className="card-btn add-collection"
+                      onClick={() => handleAddToCollection(car._id)}
+                    >
+                      Adicionar
+                    </button>
+                    <button
+                      className="card-btn add-wishlist"
+                      onClick={() => handleAddToWishlist(car._id)}
+                    >
+                      Desejar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          : currentItems.map((u) => (
+              <div className="card" key={u._id}>
+                <div className="card-image">
+                  <img
+                    src={u.profilePicture || DEFAULT_PROFILE_IMAGE}
+                    alt={u.name}
+                    className="user-avatar"
+                  />
+                </div>
+
+                <div className="card-content">
+                  <div className="card-title">{u.name}</div>
+                  <div className="card-year">
+                    Coleção: {u.collection?.length || 0} • Favoritos: {u.favorites?.length || 0}
+                  </div>
+
+                  <div className="card-buttons">
+                    <button
+                      className="card-btn add-collection"
+                      onClick={() => navigate(`/user/${u._id}`)}
+                    >
+                      Ver Perfil
+                    </button>
+                    <button className="card-btn add-wishlist" onClick={() => setActiveTab("hotwheels")}>
+                      Voltar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+      </div>
+
+      {popupImage && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.7)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+          onClick={() => setPopupImage(null)}
+        >
+          <img
+            src={popupImage}
+            alt="Hot Wheels grande"
+            style={{
+              width: "400px",
+              height: "400px",
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+              objectFit: "contain",
+              borderRadius: 12,
+              boxShadow: "0 4px 32px #0008",
+              background: "#fff",
+              padding: 8,
+              display: "block",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
 
-      {/* Cards Grid igual template */}
-      <div className="cards-grid">
-        {activeTab === "hotwheels" ? (
-          currentItems.map((car) => (
-            <div className="card" key={car._id}>
-              <div className="card-image">
-                {/* Se você tiver imagem, pode usar <img>. Senão fica no emoji do template */}
-                {car.imageUrl ? (
-                  <img
-                    src={car.imageUrl}
-                    alt={car.name || car.modelName || "Hot Wheels"}
-                    className="card-img"
-                  />
-                ) : (
-                  <div className="card-placeholder">🏎️</div>
-                )}
-              </div>
-
-              <div className="card-content">
-                <div className="card-title">
-                  {car.name || car.modelName || car.title || "Modelo"}
-                </div>
-                <div className="card-year">Ano: {car.year ?? "-"}</div>
-
-                <div className="card-buttons">
-                  <button
-                    className="card-btn add-collection"
-                    onClick={() => handleAddToCollection(car._id)}
-                  >
-                    Adicionar
-                  </button>
-                  <button
-                    className="card-btn add-wishlist"
-                    onClick={() => handleAddToWishlist(car._id)}
-                  >
-                    Desejar
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          currentItems.map((u) => (
-            <div className="card" key={u._id}>
-              <div className="card-image">
-                <img
-                  src={u.profilePicture || DEFAULT_PROFILE_IMAGE}
-                  alt={u.name}
-                  className="user-avatar"
-                />
-              </div>
-
-              <div className="card-content">
-                <div className="card-title">{u.name}</div>
-                <div className="card-year">
-                  Coleção: {u.collection?.length || 0} • Favoritos: {u.favorites?.length || 0}
-                </div>
-
-                <div className="card-buttons">
-                  <button
-                    className="card-btn add-collection"
-                    onClick={() => navigate(`/user/${u._id}`)}
-                  >
-                    Ver Perfil
-                  </button>
-                  <button
-                    className="card-btn add-wishlist"
-                    onClick={() => {
-                      // se quiser: voltar pra aba hotwheels com o nome do user na busca, etc.
-                      setActiveTab("hotwheels");
-                    }}
-                  >
-                    Voltar
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Pagination igual template */}
       <div className="pagination">
         <button className="pagination-btn" onClick={goToFirstPage} disabled={currentPage === 1}>
           Primeira
@@ -419,7 +404,6 @@ const HomePage = () => {
         </button>
       </div>
 
-      {/* Seu FAB do reconhecedor (mantém) */}
       <img
         src="/reconhecedor.png"
         alt="Reconhecer"
