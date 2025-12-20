@@ -235,6 +235,22 @@ const HomePage = () => {
             </button>
           )}
 
+          <button
+            className="user-search-btn"
+            onClick={() => navigate('/minha-colecao')}
+            title="Minha Coleção"
+          >
+            Minha Coleção
+          </button>
+
+          <button
+            className="user-search-btn"
+            onClick={() => navigate('/lista-de-desejos')}
+            title="Minha Lista de Desejos"
+          >
+            Lista de Desejos
+          </button>
+
           <div className="profile-icon" title="Meu perfil" onClick={() => navigate("/profile")}>
             {user?.name?.[0]?.toUpperCase() || "U"}
           </div>
