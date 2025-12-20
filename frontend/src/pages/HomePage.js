@@ -195,7 +195,41 @@ const HomePage = () => {
         Swal.fire("Atenção", "Você precisa estar logado para adicionar à lista de desejos!", "warning");
         return;
       }
-      const response = await addToWishlist(hotWheelId);
+      // pedir prioridade ao usuário antes de adicionar (lista clicável)
+      const html = `
+        <div style="display:flex;flex-direction:column;gap:8px;text-align:left">
+          <button data-priority="high" class="swal-priority-btn" style="padding:10px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer">Alta</button>
+          <button data-priority="medium" class="swal-priority-btn" style="padding:10px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer">Média</button>
+          <button data-priority="low" class="swal-priority-btn" style="padding:10px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer">Baixa</button>
+        </div>
+      `;
+
+      const { isConfirmed, value: chosen } = await Swal.fire({
+        title: 'Escolha a prioridade',
+        html,
+        showCancelButton: true,
+        showConfirmButton: false,
+        willOpen: () => {
+          const container = Swal.getHtmlContainer();
+          if (!container) return;
+          container.querySelectorAll('.swal-priority-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const p = btn.getAttribute('data-priority');
+              // fechar o modal retornando o valor via resolve
+              Swal.close();
+              // armazenar escolhido em dataset temporário para recuperar abaixo
+              container.setAttribute('data-chosen-priority', p);
+            });
+          });
+        }
+      });
+
+      // recuperar o escolhido
+      const swalContainer = Swal.getHtmlContainer();
+      const priority = swalContainer ? swalContainer.getAttribute('data-chosen-priority') : null;
+      if (!priority) return; // cancelado ou nada escolhido
+
+      const response = await addToWishlist(hotWheelId, priority);
       Swal.fire("Sucesso", response.message, "success");
 
       setUser((prev) => {
@@ -203,7 +237,8 @@ const HomePage = () => {
         if (response?.favorites) return { ...prev, favorites: response.favorites };
         const exists = (prev.favorites || []).some((c) => String(c._id || c) === String(hotWheelId));
         if (exists) return prev;
-        return { ...prev, favorites: [...(prev.favorites || []), hotWheelId] };
+        // inserir objeto reduzido com prioridade para manter consistência local
+        return { ...prev, favorites: [...(prev.favorites || []), { _id: hotWheelId, priority }] };
       });
     } catch (error) {
       console.error("Erro ao adicionar à lista de desejos:", error);

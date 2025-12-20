@@ -177,12 +177,12 @@ export const removeFromCollection = async (userId, carId) => {
 };
 
 // Wishlist management
-export const addToWishlist = async (hotWheelId) => {
+export const addToWishlist = async (hotWheelId, priority = 'medium') => {
   try {
     const response = await fetch(`${API_BASE_URL}/wishlist`, {
       method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ hotWheelId })
+      body: JSON.stringify({ hotWheelId, priority })
     });
 
     if (!response.ok) {
