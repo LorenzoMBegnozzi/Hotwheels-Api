@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "../css/HomePage.css";
-import "../css/UserSearch.css"; // estilos específicos para busca de usuários
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import { DEFAULT_PROFILE_IMAGE, API_BASE_URL } from "../utils/constants";
-import CarItem from "../components/common/CarItem";
-import { searchHotWheels, searchUsers, addToCollection, addToWishlist, fetchHotwheelCategories } from "../utils/api";
+import {
+  searchHotWheels,
+  searchUsers,
+  addToCollection,
+  addToWishlist,
+  fetchHotwheelCategories,
+} from "../utils/api";
 import FIXED_CATEGORY_FILTERS from "../utils/categories";
 import { isAuthenticated } from "../utils/auth";
 
@@ -20,13 +23,19 @@ const HomePage = () => {
   const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [user, setUser] = useState(null);
-  const [activeTab, setActiveTab] = useState("hotwheels"); // nova aba
-  const [userResults, setUserResults] = useState([]); // resultados da busca de usuários
-  const itemsPerPage = 100;
-  const navigate = useNavigate();
-  const years = Array.from({ length: 2025 - 1969 + 1 }, (_, i) => 2025 - i);
+  const [activeTab, setActiveTab] = useState("hotwheels");
+  const [userResults, setUserResults] = useState([]);
 
-  // Carregar perfil do usuário logado
+  const itemsPerPage = 24; // no template fica melhor 12/24 ao invés de 100
+  const navigate = useNavigate();
+
+  const currentYear = new Date().getFullYear();
+  const years = useMemo(
+    () => Array.from({ length: currentYear - 1969 + 1 }, (_, i) => currentYear - i),
+    [currentYear]
+  );
+
+  // ==================== Perfil + categorias ====================
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -37,22 +46,19 @@ const HomePage = () => {
         });
         setUser(response.data);
       } catch (error) {
-        console.error("Erro ao carregar perfil:", error);
+        // se não estiver logado, só ignora
       }
     };
-    fetchProfile();
-    // carregar categorias disponíveis (fixas no front, mesclando extras do backend se houver)
+
     const loadCategories = async () => {
       try {
-        // começa com a lista fixa na ordem desejada
         const base = [...FIXED_CATEGORY_FILTERS];
         setCategories(base);
 
-        // tenta buscar categorias do backend para incluir extras, sem alterar a ordem base
         const cats = await fetchHotwheelCategories();
         const seen = new Set(base);
         const extras = [];
-        cats.forEach((c) => {
+        (cats || []).forEach((c) => {
           if (c && !seen.has(c)) {
             seen.add(c);
             extras.push(c);
@@ -63,27 +69,32 @@ const HomePage = () => {
         console.error("Erro ao carregar categorias:", e);
       }
     };
+
+    fetchProfile();
     loadCategories();
   }, []);
 
-  // Filtrar Hot Wheels por ano
+  // ==================== Filtrar por ano ====================
   useEffect(() => {
-    if (yearFilter === "") {
-      setFilteredResults([...results]);
-    } else {
-      setFilteredResults(results.filter((car) => car.year.toString() === yearFilter));
-    }
+    if (!yearFilter) setFilteredResults([...results]);
+    else setFilteredResults(results.filter((car) => String(car.year) === String(yearFilter)));
     setCurrentPage(1);
   }, [yearFilter, results]);
 
-  // Scroll para o topo ao mudar página
   useEffect(() => window.scrollTo(0, 0), [currentPage]);
 
-  // ==================== Funções de Hot Wheels ====================
+  // ==================== Hot Wheels ====================
   const handleSearchHotWheels = async () => {
     try {
       const hotWheels = await searchHotWheels(search, { category: categoryFilter });
-      setResults(hotWheels);
+      setResults(hotWheels || []);
+      Swal.fire({
+        icon: "success",
+        title: "Busca concluída",
+        text: `${(hotWheels || []).length} resultado(s).`,
+        timer: 1200,
+        showConfirmButton: false,
+      });
     } catch (error) {
       console.error("Erro ao buscar Hot Wheels:", error);
       Swal.fire("Erro!", "Erro ao buscar Hot Wheels. Tente novamente.", "error");
@@ -118,24 +129,11 @@ const HomePage = () => {
     }
   };
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredResults.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
-
-  const goToNextPage = () => setCurrentPage(Math.min(currentPage + 1, totalPages));
-  const goToPrevPage = () => setCurrentPage(Math.max(currentPage - 1, 1));
-  const goToFirstPage = () => setCurrentPage(1);
-  const goToLastPage = () => setCurrentPage(totalPages);
-
+  // ==================== Usuários ====================
   const handleSearchUsers = async () => {
     try {
       const users = await searchUsers(search);
-
-      // Filtra para não mostrar o usuário logado
-      const filteredUsers = users.filter(u => u._id !== user?._id);
-
+      const filteredUsers = (users || []).filter((u) => u._id !== user?._id);
       setUserResults(filteredUsers);
       setCurrentPage(1);
     } catch (error) {
@@ -144,151 +142,254 @@ const HomePage = () => {
     }
   };
 
-  const currentUserItems = userResults.slice(indexOfFirstItem, indexOfLastItem);
-  const totalUserPages = Math.ceil(userResults.length / itemsPerPage);
+  // ==================== Paginação ====================
+  const list = activeTab === "hotwheels" ? filteredResults : userResults;
+  const totalPages = Math.max(1, Math.ceil(list.length / itemsPerPage));
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = list.slice(indexOfFirstItem, indexOfLastItem);
 
-  // ==================== Renderização ====================
+  const goToNextPage = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
+  const goToPrevPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
+  const goToFirstPage = () => setCurrentPage(1);
+  const goToLastPage = () => setCurrentPage(totalPages);
+
+  // ==================== Stats (igual template) ====================
+  const stats = useMemo(() => {
+    const totalModels = results.length; // você pode trocar por total global se tiver endpoint
+    const myCollection = user?.collection?.length ?? 0;
+    const wishlist = user?.favorites?.length ?? 0; // se no seu backend wishlist tiver outro nome, troca aqui
+    const lastAdds = Math.min(myCollection, 15);
+    return { totalModels, myCollection, wishlist, lastAdds };
+  }, [results.length, user]);
+
+  const onSearchClick = () => {
+    if (activeTab === "hotwheels") handleSearchHotWheels();
+    else handleSearchUsers();
+  };
+
   return (
-    <div className="home-page home-container">
-      <div className="header" style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between' }}>
-        {user && (
-          <div className="profile-section" onClick={() => navigate("/profile")}>
-            <img
-              src={user.profilePicture || DEFAULT_PROFILE_IMAGE}
-              alt={user.name}
-              className="profile-icon"
-              style={{ width: 36, height: 36, borderRadius: "50%" }}
-            />
+    <div className="hw-page">
+      {/* Header igual ao template */}
+
+      <header className="hw-header">
+        <div className="logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
+          <div className="logo-text">
+            Hot Wheels <span className="logo-accent">Collector</span>
           </div>
-        )}
-        {/* Abas dentro do header para não ficarem atrás */}
-        <div className="tabs" style={{ flex: 1, marginLeft: '8px' }}>
-          <button
-            className={`tab-button ${activeTab === "hotwheels" ? "active" : ""}`}
-            onClick={() => setActiveTab("hotwheels")}
+        </div>
+
+        <div className="header-actions">
+          {activeTab === "hotwheels" ? (
+            <button
+              className="user-search-btn"
+              onClick={() => {
+                setActiveTab("users");
+                setCurrentPage(1);
+              }}
+            >
+              Pesquisar Usuários
+            </button>
+          ) : (
+            <button
+              className="user-search-btn"
+              onClick={() => {
+                setActiveTab("hotwheels");
+                setCurrentPage(1);
+              }}
+            >
+              Pesquisar Carrinhos
+            </button>
+          )}
+
+          {/* Perfil */}
+          <div
+            className="profile-icon"
+            title="Meu perfil"
+            onClick={() => navigate("/profile")}
           >
-            Hot Wheels
-          </button>
-          <button
-            className={`tab-button ${activeTab === "users" ? "active" : ""}`}
-            onClick={() => setActiveTab("users")}
-          >
-            Pesquisar Usuários
-          </button>
+            {user?.name?.[0]?.toUpperCase() || "U"}
+          </div>
+        </div>
+      </header>
+
+      {/* Stats Bar igual template */}
+      <div className="stats-bar">
+        <div className="stat-card">
+          <div className="stat-value">{stats.totalModels}</div>
+          <div className="stat-label">Total de Modelos</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value">{stats.myCollection}</div>
+          <div className="stat-label">Minha Coleção</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value">{stats.wishlist}</div>
+          <div className="stat-label">Lista de Desejos</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value">{stats.lastAdds}</div>
+          <div className="stat-label">Últimas Adições</div>
         </div>
       </div>
-      {/* Botão/flutuante do reconhecedor fora do header */}
-      <img
-        src="/reconhecedor.png"
-        alt="Reconhecer"
-        className="recognizer-fab"
-        onClick={() => navigate('/reconhecedor')}
-      />
 
-      {/* Abas movidas para dentro do header */}
-
-      {/* ==================== Busca ==================== */}
-      <div className="search-section">
-        <div className="search-container">
-          <div className="search-input-container">
-            <input
-              type="text"
-              className="search-input"
-              placeholder={activeTab === "hotwheels" ? "Digite o nome do modelo..." : "Digite o nome do usuário..."}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <span className="search-icon">🔍</span>
-          </div>
+      {/* Search Container igual template */}
+      <div className="search-container">
+        <div className="search-bar">
+          <input
+            type="text"
+            className="search-input"
+            placeholder={activeTab === "hotwheels" ? "Buscar modelo..." : "Buscar usuário..."}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && onSearchClick()}
+          />
 
           {activeTab === "hotwheels" && (
-            <select
-              id="yearFilter"
-              value={yearFilter}
-              onChange={(e) => setYearFilter(e.target.value)}
-              className="year-filter-select"
-            >
-              <option value="">Anos</option>
-              {years.map((year) => (
-                <option key={year} value={year}>{year}</option>
+            <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
+              <option value="">Todos os Anos</option>
+              {years.map((y) => (
+                <option key={y} value={y}>{y}</option>
               ))}
             </select>
           )}
 
           {activeTab === "hotwheels" && (
-            <select
-              id="categoryFilter"
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="year-filter-select"
-            >
-              <option value="">Categorias</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
+            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+              <option value="">Todas Categorias</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
           )}
 
-          <button className="buscar-button" onClick={activeTab === "hotwheels" ? handleSearchHotWheels : handleSearchUsers}>
+          <button className="search-btn" onClick={onSearchClick}>
             Buscar
           </button>
         </div>
       </div>
 
-      {/* ==================== Resultados ==================== */}
-      {activeTab === "hotwheels" ? (
-        <>
-          <div className="collection-wishlist-buttons">
-            <button className="search-button" onClick={() => navigate("/minha-colecao")}>
-              Ver Minha Coleção
-            </button>
-            <button className="search-button" onClick={() => navigate("/lista-de-desejos")}>
-              Ver Lista de Desejos
-            </button>
-          </div>
-
-          <div className="results-container">
-            {currentItems.map((car) => (
-              <CarItem
-                key={car._id}
-                car={car}
-                onAddToCollection={handleAddToCollection}
-                onAddToWishlist={handleAddToWishlist}
-                showActions={true}
-              />
-            ))}
-          </div>
-
-          <div className="pagination">
-            <button onClick={goToFirstPage} disabled={currentPage === 1} className="pagination-button">Primeira</button>
-            <button onClick={goToPrevPage} disabled={currentPage === 1} className="pagination-button">Anterior</button>
-            <span>Página {currentPage} de {totalPages}</span>
-            <button onClick={goToNextPage} disabled={currentPage === totalPages} className="pagination-button">Próxima</button>
-            <button onClick={goToLastPage} disabled={currentPage === totalPages} className="pagination-button">Última</button>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="results-container">
-            {currentUserItems.map((u) => (
-              <div key={u._id} className="user-item">
-                <img src={u.profilePicture || DEFAULT_PROFILE_IMAGE} alt={u.name} className="user-image" />
-                <h3>{u.name}</h3>
-                <p>Coleção: {u.collection?.length || 0} | Favoritos: {u.favorites?.length || 0}</p>
-                <button className="search-button" onClick={() => navigate(`/user/${u._id}`)}>Ver Perfil</button>
-              </div>
-            ))}
-          </div>
-
-          <div className="pagination">
-            <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} className="pagination-button">Primeira</button>
-            <button onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))} disabled={currentPage === 1} className="pagination-button">Anterior</button>
-            <span>Página {currentPage} de {totalUserPages}</span>
-            <button onClick={() => setCurrentPage(Math.min(currentPage + 1, totalUserPages))} disabled={currentPage === totalUserPages} className="pagination-button">Próxima</button>
-            <button onClick={() => setCurrentPage(totalUserPages)} disabled={currentPage === totalUserPages} className="pagination-button">Última</button>
-          </div>
-        </>
+      {/* Action Buttons igual template (só pra hotwheels) */}
+      {activeTab === "hotwheels" && (
+        <div className="action-buttons">
+          <button className="action-btn collection-btn" onClick={() => navigate("/minha-colecao")}>
+            Minha Coleção
+          </button>
+          <button className="action-btn wishlist-btn" onClick={() => navigate("/lista-de-desejos")}>
+            Lista de Desejos
+          </button>
+        </div>
       )}
+
+      {/* Cards Grid igual template */}
+      <div className="cards-grid">
+        {activeTab === "hotwheels" ? (
+          currentItems.map((car) => (
+            <div className="card" key={car._id}>
+              <div className="card-image">
+                {/* Se você tiver imagem, pode usar <img>. Senão fica no emoji do template */}
+                {car.imageUrl ? (
+                  <img
+                    src={car.imageUrl}
+                    alt={car.name || car.modelName || "Hot Wheels"}
+                    className="card-img"
+                  />
+                ) : (
+                  <div className="card-placeholder">🏎️</div>
+                )}
+              </div>
+
+              <div className="card-content">
+                <div className="card-title">
+                  {car.name || car.modelName || car.title || "Modelo"}
+                </div>
+                <div className="card-year">Ano: {car.year ?? "-"}</div>
+
+                <div className="card-buttons">
+                  <button
+                    className="card-btn add-collection"
+                    onClick={() => handleAddToCollection(car._id)}
+                  >
+                    Adicionar
+                  </button>
+                  <button
+                    className="card-btn add-wishlist"
+                    onClick={() => handleAddToWishlist(car._id)}
+                  >
+                    Desejar
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          currentItems.map((u) => (
+            <div className="card" key={u._id}>
+              <div className="card-image">
+                <img
+                  src={u.profilePicture || DEFAULT_PROFILE_IMAGE}
+                  alt={u.name}
+                  className="user-avatar"
+                />
+              </div>
+
+              <div className="card-content">
+                <div className="card-title">{u.name}</div>
+                <div className="card-year">
+                  Coleção: {u.collection?.length || 0} • Favoritos: {u.favorites?.length || 0}
+                </div>
+
+                <div className="card-buttons">
+                  <button
+                    className="card-btn add-collection"
+                    onClick={() => navigate(`/user/${u._id}`)}
+                  >
+                    Ver Perfil
+                  </button>
+                  <button
+                    className="card-btn add-wishlist"
+                    onClick={() => {
+                      // se quiser: voltar pra aba hotwheels com o nome do user na busca, etc.
+                      setActiveTab("hotwheels");
+                    }}
+                  >
+                    Voltar
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Pagination igual template */}
+      <div className="pagination">
+        <button className="pagination-btn" onClick={goToFirstPage} disabled={currentPage === 1}>
+          Primeira
+        </button>
+        <button className="pagination-btn" onClick={goToPrevPage} disabled={currentPage === 1}>
+          Anterior
+        </button>
+
+        <div className="pagination-info">
+          Página {currentPage} de {totalPages}
+        </div>
+
+        <button className="pagination-btn" onClick={goToNextPage} disabled={currentPage === totalPages}>
+          Próxima
+        </button>
+        <button className="pagination-btn" onClick={goToLastPage} disabled={currentPage === totalPages}>
+          Última
+        </button>
+      </div>
+
+      {/* Seu FAB do reconhecedor (mantém) */}
+      <img
+        src="/reconhecedor.png"
+        alt="Reconhecer"
+        className="recognizer-fab"
+        onClick={() => navigate("/reconhecedor")}
+      />
     </div>
   );
 };
