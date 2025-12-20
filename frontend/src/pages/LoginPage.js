@@ -178,7 +178,7 @@ const LoginPage = () => {
           </div>
 
           <h1 className="logo-title">
-            Hot Wheels <span className="logo-accent">Collector</span>
+            Diecast <span className="logo-accent">Social</span>
           </h1>
           <p className="logo-subtitle">{subtitle}</p>
         </div>
