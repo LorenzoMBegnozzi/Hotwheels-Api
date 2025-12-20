@@ -270,6 +270,38 @@ const HomePage = () => {
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && onSearchClick()}
           />
+
+          {activeTab === "hotwheels" && (
+            <>
+              <select
+                value={categoryFilter}
+                onChange={(e) => {
+                  setCategoryFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Todas Categorias</option>
+                {categories.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+
+              <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
+                <option value="">Todos os Anos</option>
+                {years.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
+
+          <button className="search-btn" onClick={onSearchClick}>
+            Buscar
+          </button>
         </div>
       </div>
 
