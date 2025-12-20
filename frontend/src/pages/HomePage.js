@@ -261,7 +261,7 @@ const HomePage = () => {
       <header className="hw-header">
         <div className="logo" style={{ cursor: "default" }}>
           <div className="logo-text">
-            Hot Wheels <span className="logo-accent">Collector</span>
+            Diecast <span className="logo-accent">Social</span>
           </div>
         </div>
 
