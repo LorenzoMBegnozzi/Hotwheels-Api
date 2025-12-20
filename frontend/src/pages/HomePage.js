@@ -446,7 +446,11 @@ const HomePage = () => {
                 </div>
 
                 <div className="card-content">
-                  <div className="card-title">
+                  <div
+                    className="card-title"
+                    style={{ color: "#000000ff" }}
+                    title={car.name || car.modelName || car.title}
+                  >
                     {car.name || car.modelName || car.title || "Modelo"}
                   </div>
                   <div className="card-year">Ano: {car.year ?? "-"}</div>
