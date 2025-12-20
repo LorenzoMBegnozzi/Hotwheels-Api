@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../css/LoginPage.css";
 import Logo from "../css/logo2.png";
@@ -26,6 +26,16 @@ const LoginPage = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // if route is /register, open register mode
+  React.useEffect(() => {
+    if (location?.pathname === '/register') {
+      setIsRegistering(true);
+      setRegisterCodeSent(false);
+      setIsResetting(false);
+    }
+  }, [location?.pathname]);
 
   const handleLogin = async () => {
     try {
