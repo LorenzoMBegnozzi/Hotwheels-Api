@@ -209,7 +209,7 @@ const WishListPage = () => {
       <header className="wl-header">
         <div className="logo">
           <div className="logo-text">
-            Hot Wheels <span className="logo-accent">Collector</span>
+            Diecast <span className="logo-accent">Social</span>
           </div>
         </div>
 
