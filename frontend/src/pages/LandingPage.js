@@ -22,7 +22,12 @@ const LandingPage = () => {
 
       <section className="hero">
         <div className="hero-content">
-          <div className="hero-badge">🚀 A Rede Social dos Colecionadores</div>
+          <div className="hero-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M2 12a10 10 0 1010-10A10 10 0 002 12zm15.7-4.3l-4.9 4.9-2.1-.7-.7-2.1 4.9-4.9L17.7 7.7z" />
+            </svg>
+            A Rede Social dos Colecionadores
+          </div>
           <h1 className="hero-title">
             Organize sua coleção de<br />
             <span className="hero-gradient">Miniaturas</span>
@@ -62,32 +67,56 @@ const LandingPage = () => {
         </div>
         <div className="features-grid">
           <div className="feature-card">
-            <div className="feature-icon">📦</div>
+            <div className="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M21 8V7l-9-4-9 4v1l9 4 9-4zM3 10.2v6.8l8 3.6 8-3.6v-6.8l-8 3.6-8-3.6z" />
+              </svg>
+            </div>
             <h3 className="feature-title">Catálogo Completo</h3>
             <p className="feature-description">Organize sua coleção com filtros por ano, categoria e fabricante. Adicione fotos e informações detalhadas de cada modelo.</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">⭐</div>
+            <div className="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M12 .587l3.668 7.431L24 9.748l-6 5.847L19.335 24 12 20.201 4.665 24 6 15.595 0 9.748l8.332-1.73L12 .587z" />
+              </svg>
+            </div>
             <h3 className="feature-title">Lista de Desejos</h3>
             <p className="feature-description">Mantenha uma lista dos modelos que deseja adquirir com prioridades e estimativas de preço.</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">👥</div>
+            <div className="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M16 11c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-8 0c1.657 0 3-1.343 3-3S9.657 5 8 5 5 6.343 5 8s1.343 3 3 3zm0 2c-2.667 0-8 1.333-8 4v3h14v-3c0-2.667-5.333-4-6-4zm8 0c-.29 0-.63.02-1 .06 1.16.84 2 2 2 3.94v3h6v-3c0-2.667-5.333-4-7-4z" />
+              </svg>
+            </div>
             <h3 className="feature-title">Rede Social</h3>
             <p className="feature-description">Conecte-se com outros colecionadores, compartilhe sua coleção e descubra novos modelos.</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">📊</div>
+            <div className="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M3 3v18h18v-2H5V3H3zm6 8h2v7H9v-7zm4-4h2v11h-2V7zm4 6h2v5h-2v-5z" />
+              </svg>
+            </div>
             <h3 className="feature-title">Estatísticas</h3>
             <p className="feature-description">Acompanhe o crescimento da sua coleção com gráficos e relatórios detalhados.</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">🔍</div>
+            <div className="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M11 4a7 7 0 105.292 11.708l4.5 4.5 1.414-1.414-4.5-4.5A7 7 0 0011 4zm0 2a5 5 0 110 10A5 5 0 0111 6z" fill="currentColor" />
+              </svg>
+            </div>
             <h3 className="feature-title">Busca Avançada</h3>
             <p className="feature-description">Encontre modelos específicos rapidamente com filtros poderosos e busca inteligente.</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">🌙</div>
+            <div className="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+              </svg>
+            </div>
             <h3 className="feature-title">Interface Moderna</h3>
             <p className="feature-description">Design dark premium, responsivo e otimizado para todos os dispositivos.</p>
           </div>
