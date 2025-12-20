@@ -81,7 +81,22 @@ const WishListPage = () => {
   };
 
   const handlePriorityChange = (carId, newPriority) => {
+    // otimista update
     setWishlist((prev) => prev.map((c) => (c._id === carId ? { ...c, priority: newPriority } : c)));
+
+    // persistir no backend
+    (async () => {
+      try {
+        await axios.put(`${API_BASE_URL}/wishlist/${carId}/priority`, { priority: newPriority }, {
+          headers: { "x-auth-token": localStorage.getItem("token"), "Content-Type": "application/json" }
+        });
+      } catch (err) {
+        console.error('❌ Erro ao salvar prioridade:', err);
+        // reverter state se falhar
+        setWishlist((prev) => prev.map((c) => (c._id === carId ? { ...c, priority: c.priority || 'medium' } : c)));
+        Swal.fire('Erro', 'Não foi possível atualizar a prioridade.', 'error');
+      }
+    })();
   };
 
   const handleFileChange = (event) => {
