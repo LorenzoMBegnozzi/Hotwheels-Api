@@ -35,66 +35,49 @@ const ProfilePage = () => {
   // avatar (sua funcionalidade)
   const [selectedAvatar, setSelectedAvatar] = useState(DEFAULT_USER_IMG);
 
-  // conta (visual) - não muda backend
+  // conta (visual) - sem mudar backend
   const [displayName, setDisplayName] = useState("");
 
-  // preferências (visual apenas)
-  const [prefEmail, setPrefEmail] = useState(true);
-  const [prefPublic, setPrefPublic] = useState(true);
-
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchProfileAndStats = async () => {
       try {
         let token = localStorage.getItem("token");
         if (token && !token.startsWith("Bearer ")) token = `Bearer ${token}`;
 
         const response = await axios.get(`${API_BASE_URL}/auth/profile`, {
-          headers: { Authorization: token },
+          headers: token ? { Authorization: token } : {},
         });
 
-        setUser(response.data);
-        setDisplayName(response.data?.name || "");
-        setSelectedAvatar(response.data?.profilePicture || DEFAULT_USER_IMG);
-      } catch (error) {
-        console.error("Erro ao carregar perfil:", error);
-      }
-    };
-    fetchProfile();
-    // também buscar coleção e wishlist para mostrar estatísticas reais
-    const fetchStats = async () => {
-      try {
-        const tokenRaw = localStorage.getItem("token");
-        const auth = tokenRaw && tokenRaw.startsWith("Bearer ") ? tokenRaw : tokenRaw ? `Bearer ${tokenRaw}` : null;
+        const profile = response.data;
+        setUser(profile);
+        setDisplayName(profile?.name || "");
+        setSelectedAvatar(profile?.profilePicture || DEFAULT_USER_IMG);
 
-        // profile para obter userId caso não esteja no local state ainda
-        const profRes = await axios.get(`${API_BASE_URL}/auth/profile`, { headers: auth ? { Authorization: auth } : {} });
-        const me = profRes.data;
-        if (!me || !me._id) return;
-
-        // coleção
+        // buscar contagens: coleção e wishlist (endpoints exigem auth)
         let collectionCount = 0;
         try {
-          const colRes = await axios.get(`${API_BASE_URL}/collection/${me._id}`, { headers: auth ? { Authorization: auth } : {} });
+          const colRes = await axios.get(`${API_BASE_URL}/collection/${profile._id}`, {
+            headers: token ? { Authorization: token } : {},
+          });
           collectionCount = Array.isArray(colRes.data?.collection) ? colRes.data.collection.length : 0;
         } catch (e) {
-          // pode retornar 404 ou erro -> assume 0
           collectionCount = 0;
         }
 
-        // wishlist
         let wishlistCount = 0;
         try {
-          const wishRes = await axios.get(`${API_BASE_URL}/wishlist`, { headers: auth ? { Authorization: auth } : {} });
+          const wishRes = await axios.get(`${API_BASE_URL}/wishlist`, {
+            headers: token ? { Authorization: token } : {},
+          });
           wishlistCount = Array.isArray(wishRes.data?.favorites) ? wishRes.data.favorites.length : 0;
         } catch (e) {
           wishlistCount = 0;
         }
 
-        // meses ativo: usar timestamp embutido no ObjectId
-        const objectId = me._id;
+        // calcular monthsActive a partir do ObjectId timestamp (primeiros 8 chars)
         let monthsActive = 0;
         try {
-          const ts = parseInt(objectId.substring(0, 8), 16) * 1000; // ms
+          const ts = parseInt(String(profile._id).substring(0, 8), 16) * 1000;
           const created = new Date(ts);
           const now = new Date();
           monthsActive = Math.max(0, (now.getFullYear() - created.getFullYear()) * 12 + (now.getMonth() - created.getMonth()));
@@ -102,15 +85,14 @@ const ProfilePage = () => {
           monthsActive = 0;
         }
 
-        // atualizar estado local do user com estatísticas temporárias
+        // atualizar user com estatísticas
         setUser((prev) => ({ ...(prev || {}), collectionCount, wishlistCount, monthsActive }));
-      } catch (err) {
-        // ignorar falhas de stats
-        console.warn('Não foi possível carregar estatísticas do usuário', err);
+      } catch (error) {
+        console.error("Erro ao carregar perfil:", error);
       }
     };
 
-    fetchStats();
+    fetchProfileAndStats();
   }, []);
 
   const handleChangePassword = async () => {
@@ -163,10 +145,14 @@ const ProfilePage = () => {
     }
   };
 
-  // botão "Salvar Alterações" da conta -> NÃO muda backend (só visual)
+  // salvar conta (visual apenas)
   const handleSaveAccountInfo = (e) => {
     e.preventDefault();
-    Swal.fire("Ok!", "Visual pronto. Se quiser salvar no backend, eu te ajudo a criar o endpoint.", "info");
+    Swal.fire(
+      "Ok!",
+      "Visual pronto. Se quiser salvar no backend, eu te ajudo a criar o endpoint.",
+      "info"
+    );
   };
 
   const handleLogout = () => {
@@ -223,7 +209,6 @@ const ProfilePage = () => {
             <h1 className="hw-profile-name">{user.name}</h1>
             <p className="hw-profile-email">{user.email}</p>
 
-            {/* Stats (placeholder visual — não quebra nada) */}
             <div className="hw-stats">
               <div className="hw-stat">
                 <div className="hw-stat-value">{user.collectionCount ?? (user.collection ? user.collection.length : 0)}</div>
@@ -241,8 +226,8 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        {/* Grid com 4 cards (igual ao layout HTML) */}
-        <section className="hw-grid-full">
+        {/* Grid (3 cards) */}
+        <section className="hw-grid-3">
           {/* Avatar */}
           <div className="hw-card">
             <h2 className="hw-card-title">
@@ -373,60 +358,6 @@ const ProfilePage = () => {
                 Salvar Alterações
               </button>
             </form>
-          </div>
-
-          {/* Preferências */}
-          <div className="hw-card">
-            <h2 className="hw-card-title">
-              <span className="hw-card-icon" aria-hidden="true">⚙️</span>
-              Preferências
-            </h2>
-
-            <div className="hw-settings-section">
-              <div className="hw-setting-item">
-                <div className="hw-setting-info">
-                  <div className="hw-setting-name">Notificações por E-mail</div>
-                  <div className="hw-setting-desc">Receba atualizações sobre sua coleção</div>
-                </div>
-
-                <label className="hw-toggle">
-                  <input
-                    type="checkbox"
-                    checked={prefEmail}
-                    onChange={(e) => setPrefEmail(e.target.checked)}
-                  />
-                  <span className="hw-slider" />
-                </label>
-              </div>
-
-              <div className="hw-setting-item">
-                <div className="hw-setting-info">
-                  <div className="hw-setting-name">Perfil Público</div>
-                  <div className="hw-setting-desc">Permita que outros vejam sua coleção</div>
-                </div>
-
-                <label className="hw-toggle">
-                  <input
-                    type="checkbox"
-                    checked={prefPublic}
-                    onChange={(e) => setPrefPublic(e.target.checked)}
-                  />
-                  <span className="hw-slider" />
-                </label>
-              </div>
-
-              <div className="hw-setting-item">
-                <div className="hw-setting-info">
-                  <div className="hw-setting-name">Modo Escuro</div>
-                  <div className="hw-setting-desc">Sempre ativado (tema padrão)</div>
-                </div>
-
-                <label className="hw-toggle">
-                  <input type="checkbox" checked disabled />
-                  <span className="hw-slider" />
-                </label>
-              </div>
-            </div>
           </div>
         </section>
       </main>
