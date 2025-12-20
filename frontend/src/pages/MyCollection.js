@@ -269,13 +269,6 @@ const MyCollection = () => {
             filtered.map((car) => (
               <div key={car._id} className="collection-card">
                 <div className="card-image">
-                  <div
-                    className="card-menu"
-                    title="Remover"
-                    onClick={() => handleRemoveCar(car._id)}
-                  >
-                    ⋮
-                  </div>
                   <img src={car.imageUrl || "https://via.placeholder.com/600x400"} alt={car.name} />
                 </div>
 
