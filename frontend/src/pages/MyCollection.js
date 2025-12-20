@@ -13,6 +13,7 @@ const MyCollection = () => {
   // (UI do template) filtros locais (não muda seu backend)
   const [searchTerm, setSearchTerm] = useState("");
   const [yearFilter, setYearFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
 
   useEffect(() => {
@@ -123,9 +124,14 @@ const MyCollection = () => {
     const newest = years.length ? Math.max(...years) : "-";
     const oldest = years.length ? Math.min(...years) : "-";
 
-    // Você não tem "categoria" no seu model custom -> então deixo 1 como placeholder coerente
-    // (se no futuro você tiver car.category, eu ajusto para contar categorias reais)
-    const categoriesCount = total > 0 ? 1 : 0;
+      // Conta categorias únicas usando `primaryCategory` ou `categories` quando disponíveis
+      const categorySet = new Set();
+      collection.forEach((c) => {
+        if (c.primaryCategory) categorySet.add(c.primaryCategory);
+        if (Array.isArray(c.categories)) c.categories.forEach((x) => x && categorySet.add(x));
+      });
+
+      const categoriesCount = categorySet.size;
 
     return { total, categoriesCount, newest, oldest };
   }, [collection]);
@@ -140,6 +146,16 @@ const MyCollection = () => {
     return Array.from(set).sort((a, b) => Number(b) - Number(a));
   }, [collection]);
 
+  // categorias disponíveis para filtro
+  const categoryOptions = useMemo(() => {
+    const set = new Set();
+    collection.forEach((c) => {
+      if (c.primaryCategory) set.add(c.primaryCategory);
+      if (Array.isArray(c.categories)) c.categories.forEach((cat) => cat && set.add(cat));
+    });
+    return Array.from(set).sort();
+  }, [collection]);
+
   // lista filtrada (somente client-side)
   const filtered = useMemo(() => {
     return collection.filter((car) => {
@@ -150,10 +166,14 @@ const MyCollection = () => {
           .includes(searchTerm.toLowerCase());
 
       const matchesYear = !yearFilter || String(car.year) === String(yearFilter);
+      const matchesCategory =
+        !categoryFilter ||
+        (car.primaryCategory && String(car.primaryCategory) === String(categoryFilter)) ||
+        (Array.isArray(car.categories) && car.categories.includes(categoryFilter));
 
-      return matchesSearch && matchesYear;
+      return matchesSearch && matchesYear && matchesCategory;
     });
-  }, [collection, searchTerm, yearFilter]);
+  }, [collection, searchTerm, yearFilter, categoryFilter]);
 
   const userInitial = (localStorage.getItem("userName") || "U").trim().slice(0, 1).toUpperCase();
 
@@ -214,9 +234,18 @@ const MyCollection = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
-          {/* placeholder (sem categoria real no seu model) */}
-          <select className="filter-select" disabled title="Sem categorias no modelo atual">
-            <option>Todas Categorias</option>
+          <select
+            className="filter-select"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            title="Filtrar por categoria"
+          >
+            <option value="">Todas Categorias</option>
+            {categoryOptions.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
           </select>
 
           <select
@@ -275,8 +304,10 @@ const MyCollection = () => {
                 <div className="card-content">
                   <div className="card-meta">
                     <span className="meta-badge">{car.year || "-"}</span>
-                    {/* Sem categoria no seu modelo -> badge fixo */}
-                    <span className="meta-badge">Custom</span>
+                    {/* Mostrar categoria real quando disponível */}
+                    <span className="meta-badge">
+                      {car.primaryCategory || (Array.isArray(car.categories) && car.categories[0]) || "Custom"}
+                    </span>
                   </div>
 
                   <div className="card-title">{car.name}</div>
