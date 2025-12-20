@@ -135,11 +135,23 @@ const LandingPage = () => {
           <p className="section-subtitle">Acompanhe o desenvolvimento do projeto e fique por dentro das novidades</p>
         </div>
         <div className="social-links">
-          <a href="#" className="social-link" title="GitHub">🐙</a>
-          <a href="#" className="social-link" title="LinkedIn">💼</a>
-          <a href="#" className="social-link" title="Instagram">📷</a>
-          <a href="#" className="social-link" title="Twitter">🐦</a>
-          <a href="#" className="social-link" title="Email">✉️</a>
+          <a href="https://github.com/LorenzoMBegnozzi" className="social-link" title="GitHub" aria-label="GitHub" target="_blank" rel="noopener noreferrer">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 0.5C5.37 0.5 0 5.87 0 12.5C0 17.86 3.438 22.36 8.205 23.98C8.805 24.09 9.025 23.73 9.025 23.42C9.025 23.14 9.015 22.39 9.01 21.39C5.672 22.09 4.968 19.78 4.968 19.78C4.422 18.36 3.633 17.97 3.633 17.97C2.545 17.21 3.715 17.23 3.715 17.23C4.922 17.31 5.56 18.46 5.56 18.46C6.64 20.3 8.375 19.8 9.05 19.5C9.16 18.72 9.47 18.18 9.82 17.86C7.145 17.55 4.344 16.48 4.344 11.72C4.344 10.37 4.824 9.27 5.605 8.41C5.48 8.09 5.06 6.84 5.72 5.14C5.72 5.14 6.72 4.8 9.01 6.36C9.95 6.07 10.96 5.93 11.98 5.93C13 5.93 14.01 6.07 14.95 6.36C17.23 4.8 18.23 5.14 18.23 5.14C18.9 6.84 18.48 8.09 18.36 8.41C19.145 9.27 19.62 10.37 19.62 11.72C19.62 16.49 16.815 17.54 14.135 17.85C14.58 18.25 15 19.03 15 20.19C15 21.78 14.985 22.98 14.985 23.42C14.985 23.73 15.2 24.1 15.81 23.98C20.58 22.36 24 17.86 24 12.5C24 5.87 18.63 0.5 12 0.5Z" />
+            </svg>
+          </a>
+          <a href="https://www.linkedin.com/in/lorenzo-marzola-begnozzi-764732227/" className="social-link" title="LinkedIn" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4.98 3.5C4.98 4.88 3.86 6 2.48 6C1.1 6 0 4.88 0 3.5C0 2.12 1.12 1 2.5 1C3.88 1 4.98 2.12 4.98 3.5ZM0.5 8.5H4.5V23.5H0.5V8.5ZM8.5 8.5H12.26V10.32H12.33C12.98 9.24 14.45 8.1 16.66 8.1C21.02 8.1 22 10.86 22 15.06V23.5H18V15.98C18 13.88 17.96 11.26 15.06 11.26C12.12 11.26 11.66 13.44 11.66 15.82V23.5H7.66V8.5H8.5Z" />
+            </svg>
+          </a>
+          <a href="https://www.instagram.com/lorenzo_berg_/" className="social-link" title="Instagram" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              <circle cx="12" cy="12" r="3.2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+            </svg>
+          </a>
         </div>
       </section>
 
