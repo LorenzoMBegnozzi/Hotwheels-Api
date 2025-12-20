@@ -479,7 +479,13 @@ const HomePage = () => {
                 </div>
 
                 <div className="card-content">
-                  <div className="card-title">{u.name}</div>
+                  <div
+                    className="card-title"
+                    style={{ color: "#000000ff" }}
+                    title={u.name || u.email}
+                  >
+                    {u.name || u.email || 'Usuário'}
+                  </div>
                   <div className="card-year">
                     Coleção: {u.collection?.length || 0} • Favoritos: {u.favorites?.length || 0}
                   </div>
