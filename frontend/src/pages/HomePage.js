@@ -99,6 +99,41 @@ const HomePage = () => {
 
     fetchProfileAndCollection();
     loadCategories();
+
+    // listeners para atualizações locais em coleção/wishlist (emitidos por utils/api)
+    const onCollectionChanged = (e) => {
+      try {
+        const payload = e?.detail;
+        // payload pode conter collection completa ou apenas mensagem; buscamos atualizar localmente
+        setUser((prev) => {
+          if (!prev) return prev;
+          // se payload.collection existir, usar ela; senão incrementar usando last add
+          const newCollection = payload?.collection || prev.collection || [];
+          return { ...prev, collection: newCollection };
+        });
+      } catch (err) {
+        // ignorar
+      }
+    };
+
+    const onWishlistChanged = (e) => {
+      try {
+        const payload = e?.detail;
+        setUser((prev) => {
+          if (!prev) return prev;
+          const newFavorites = payload?.favorites || prev.favorites || [];
+          return { ...prev, favorites: newFavorites };
+        });
+      } catch (err) {}
+    };
+
+    window.addEventListener('user:collection:changed', onCollectionChanged);
+    window.addEventListener('user:wishlist:changed', onWishlistChanged);
+
+    return () => {
+      window.removeEventListener('user:collection:changed', onCollectionChanged);
+      window.removeEventListener('user:wishlist:changed', onWishlistChanged);
+    };
   }, []);
 
   // ==================== Filtrar por ano ====================
@@ -139,6 +174,15 @@ const HomePage = () => {
       }
       const response = await addToCollection(hotWheelId);
       Swal.fire("Sucesso", response.message, "success");
+
+      // atualizar localmente: se response.collection estiver presente, usar; senão adicionar id localmente
+      setUser((prev) => {
+        if (!prev) return prev;
+        if (response?.collection) return { ...prev, collection: response.collection };
+        const exists = (prev.collection || []).some((c) => String(c._id || c) === String(hotWheelId));
+        if (exists) return prev;
+        return { ...prev, collection: [...(prev.collection || []), hotWheelId] };
+      });
     } catch (error) {
       console.error("Erro ao adicionar à coleção:", error);
       Swal.fire("Erro", "Erro ao adicionar à coleção. Tente novamente.", "error");
@@ -153,6 +197,14 @@ const HomePage = () => {
       }
       const response = await addToWishlist(hotWheelId);
       Swal.fire("Sucesso", response.message, "success");
+
+      setUser((prev) => {
+        if (!prev) return prev;
+        if (response?.favorites) return { ...prev, favorites: response.favorites };
+        const exists = (prev.favorites || []).some((c) => String(c._id || c) === String(hotWheelId));
+        if (exists) return prev;
+        return { ...prev, favorites: [...(prev.favorites || []), hotWheelId] };
+      });
     } catch (error) {
       console.error("Erro ao adicionar à lista de desejos:", error);
       Swal.fire("Erro", "Erro ao adicionar à lista de desejos. Tente novamente.", "error");

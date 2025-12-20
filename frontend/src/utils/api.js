@@ -143,6 +143,14 @@ export const addToCollection = async (hotWheelId) => {
       throw new Error('Erro ao adicionar à coleção');
     }
 
+    // notifica outros componentes no front-end que coleção do usuário mudou
+    try {
+      const payload = await response.clone().json();
+      window.dispatchEvent(new CustomEvent('user:collection:changed', { detail: payload }));
+    } catch (e) {
+      // ignorar falha na notificação
+    }
+
     return await response.json();
   } catch (error) {
     console.error('Erro ao adicionar à coleção:', error);
@@ -179,6 +187,14 @@ export const addToWishlist = async (hotWheelId) => {
 
     if (!response.ok) {
       throw new Error('Erro ao adicionar à lista de desejos');
+    }
+
+    // notifica outros componentes no front-end que wishlist do usuário mudou
+    try {
+      const payload = await response.clone().json();
+      window.dispatchEvent(new CustomEvent('user:wishlist:changed', { detail: payload }));
+    } catch (e) {
+      // ignorar falha na notificação
     }
 
     return await response.json();
