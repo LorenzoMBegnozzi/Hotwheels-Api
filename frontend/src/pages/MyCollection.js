@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../css/MyCollection.css";
 import { API_BASE_URL } from "../utils/constants";
@@ -10,13 +10,15 @@ const MyCollection = () => {
   const [showModal, setShowModal] = useState(false);
   const [newCar, setNewCar] = useState({ name: "", year: "", image: null });
 
-  const navigate = useNavigate();
+  // (UI do template) filtros locais (não muda seu backend)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [yearFilter, setYearFilter] = useState("");
+  const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
 
   useEffect(() => {
     const fetchCollection = async () => {
       const token = localStorage.getItem("token");
       const userId = localStorage.getItem("userId");
-
       if (!token || !userId) return;
 
       try {
@@ -25,7 +27,7 @@ const MyCollection = () => {
         });
 
         if (response.status === 200) {
-          setCollection(response.data.collection); // Atualiza a coleção no estado
+          setCollection(response.data.collection || []);
         }
       } catch (error) {
         console.error("Erro ao buscar coleção:", error);
@@ -46,7 +48,6 @@ const MyCollection = () => {
     }
 
     const token = localStorage.getItem("token");
-
     if (!token) {
       Swal.fire("Erro!", "Usuário não autenticado!", "error");
       return;
@@ -62,7 +63,7 @@ const MyCollection = () => {
         headers: { "x-auth-token": token, "Content-Type": "multipart/form-data" },
       });
 
-      setCollection([...collection, response.data.car]);
+      setCollection((prev) => [...prev, response.data.car]);
       setShowModal(false);
       setNewCar({ name: "", year: "", image: null });
       Swal.fire("Sucesso!", "Carro adicionado à coleção!", "success");
@@ -101,7 +102,7 @@ const MyCollection = () => {
             headers: { "x-auth-token": token },
           });
 
-          setCollection((prevCollection) => prevCollection.filter((car) => car._id !== carId));
+          setCollection((prev) => prev.filter((car) => car._id !== carId));
           Swal.fire("Removido!", "O item foi removido da sua coleção.", "success");
         } catch (error) {
           console.error("Erro ao remover item:", error);
@@ -111,57 +112,234 @@ const MyCollection = () => {
     });
   };
 
-  return (
-    <div className="collection-page my-collection-container home-container">
-      <div className="collection-header">
-        <h2>Minha Coleção</h2>
-        <Link to="/home" className="collection-button">Home</Link>
-      </div>
+  // ======== Stats do template usando seus dados ========
+  const stats = useMemo(() => {
+    const total = collection.length;
 
-      <div className="results-container">
-        {/* Botão para adicionar novo carro */}
-        <div className="add-car-button" onClick={() => setShowModal(true)}>
-          <div className="plus-icon">➕</div>
-          <p>Adicionar Hot Wheel</p>
+    const years = collection
+      .map((c) => Number(c.year))
+      .filter((y) => Number.isFinite(y));
+
+    const newest = years.length ? Math.max(...years) : "-";
+    const oldest = years.length ? Math.min(...years) : "-";
+
+    // Você não tem "categoria" no seu model custom -> então deixo 1 como placeholder coerente
+    // (se no futuro você tiver car.category, eu ajusto para contar categorias reais)
+    const categoriesCount = total > 0 ? 1 : 0;
+
+    return { total, categoriesCount, newest, oldest };
+  }, [collection]);
+
+  // anos disponíveis para filtro
+  const yearOptions = useMemo(() => {
+    const set = new Set(
+      collection
+        .map((c) => String(c.year ?? ""))
+        .filter((y) => y && y !== "undefined" && y !== "null")
+    );
+    return Array.from(set).sort((a, b) => Number(b) - Number(a));
+  }, [collection]);
+
+  // lista filtrada (somente client-side)
+  const filtered = useMemo(() => {
+    return collection.filter((car) => {
+      const matchesSearch =
+        !searchTerm ||
+        String(car.name || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      const matchesYear = !yearFilter || String(car.year) === String(yearFilter);
+
+      return matchesSearch && matchesYear;
+    });
+  }, [collection, searchTerm, yearFilter]);
+
+  const userInitial = (localStorage.getItem("userName") || "U").trim().slice(0, 1).toUpperCase();
+
+  return (
+    <div className="mc-page">
+      {/* Header */}
+      <header className="mc-header">
+        <div className="logo">
+          <div className="logo-text">
+            Hot Wheels <span className="logo-accent">Collector</span>
+          </div>
         </div>
 
-        {/* Botão para o reconhecedor */}
-        {/* <div className="add-car-button" onClick={() => navigate("/reconhecedor")}>
-          <div className="plus-icon">🔍</div>
-          <p>Reconhecer Imagem</p>
-        </div> */}
+        <div className="header-actions">
+          <Link to="/home" className="home-btn">
+            Home
+          </Link>
+          <div className="profile-icon" title="Perfil">
+            {userInitial}
+          </div>
+        </div>
+      </header>
 
-        {/* Lista de carros */}
-        {collection.map((car) => (
-          <div key={car._id} className="car-item">
-            <img
-              src={car.imageUrl || "https://via.placeholder.com/150"}
-              alt={car.name}
-              className="car-image"
-            />
-            <h3>
-              {car.name} ({car.year})
-            </h3>
+      {/* Main */}
+      <main className="main-container">
+        <div className="page-header">
+          <h1 className="page-title">Minha Coleção</h1>
+          <p className="page-subtitle">Gerencie e visualize todos os seus Hot Wheels</p>
+        </div>
+
+        {/* Stats */}
+        <div className="stats-bar">
+          <div className="stat-card">
+            <div className="stat-value">{stats.total}</div>
+            <div className="stat-label">Total na Coleção</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-value">{stats.categoriesCount}</div>
+            <div className="stat-label">Categorias</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-value">{stats.newest}</div>
+            <div className="stat-label">Ano Mais Recente</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-value">{stats.oldest}</div>
+            <div className="stat-label">Ano Mais Antigo</div>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="filter-bar">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="🔍 Buscar na coleção..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          {/* placeholder (sem categoria real no seu model) */}
+          <select className="filter-select" disabled title="Sem categorias no modelo atual">
+            <option>Todas Categorias</option>
+          </select>
+
+          <select
+            className="filter-select"
+            value={yearFilter}
+            onChange={(e) => setYearFilter(e.target.value)}
+          >
+            <option value="">Todos os Anos</option>
+            {yearOptions.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
+
+          <div className="view-toggle">
             <button
-              className="delete-button"
-              onClick={() => handleRemoveCar(car._id)}
+              type="button"
+              className={`toggle-btn ${viewMode === "grid" ? "active" : ""}`}
+              onClick={() => setViewMode("grid")}
             >
-              Excluir
+              Grid
+            </button>
+            <button
+              type="button"
+              className={`toggle-btn ${viewMode === "list" ? "active" : ""}`}
+              onClick={() => setViewMode("list")}
+            >
+              Lista
             </button>
           </div>
-        ))}
-      </div>
+        </div>
 
+        {/* Cards */}
+        <div className={`cards-grid ${viewMode === "list" ? "list-view" : ""}`}>
+          {/* Add Card */}
+          <div className="add-card" onClick={() => setShowModal(true)} role="button" tabIndex={0}>
+            <div className="add-icon">+</div>
+            <div className="add-text">Adicionar Hot Wheel</div>
+          </div>
 
+          {/* Empty */}
+          {filtered.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">🏎️</div>
+              <div className="empty-title">Nada por aqui ainda</div>
+              <div className="empty-text">Adicione seu primeiro Hot Wheel à coleção.</div>
+            </div>
+          ) : (
+            filtered.map((car) => (
+              <div key={car._id} className="collection-card">
+                <div className="card-image">
+                  <div
+                    className="card-menu"
+                    title="Remover"
+                    onClick={() => handleRemoveCar(car._id)}
+                  >
+                    ⋮
+                  </div>
+                  <img src={car.imageUrl || "https://via.placeholder.com/600x400"} alt={car.name} />
+                </div>
+
+                <div className="card-content">
+                  <div className="card-meta">
+                    <span className="meta-badge">{car.year || "-"}</span>
+                    {/* Sem categoria no seu modelo -> badge fixo */}
+                    <span className="meta-badge">Custom</span>
+                  </div>
+
+                  <div className="card-title">{car.name}</div>
+
+                  <div className="card-actions">
+                    {/* Se você quiser navegar pra uma página de detalhes no futuro, troca o onClick */}
+                    <button type="button" className="card-btn btn-view" onClick={() => {}}>
+                      Ver Detalhes
+                    </button>
+
+                    <button
+                      type="button"
+                      className="card-btn btn-delete"
+                      onClick={() => handleRemoveCar(car._id)}
+                      title="Excluir"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </main>
+
+      {/* Modal (mantém seus campos) */}
       {showModal && (
-        <div className="modal">
-          <div className="modal-content">
+        <div className="modal" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h2>Adicionar Hot Wheel</h2>
-            <input type="text" placeholder="Nome do carro" value={newCar.name} onChange={(e) => setNewCar({ ...newCar, name: e.target.value })} />
-            <input type="number" placeholder="Ano" value={newCar.year} onChange={(e) => setNewCar({ ...newCar, year: e.target.value })} />
+
+            <input
+              type="text"
+              placeholder="Nome do carro"
+              value={newCar.name}
+              onChange={(e) => setNewCar({ ...newCar, name: e.target.value })}
+            />
+
+            <input
+              type="number"
+              placeholder="Ano"
+              value={newCar.year}
+              onChange={(e) => setNewCar({ ...newCar, year: e.target.value })}
+            />
+
             <input type="file" accept="image/*" onChange={handleFileChange} />
-            <button onClick={handleAddCar}>Salvar</button>
-            <button onClick={() => setShowModal(false)}>Cancelar</button>
+
+            <div className="modal-actions">
+              <button type="button" onClick={handleAddCar}>
+                Salvar
+              </button>
+              <button type="button" className="btn-cancel" onClick={() => setShowModal(false)}>
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       )}

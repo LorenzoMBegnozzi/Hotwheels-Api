@@ -23,6 +23,7 @@ const HomePage = () => {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("hotwheels");
   const [userResults, setUserResults] = useState([]);
@@ -248,7 +249,7 @@ const HomePage = () => {
             onClick={() => navigate('/lista-de-desejos')}
             title="Minha Lista de Desejos"
           >
-            Lista de Desejos
+            Minha Lista de Desejos
           </button>
 
           <div className="profile-icon" title="Meu perfil" onClick={() => navigate("/profile")}>
@@ -318,10 +319,26 @@ const HomePage = () => {
           <button className="search-btn" onClick={onSearchClick}>
             Buscar
           </button>
+          <div className="view-toggle" style={{ marginLeft: 12 }}>
+            <button
+              type="button"
+              className={`toggle-btn ${viewMode === "grid" ? "active" : ""}`}
+              onClick={() => setViewMode("grid")}
+            >
+              Grid
+            </button>
+            <button
+              type="button"
+              className={`toggle-btn ${viewMode === "list" ? "active" : ""}`}
+              onClick={() => setViewMode("list")}
+            >
+              Lista
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="cards-grid">
+      <div className={`cards-grid ${viewMode === "list" ? "list-view" : ""}`}>
         {activeTab === "hotwheels"
           ? currentItems.map((car) => (
               <div className="card" key={car._id}>

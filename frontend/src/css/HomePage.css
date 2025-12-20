@@ -172,6 +172,33 @@
   transform: translateY(-1px);
 }
 
+/* View toggle (grid / list) */
+.view-toggle{
+  display:flex;
+  gap:0.5rem;
+  background:#14141a;
+  padding:0.25rem;
+  border-radius:8px;
+  border:1px solid #252530;
+  margin-left: 8px;
+}
+.toggle-btn{
+  padding:0.45rem 0.9rem;
+  background:transparent;
+  border:none;
+  color:#9ca3af;
+  cursor:pointer;
+  border-radius:6px;
+  font-size:0.85rem;
+  font-weight:500;
+  transition: all 0.15s;
+}
+.toggle-btn.active{
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+}
+
+
 /* Action Buttons */
 .action-buttons{
   display:flex;
@@ -211,6 +238,11 @@
   display:grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
+}
+
+/* list view */
+.cards-grid.list-view{
+  grid-template-columns: 1fr;
 }
 .card{
   background:#14141a;
