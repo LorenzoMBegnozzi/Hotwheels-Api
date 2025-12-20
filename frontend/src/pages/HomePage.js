@@ -84,20 +84,24 @@ const HomePage = () => {
   useEffect(() => window.scrollTo(0, 0), [currentPage]);
 
   // ==================== Hot Wheels ====================
-  const handleSearchHotWheels = async () => {
+  const handleSearchHotWheels = async (showAlert = true) => {
     try {
       const hotWheels = await searchHotWheels(search, { category: categoryFilter });
       setResults(hotWheels || []);
-      Swal.fire({
-        icon: "success",
-        title: "Busca concluída",
-        text: `${(hotWheels || []).length} resultado(s).`,
-        timer: 1200,
-        showConfirmButton: false,
-      });
+      if (showAlert) {
+        Swal.fire({
+          icon: "success",
+          title: "Busca concluída",
+          text: `${(hotWheels || []).length} resultado(s).`,
+          timer: 1200,
+          showConfirmButton: false,
+        });
+      }
     } catch (error) {
       console.error("Erro ao buscar Hot Wheels:", error);
-      Swal.fire("Erro!", "Erro ao buscar Hot Wheels. Tente novamente.", "error");
+      if (showAlert) {
+        Swal.fire("Erro!", "Erro ao buscar Hot Wheels. Tente novamente.", "error");
+      }
     }
   };
 
@@ -167,6 +171,16 @@ const HomePage = () => {
     if (activeTab === "hotwheels") handleSearchHotWheels();
     else handleSearchUsers();
   };
+
+  // Buscar Hot Wheels ou Usuários automaticamente ao trocar de aba
+  useEffect(() => {
+    if (activeTab === "hotwheels") {
+      handleSearchHotWheels(false); // não mostrar alerta na busca inicial
+    } else if (activeTab === "users") {
+      handleSearchUsers(); // busca usuários automaticamente
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
 
   return (
     <div className="hw-page">
