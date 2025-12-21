@@ -501,9 +501,7 @@ const HomePage = () => {
                     >
                       Ver Perfil
                     </button>
-                    <button className="card-btn add-wishlist" onClick={() => setActiveTab("hotwheels")}>
-                      Voltar
-                    </button>
+                    {/* back button removed per request */}
                   </div>
                 </div>
               </div>
