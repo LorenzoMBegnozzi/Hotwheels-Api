@@ -176,7 +176,7 @@ const ProfilePage = () => {
       <header className="hw-header">
         <div className="hw-logo">
           <div className="hw-logo-text">
-            Hot Wheels <span className="hw-logo-accent">Collector</span>
+            Diecast <span className="hw-logo-accent">Social</span>
           </div>
         </div>
 
