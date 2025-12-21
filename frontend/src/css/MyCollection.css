@@ -492,6 +492,7 @@
   .main-container {
     padding: 2rem;
   }
+
   .cards-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
@@ -527,4 +528,222 @@
   .cards-grid {
     grid-template-columns: 1fr;
   }
+
+  /* ===== Base (evita travar altura e melhora mobile) ===== */
+  .mc-page {
+    min-height: 100dvh;
+    /* melhor que 100vh no mobile */
+  }
+
+  /* ===== Header responsivo (quebra em linhas) ===== */
+  @media (max-width: 768px) {
+    .mc-header {
+      padding: 0.9rem 1.25rem;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    .logo {
+      justify-content: center;
+    }
+
+    .header-actions {
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .home-btn {
+      flex: 1 1 180px;
+      /* quebra em linhas */
+      text-align: center;
+      padding: 0.6rem 1rem;
+    }
+
+    .profile-icon {
+      flex: 0 0 auto;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .logo-text {
+      font-size: 1.25rem;
+    }
+
+    .home-btn {
+      flex: 1 1 100%;
+    }
+  }
+
+  /* ===== Main container padding mais suave ===== */
+  @media (max-width: 1024px) {
+    .main-container {
+      padding: 2rem 2rem 3rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .main-container {
+      padding: 1.5rem 1.25rem 2.5rem;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .main-container {
+      padding: 1.25rem 1rem 2.25rem;
+    }
+  }
+
+  /* ===== Page header tipografia fluida ===== */
+  .page-title {
+    font-size: clamp(1.8rem, 4.5vw, 2.5rem);
+  }
+
+  .page-subtitle {
+    font-size: clamp(0.95rem, 2.2vw, 1rem);
+  }
+
+  /* ===== Stats bar: grid responsivo (melhor que coluna) ===== */
+  @media (max-width: 1024px) {
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      padding: 1.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .stats-bar {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ===== Filter bar: vira grid e encaixa tudo melhor ===== */
+  @media (max-width: 768px) {
+    .filter-bar {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      align-items: stretch;
+    }
+
+    .search-input {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .filter-select {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .view-toggle {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .view-toggle {
+      width: 100%;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      text-align: center;
+    }
+  }
+
+  /* ===== Cards grid: auto-fit no tablet e 1 coluna no celular ===== */
+  @media (max-width: 1024px) {
+    .cards-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .cards-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ===== Alturas: reduzem no mobile (ficam mais confortáveis) ===== */
+  @media (max-width: 768px) {
+    .card-image {
+      height: 230px;
+    }
+
+    .add-card {
+      min-height: 300px;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .card-image {
+      height: 210px;
+    }
+
+    .add-card {
+      min-height: 260px;
+    }
+  }
+
+  /* ===== Botões dos cards: melhor toque no mobile ===== */
+  @media (max-width: 420px) {
+    .card-actions {
+      flex-direction: column;
+    }
+
+    .btn-delete {
+      width: 100%;
+    }
+  }
+
+  /* ===== Empty state: padding menor no celular ===== */
+  @media (max-width: 420px) {
+    .empty-state {
+      padding: 2.5rem 1rem;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+    }
+
+    .empty-title {
+      font-size: 1.25rem;
+    }
+  }
+
+  /* ===== Modal: encaixa melhor em telas pequenas ===== */
+  @media (max-width: 420px) {
+    .modal {
+      padding: 0.75rem;
+      align-items: flex-end;
+      /* parece "bottom sheet" */
+    }
+
+    .modal-content {
+      max-width: 100%;
+      border-radius: 16px;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+    }
+
+    .modal-content button {
+      width: 100%;
+    }
+  }
+
 }
