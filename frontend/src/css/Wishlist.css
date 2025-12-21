@@ -383,7 +383,7 @@
 }
 
 .priority-select {
-  background: rgba(20,20,26,0.9);
+  background: rgba(20, 20, 26, 0.9);
   color: #f0f0f5;
   border: 1px solid #252530;
   border-radius: 8px;
@@ -394,7 +394,7 @@
   cursor: pointer;
 }
 
-.card-image > .priority-badge {
+.card-image>.priority-badge {
   position: absolute;
   top: 0.9rem;
   left: 0.9rem;
@@ -601,6 +601,7 @@
   .main-container {
     padding: 2rem;
   }
+
   .cards-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
@@ -642,4 +643,251 @@
   .cards-grid {
     grid-template-columns: 1fr;
   }
+
+  /* ===== Base ===== */
+  .wl-page {
+    min-height: 100dvh;
+    /* melhor que 100vh no mobile */
+  }
+
+  /* ===== Header responsivo (quebra em linhas) ===== */
+  @media (max-width: 768px) {
+    .wl-header {
+      padding: 0.9rem 1.25rem;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    .logo {
+      justify-content: center;
+    }
+
+    .header-actions {
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .home-btn {
+      flex: 1 1 180px;
+      text-align: center;
+      padding: 0.6rem 1rem;
+    }
+
+    .profile-icon {
+      flex: 0 0 auto;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .logo-text {
+      font-size: 1.25rem;
+    }
+
+    .home-btn {
+      flex: 1 1 100%;
+    }
+  }
+
+  /* ===== Container padding mais suave ===== */
+  @media (max-width: 1024px) {
+    .main-container {
+      padding: 2rem 2rem 3rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .main-container {
+      padding: 1.5rem 1.25rem 2.5rem;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .main-container {
+      padding: 1.25rem 1rem 2.25rem;
+    }
+  }
+
+  /* ===== Tipografia fluida ===== */
+  .page-title {
+    font-size: clamp(1.8rem, 4.5vw, 2.5rem);
+  }
+
+  .title-icon {
+    font-size: clamp(2rem, 5vw, 2.5rem);
+  }
+
+  .page-subtitle {
+    font-size: clamp(0.95rem, 2.2vw, 1rem);
+  }
+
+  /* ===== Stats: grid responsivo ===== */
+  @media (max-width: 1024px) {
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      padding: 1.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .stats-bar {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ===== Filter bar: vira grid e encaixa bem ===== */
+  @media (max-width: 768px) {
+    .filter-bar {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      align-items: stretch;
+    }
+
+    .search-input {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .filter-select {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .priority-filter {
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .priority-btn {
+      flex: 1 1 110px;
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .priority-btn {
+      flex: 1 1 100%;
+    }
+  }
+
+  /* ===== Cards: auto-fit no tablet e 1 coluna no celular ===== */
+  @media (max-width: 1024px) {
+    .cards-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .cards-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ===== Alturas menores no mobile ===== */
+  @media (max-width: 768px) {
+    .card-image {
+      height: 230px;
+    }
+
+    .add-card {
+      min-height: 300px;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .card-image {
+      height: 210px;
+    }
+
+    .add-card {
+      min-height: 260px;
+    }
+  }
+
+  /* ===== Conteúdo do card e botões no mobile ===== */
+  @media (max-width: 420px) {
+    .card-actions {
+      flex-direction: column;
+    }
+
+    .btn-delete {
+      width: 100%;
+    }
+  }
+
+  /* ===== Priority badge + priority-control não se atropelam ===== */
+  @media (max-width: 420px) {
+    .card-image>.priority-badge {
+      top: 0.7rem;
+      left: 0.7rem;
+      height: 30px;
+      font-size: 0.7rem;
+      padding: 0 0.55rem;
+    }
+
+    .card-menu.priority-control {
+      top: 0.7rem;
+      right: 0.7rem;
+      height: 30px;
+      padding: 0.25rem;
+      gap: 0.35rem;
+    }
+
+    .priority-select {
+      height: 30px;
+      font-size: 0.8rem;
+      padding: 0 0.45rem;
+    }
+  }
+
+  /* ===== Empty state ===== */
+  @media (max-width: 420px) {
+    .empty-state {
+      padding: 2.5rem 1rem;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+    }
+
+    .empty-title {
+      font-size: 1.25rem;
+    }
+  }
+
+  /* ===== Modal como bottom-sheet no mobile ===== */
+  @media (max-width: 420px) {
+    .modal {
+      padding: 0.75rem;
+      align-items: flex-end;
+    }
+
+    .modal-content {
+      max-width: 100%;
+      border-radius: 16px;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+    }
+
+    .modal-content button {
+      width: 100%;
+    }
+  }
+
 }
