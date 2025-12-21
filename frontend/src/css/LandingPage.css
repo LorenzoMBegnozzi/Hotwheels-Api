@@ -54,7 +54,17 @@ section { padding:6rem 3rem; position:relative; }
 .feature-description { color:#9ca3af; line-height:1.6; }
 
 .screenshot-container { max-width:1200px; margin:0 auto; background:#14141a; border:1px solid #252530; border-radius:20px; padding:2rem; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
-.screenshot-placeholder { width:100%; height:600px; background: linear-gradient(135deg,#1c1c24 0%,#14141a 100%); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:6rem; opacity:0.3; }
+.screenshot-placeholder {
+	width:100%;
+	height:600px;
+	border-radius:12px;
+	display:block;
+	object-fit:contain;
+	object-position:center;
+	-o-object-fit:contain;
+	background: none;
+	filter: brightness(1.35) contrast(1.05) saturate(1.05);
+}
 
 .about-content { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
 .about-image { width:100%; height:500px; background: linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:8rem; box-shadow:0 20px 60px rgba(99,102,241,0.3); }

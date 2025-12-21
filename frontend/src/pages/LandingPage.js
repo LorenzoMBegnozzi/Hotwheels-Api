@@ -1,6 +1,7 @@
 import React from 'react';
 import '../css/LandingPage.css';
 import sobreMim from '../css/sobre-mim.jpeg';
+import painelImg from '../css/painel.png';
 import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
@@ -130,7 +131,7 @@ const LandingPage = () => {
           <p className="section-subtitle">Interface intuitiva e moderna que torna o gerenciamento da sua coleção uma experiência agradável</p>
         </div>
         <div className="screenshot-container">
-          <div className="screenshot-placeholder">🖼️</div>
+          <img src={painelImg} alt="Painel" className="screenshot-placeholder" />
         </div>
       </section>
 
