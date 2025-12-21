@@ -12,7 +12,7 @@
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid rgba(255,255,255,0.06);
 }
 
 .backButton {
@@ -35,9 +35,9 @@
   gap: 2rem;
   margin-bottom: 3rem;
   padding: 2rem;
-  background: white;
+  background: rgba(20,20,26,0.6);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
 }
 
 .userImage {
@@ -84,8 +84,8 @@
   color: #dc3545;
   margin: 2rem 0;
   padding: 1rem;
-  background: #f8d7da;
-  border: 1px solid #f5c6cb;
+  background: rgba(220,66,66,0.06);
+  border: 1px solid rgba(220,66,66,0.12);
   border-radius: 8px;
 }
 
@@ -95,7 +95,7 @@
   color: #666;
   margin: 3rem 0;
   padding: 2rem;
-  background: #f8f9fa;
+  background: rgba(255,255,255,0.02);
   border-radius: 8px;
 }
 
