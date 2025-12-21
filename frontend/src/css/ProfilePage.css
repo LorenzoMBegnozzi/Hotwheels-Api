@@ -197,6 +197,19 @@ body {
   padding: 2rem;
 }
 
+/* Overrides to prevent accidental white backgrounds from other CSS modules */
+.profile-page,
+.profile-page * {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+/* Ensure main container and cards use the theme colors */
+.profile-page .hw-container { background: transparent; }
+.profile-page .hw-card { background: var(--panel) !important; border-color: var(--border) !important; }
+.profile-page .hw-profile-header { background: var(--panel) !important; }
+.profile-page .userInfo { background: transparent !important; box-shadow: none !important; border: 1px solid var(--border) !important; }
+
 .hw-card-title {
   font-size: 1.5rem;
   font-weight: 800;

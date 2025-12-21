@@ -1,8 +1,8 @@
 .carItem {
-  background: white;
+  background: rgba(20,20,26,0.6);
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
@@ -24,7 +24,7 @@
   height: 180px; /* Reduzido de 200px para 180px */
   border-radius: 8px;
   overflow: hidden;
-  background-color: #fafafa; /* Fundo mais claro para melhor contraste */
+  background-color: rgba(255,255,255,0.02); /* Fundo sutil escuro */
   display: flex;
   align-items: center;
   justify-content: center;
