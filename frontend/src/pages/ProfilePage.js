@@ -157,7 +157,7 @@ const ProfilePage = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    navigate("/");
   };
 
   if (!user) return <p className="profile-loading">Carregando...</p>;
