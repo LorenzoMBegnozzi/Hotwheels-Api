@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState } from "react";
 import "../css/Wishlist.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { removeFromWishlist as apiRemoveFromWishlist } from '../utils/api';
 import { API_BASE_URL } from "../utils/constants";
 import Swal from "sweetalert2";
 
@@ -64,17 +65,25 @@ const WishListPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`${API_BASE_URL}/wishlist/${carId}`, {
-            headers: { "x-auth-token": localStorage.getItem("token") },
-          });
-
-          if (response.status === 200) {
-            setWishlist((prev) => prev.filter((car) => car._id !== carId));
-            Swal.fire("Removido!", "O item foi removido da sua lista de desejos.", "success");
-          }
+          const resp = await apiRemoveFromWishlist(carId);
+          // backend returns updated favorites array
+          const updated = resp.favorites || [];
+          setWishlist(updated);
+          // notify other parts of the app
+          try { window.dispatchEvent(new CustomEvent('user:wishlist:changed', { detail: resp })); } catch (e) {}
+          Swal.fire("Removido!", "O item foi removido da sua lista de desejos.", "success");
         } catch (err) {
           console.error("❌ Erro ao remover item da wishlist:", err);
-          Swal.fire("Erro!", "Erro ao remover o item. Tente novamente.", "error");
+          const status = err && err.status ? ` (status ${err.status})` : '';
+          let bodyMsg = '';
+          if (err && err.body) {
+            try {
+              bodyMsg = typeof err.body === 'string' ? err.body : JSON.stringify(err.body);
+            } catch (e) {
+              bodyMsg = String(err.body);
+            }
+          }
+          Swal.fire("Erro!", `Erro ao remover o item.${status} ${bodyMsg ? ' Detalhes: ' + bodyMsg : ''}`.trim(), "error");
         }
       }
     });
