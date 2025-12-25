@@ -2,7 +2,7 @@ import React, { useMemo, useEffect, useState } from "react";
 import "../css/Wishlist.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { removeFromWishlist as apiRemoveFromWishlist } from '../utils/api';
+import { removeFromWishlist as apiRemoveFromWishlist, addToCollection as apiAddToCollection } from '../utils/api';
 import { API_BASE_URL } from "../utils/constants";
 import Swal from "sweetalert2";
 
@@ -87,6 +87,36 @@ const WishListPage = () => {
         }
       }
     });
+  };
+
+  const handleMoveToCollection = async (car) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      Swal.fire("Atenção", "Faça login para mover itens para a coleção.", "warning");
+      return;
+    }
+
+    try {
+      // 1) adicionar à coleção (backend previne duplicatas)
+      const addResp = await apiAddToCollection(car._id || car);
+
+      // 2) remover da wishlist
+      const remResp = await apiRemoveFromWishlist(car._id || car);
+
+      const updated = remResp.favorites || [];
+      setWishlist(updated);
+
+      // notificar outras partes da aplicação
+      try { window.dispatchEvent(new CustomEvent('user:collection:changed', { detail: addResp })); } catch (e) {}
+      try { window.dispatchEvent(new CustomEvent('user:wishlist:changed', { detail: remResp })); } catch (e) {}
+
+      Swal.fire("Sucesso", "Item movido para sua coleção.", "success");
+    } catch (err) {
+      console.error("Erro ao mover item para a coleção:", err);
+      // se o backend indicar que já existe na wishlist/coleção, mostrar mensagem apropriada
+      const msg = err?.message || err?.response?.data?.message || "Não foi possível mover o item.";
+      Swal.fire("Erro", msg, "error");
+    }
   };
 
   const handlePriorityChange = (carId, newPriority) => {
@@ -382,11 +412,7 @@ const WishListPage = () => {
                           <button
                             type="button"
                             className="card-btn btn-move"
-                            onClick={() => {
-                              // Você não tem endpoint de "mover p/ coleção" na wishlist atual.
-                              // Se tiver depois, eu ligo aqui.
-                              Swal.fire("Em breve", "Função de mover para coleção ainda não foi implementada.", "info");
-                            }}
+                            onClick={() => handleMoveToCollection(car)}
                           >
                             ✓ Mover p/ Coleção
                           </button>
