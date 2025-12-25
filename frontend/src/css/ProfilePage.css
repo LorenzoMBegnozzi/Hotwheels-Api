@@ -374,3 +374,51 @@ body,
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* Incoming requests */
+.hw-incoming-requests {
+  margin-top: 2rem;
+}
+.hw-requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.hw-request-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.hw-request-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.hw-request-user img {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.hw-request-meta .hw-request-name {
+  font-weight: 700;
+}
+.hw-request-meta .hw-request-email {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.hw-request-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.hw-friends-list .hw-request-item {
+  align-items: center;
+}
+.hw-friend-item:hover {
+  background: rgba(99,102,241,0.04);
+}

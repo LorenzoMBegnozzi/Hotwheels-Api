@@ -20,6 +20,7 @@ app.use("/api/collection", require("./routes/collectionRoutes"));
 app.use("/api/wishlist", require("./routes/wishlistRoutes"));
 app.use("/api/users", require("./routes/users"));
 app.use("/api/recognizer", require("./routes/recognizerRoutes"));
+app.use("/api/friends", require("./routes/friendRoutes"));
 
 
 // Conectar ao MongoDB
