@@ -212,7 +212,12 @@ export const removeFromWishlist = async (carId) => {
     });
 
     if (!response.ok) {
-      throw new Error('Erro ao remover da lista de desejos');
+      let body = null;
+      try { body = await response.clone().json(); } catch (e) { try { body = await response.clone().text(); } catch (e2) { body = null; } }
+      const err = new Error('Erro ao remover da lista de desejos');
+      err.status = response.status;
+      err.body = body;
+      throw err;
     }
 
     return await response.json();

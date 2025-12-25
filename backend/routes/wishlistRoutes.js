@@ -4,34 +4,44 @@ const UserCollection = require("../models/UserCollection");
 const router = express.Router();
 const mongoose = require("mongoose");
 
-// Helper: tenta extrair um id válido a partir de diferentes formatos de entrada
+// Helper: extrai um id válido (24 hex) a partir de diferentes formatos de entrada
 const extractFavoriteId = (f) => {
   if (!f) return null;
-  // já no novo formato: subdocument com hotWheel
-  if (f.hotWheel) {
-    try {
-      return f.hotWheel.toString();
-    } catch (e) {
-      return null;
+
+  // novo formato: { hotWheel: ObjectId | subdoc, priority }
+  try {
+    if (typeof f === 'object' && f.hotWheel) {
+      const candidate = f.hotWheel && f.hotWheel._id ? f.hotWheel._id.toString() : String(f.hotWheel);
+      if (mongoose.Types.ObjectId.isValid(candidate)) return candidate;
     }
+  } catch (e) {
+    // continue
   }
 
-  // se for ObjectId ou string com hex
+  // se já for um ObjectId ou string hex
   try {
-    if (mongoose.Types.ObjectId.isValid(f)) return f.toString();
+    if (mongoose.Types.ObjectId.isValid(f)) return String(f);
   } catch (e) {}
 
   // se for subdocument antigo com _id
-  if (f._id) {
-    try {
-      if (mongoose.Types.ObjectId.isValid(f._id)) return f._id.toString();
-    } catch (e) {}
-  }
-
-  // última tentativa: tentar converter via toString
   try {
-    const s = f.toString();
-    if (mongoose.Types.ObjectId.isValid(s)) return s;
+    if (f && typeof f === 'object' && f._id && mongoose.Types.ObjectId.isValid(f._id)) {
+      return String(f._id);
+    }
+  } catch (e) {}
+
+  // se for string que contenha apenas o hex
+  try {
+    if (typeof f === 'string') {
+      // tentar parsear se for um objeto serializado
+      try {
+        const parsed = JSON.parse(f);
+        return extractFavoriteId(parsed);
+      } catch (e) {
+        // não JSON - verificar se é um hex simples
+        if (mongoose.Types.ObjectId.isValid(f)) return f;
+      }
+    }
   } catch (e) {}
 
   return null;
@@ -79,7 +89,11 @@ router.get("/user/:userId", async (req, res) => {
 
         // caso seja apenas um id (ObjectId) ou string id
         const id = extractFavoriteId(f);
-        if (id) missingIds.push(id);
+        if (id && mongoose.Types.ObjectId.isValid(id)) {
+          missingIds.push(id);
+        } else if (id) {
+          console.warn('⚠️ Ignorando favorite id inválido ao construir missingIds:', id, f);
+        }
       } catch (e) {
         // ignorar entradas inválidas
         console.warn('⚠️ Entrada inválida na wishlist encontrada e ignorada', f, e);
@@ -162,9 +176,13 @@ router.post("/", authMiddleware, async (req, res) => {
           const hw = f.hotWheel.toObject ? f.hotWheel.toObject() : f.hotWheel;
           favorites.push({ ...hw, priority: f.priority || 'medium' });
         } else {
-          const id = extractFavoriteId(f);
-          if (id) favorites.push({ _id: id, priority: 'medium' });
-        }
+            const id = extractFavoriteId(f);
+            if (id && mongoose.Types.ObjectId.isValid(id)) {
+              favorites.push({ _id: id, priority: 'medium' });
+            } else if (id) {
+              console.warn('⚠️ Ignorando favorite id inválido ao reconstruir favorites:', id, f);
+            }
+          }
       } catch (e) {
         // ignore
       }
@@ -208,8 +226,10 @@ router.delete("/:carId", authMiddleware, async (req, res) => {
       if (f && f.hotWheel) {
         const hw = f.hotWheel ? f.hotWheel.toObject() : null;
         if (hw) favorites.push({ ...hw, priority: f.priority || 'medium' });
-      } else if (id) {
+      } else if (id && mongoose.Types.ObjectId.isValid(id)) {
         missingIds3.push(id);
+      } else if (id) {
+        console.warn('⚠️ Ignorando favorite id inválido ao construir missingIds3:', id, f);
       }
     });
     if (missingIds3.length > 0) {
@@ -225,7 +245,9 @@ router.delete("/:carId", authMiddleware, async (req, res) => {
     res.status(200).json({ message: "Item removido com sucesso.", favorites });
   } catch (error) {
     console.error("❌ Erro ao remover item da wishlist:", error);
-    res.status(500).json({ message: "Erro no servidor." });
+    if (error && error.stack) console.error(error.stack);
+    // Em desenvolvimento, retornar stack/mensagem completa auxilia debug localmente
+    res.status(500).json({ message: error.message || "Erro no servidor.", stack: error.stack });
   }
 });
 
