@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import "../css/HomePage.css";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { toastSuccess, toastError, toastInfo, toastWarning } from '../utils/alerts';
 import { useNavigate } from "react-router-dom";
 import { DEFAULT_PROFILE_IMAGE, API_BASE_URL } from "../utils/constants";
 import {
@@ -152,35 +153,29 @@ const HomePage = () => {
       setResults(hotWheels || []);
 
       if (showAlert) {
-        Swal.fire({
-          icon: "success",
-          title: "Busca concluída",
-          text: `${(hotWheels || []).length} resultado(s).`,
-          timer: 1200,
-          showConfirmButton: false,
-        });
+        toastSuccess('Busca concluída', `${(hotWheels || []).length} resultado(s).`, { timer: 1200 });
       }
     } catch (error) {
       console.error("Erro ao buscar Hot Wheels:", error);
-      if (showAlert) Swal.fire("Erro!", "Erro ao buscar Hot Wheels. Tente novamente.", "error");
+      if (showAlert) toastError('Erro!', 'Erro ao buscar Hot Wheels. Tente novamente.');
     }
   };
 
   const handleAddToCollection = async (hotWheelId) => {
     try {
       if (!isAuthenticated()) {
-        Swal.fire("Atenção", "Você precisa estar logado para adicionar à coleção!", "warning");
+        toastWarning('Atenção', 'Você precisa estar logado para adicionar à coleção!');
         return;
       }
       // checar duplicata localmente
       const alreadyInCollection = (user?.collection || []).some((c) => String(c._id || c) === String(hotWheelId));
       if (alreadyInCollection) {
-        Swal.fire("Aviso", "Este modelo já está na sua coleção.", "info");
+        toastInfo('Aviso', 'Este modelo já está na sua coleção.');
         return;
       }
 
       const response = await addToCollection(hotWheelId);
-      Swal.fire("Sucesso", response.message, "success");
+      toastSuccess('Sucesso', response.message);
 
       // atualizar localmente: se response.collection estiver presente, usar; senão adicionar id localmente
       setUser((prev) => {
@@ -192,14 +187,14 @@ const HomePage = () => {
       });
     } catch (error) {
       console.error("Erro ao adicionar à coleção:", error);
-      Swal.fire("Erro", "Erro ao adicionar à coleção. Tente novamente.", "error");
+      toastError('Erro', 'Erro ao adicionar à coleção. Tente novamente.');
     }
   };
 
   const handleAddToWishlist = async (hotWheelId) => {
     try {
       if (!isAuthenticated()) {
-        Swal.fire("Atenção", "Você precisa estar logado para adicionar à lista de desejos!", "warning");
+        toastWarning('Atenção', 'Você precisa estar logado para adicionar à lista de desejos!');
         return;
       }
       // pedir prioridade ao usuário antes de adicionar (lista clicável)
@@ -239,12 +234,12 @@ const HomePage = () => {
       // checar duplicata localmente
       const alreadyInWishlist = (user?.favorites || []).some((c) => String(c._id || c) === String(hotWheelId));
       if (alreadyInWishlist) {
-        Swal.fire("Aviso", "Este modelo já está na sua lista de desejos.", "info");
+        toastInfo('Aviso', 'Este modelo já está na sua lista de desejos.');
         return;
       }
 
       const response = await addToWishlist(hotWheelId, priority);
-      Swal.fire("Sucesso", response.message, "success");
+      toastSuccess('Sucesso', response.message);
 
       setUser((prev) => {
         if (!prev) return prev;
@@ -254,7 +249,7 @@ const HomePage = () => {
       });
     } catch (error) {
       console.error("Erro ao adicionar à lista de desejos:", error);
-      Swal.fire("Erro", "Erro ao adicionar à lista de desejos. Tente novamente.", "error");
+      toastError('Erro', 'Erro ao adicionar à lista de desejos. Tente novamente.');
     }
   };
 
@@ -267,7 +262,7 @@ const HomePage = () => {
       setCurrentPage(1);
     } catch (error) {
       console.error("Erro ao buscar usuários:", error);
-      Swal.fire("Erro!", "Erro ao buscar usuários. Tente novamente.", "error");
+      toastError('Erro!', 'Erro ao buscar usuários. Tente novamente.');
     }
   };
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { toastSuccess, toastError, toastInfo } from '../utils/alerts';
 import { useNavigate } from "react-router-dom";
 import "../css/ProfilePage.css";
 import { DEFAULT_PROFILE_IMAGE, API_BASE_URL } from "../utils/constants";
@@ -97,7 +98,7 @@ const ProfilePage = () => {
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      Swal.fire("Erro!", "As senhas não coincidem.", "error");
+      toastError('Erro!', 'As senhas não coincidem.');
       return;
     }
 
@@ -111,16 +112,12 @@ const ProfilePage = () => {
         { headers: { Authorization: token } }
       );
 
-      Swal.fire("Sucesso!", "Senha alterada com sucesso!", "success");
+      toastSuccess('Sucesso!', 'Senha alterada com sucesso!');
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
-      Swal.fire(
-        "Erro!",
-        err.response?.data?.message || "Erro ao alterar senha.",
-        "error"
-      );
+      toastError('Erro!', err.response?.data?.message || 'Erro ao alterar senha.');
     }
   };
 
@@ -135,24 +132,16 @@ const ProfilePage = () => {
         { headers: { Authorization: token } }
       );
 
-      Swal.fire("Sucesso!", "Avatar atualizado!", "success");
+      toastSuccess('Sucesso!', 'Avatar atualizado!');
     } catch (err) {
-      Swal.fire(
-        "Erro!",
-        err.response?.data?.message || "Falha ao atualizar avatar.",
-        "error"
-      );
+      toastError('Erro!', err.response?.data?.message || 'Falha ao atualizar avatar.');
     }
   };
 
   // salvar conta (visual apenas)
   const handleSaveAccountInfo = (e) => {
     e.preventDefault();
-    Swal.fire(
-      "Ok!",
-      "Visual pronto. Se quiser salvar no backend, eu te ajudo a criar o endpoint.",
-      "info"
-    );
+    toastInfo('Ok!', 'Visual pronto. Se quiser salvar no backend, eu te ajudo a criar o endpoint.');
   };
 
   const handleLogout = () => {

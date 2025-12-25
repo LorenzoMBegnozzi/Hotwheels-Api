@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import { toastSuccess, toastError } from '../utils/alerts';
 import "../css/MyCollection.css";
 import { API_BASE_URL } from "../utils/constants";
 
@@ -44,13 +45,13 @@ const MyCollection = () => {
 
   const handleAddCar = async () => {
     if (!newCar.name || !newCar.year || !newCar.image) {
-      Swal.fire("Erro!", "Todos os campos são obrigatórios!", "error");
+      toastError('Erro!', 'Todos os campos são obrigatórios!');
       return;
     }
 
     const token = localStorage.getItem("token");
     if (!token) {
-      Swal.fire("Erro!", "Usuário não autenticado!", "error");
+      toastError('Erro!', 'Usuário não autenticado!');
       return;
     }
 
@@ -67,14 +68,14 @@ const MyCollection = () => {
       setCollection((prev) => [...prev, response.data.car]);
       setShowModal(false);
       setNewCar({ name: "", year: "", image: null });
-      Swal.fire("Sucesso!", "Carro adicionado à coleção!", "success");
+      toastSuccess('Sucesso!', 'Carro adicionado à coleção!');
     } catch (error) {
       console.error("Erro ao adicionar carro:", error);
 
       if (error.response?.data?.message === "Carro já existe na coleção") {
-        Swal.fire("Erro!", "Este carro já está na sua coleção!", "warning");
+        toastError('Erro!', 'Este carro já está na sua coleção!');
       } else {
-        Swal.fire("Erro!", "Não foi possível adicionar o carro.", "error");
+        toastError('Erro!', 'Não foi possível adicionar o carro.');
       }
     }
   };
@@ -84,7 +85,7 @@ const MyCollection = () => {
     const userId = localStorage.getItem("userId");
 
     if (!token || !userId) {
-      Swal.fire("Erro!", "Usuário não autenticado!", "error");
+      toastError('Erro!', 'Usuário não autenticado!');
       return;
     }
 
@@ -104,10 +105,10 @@ const MyCollection = () => {
           });
 
           setCollection((prev) => prev.filter((car) => car._id !== carId));
-          Swal.fire("Removido!", "O item foi removido da sua coleção.", "success");
+          toastSuccess('Removido!', 'O item foi removido da sua coleção.');
         } catch (error) {
           console.error("Erro ao remover item:", error);
-          Swal.fire("Erro!", "Erro ao remover o item. Tente novamente.", "error");
+          toastError('Erro!', 'Erro ao remover o item. Tente novamente.');
         }
       }
     });

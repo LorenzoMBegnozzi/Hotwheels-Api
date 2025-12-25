@@ -4,6 +4,7 @@ import axios from 'axios';
 import '../css/RecognizerPage.css';
 import '../css/HomePage.css';
 import Swal from 'sweetalert2';
+import { toastSuccess, toastError, toastInfo, toastWarning } from '../utils/alerts';
 import { API_BASE_URL } from '../utils/constants';
 
 const RecognizerPage = () => {
@@ -22,7 +23,7 @@ const RecognizerPage = () => {
   async function addToCollection(id) {
     try {
       const tokenRaw = localStorage.getItem('token');
-      if (!tokenRaw) return Swal.fire('Atenção', 'Faça login para adicionar à coleção', 'warning');
+      if (!tokenRaw) return toastWarning('Atenção', 'Faça login para adicionar à coleção');
       const token = tokenRaw.startsWith('Bearer ') ? tokenRaw : `Bearer ${tokenRaw}`;
       // checar duplicata localmente (se disponível)
       try {
@@ -31,22 +32,22 @@ const RecognizerPage = () => {
           const user = JSON.parse(userRaw);
           const exists = (user.collection || []).some((c) => String(c._id || c) === String(id));
           if (exists) {
-            return Swal.fire('Aviso', 'Este modelo já está na sua coleção.', 'info');
+            return toastInfo('Aviso', 'Este modelo já está na sua coleção.');
           }
         }
       } catch (e) { /* ignore parsing errors */ }
 
       const { data } = await axios.post(`${API_BASE_URL}/collection/add`, { hotWheelId: id }, { headers: { Authorization: token } });
-      Swal.fire('Sucesso', data.message || 'Adicionado à coleção', 'success');
+      toastSuccess('Sucesso', data.message || 'Adicionado à coleção');
     } catch (e) {
-      Swal.fire('Erro', 'Não foi possível adicionar à coleção', 'error');
+      toastError('Erro', 'Não foi possível adicionar à coleção');
     }
   }
 
   async function addToWishlist(id) {
     try {
       const tokenRaw = localStorage.getItem('token');
-      if (!tokenRaw) return Swal.fire('Atenção', 'Faça login para adicionar à wishlist', 'warning');
+      if (!tokenRaw) return toastWarning('Atenção', 'Faça login para adicionar à wishlist');
       const token = tokenRaw.startsWith('Bearer ') ? tokenRaw : `Bearer ${tokenRaw}`;
       // checar duplicata localmente (se disponível)
       try {
@@ -55,15 +56,15 @@ const RecognizerPage = () => {
           const user = JSON.parse(userRaw);
           const exists = (user.favorites || []).some((c) => String(c._id || c) === String(id));
           if (exists) {
-            return Swal.fire('Aviso', 'Este modelo já está na sua lista de desejos.', 'info');
+            return toastInfo('Aviso', 'Este modelo já está na sua lista de desejos.');
           }
         }
       } catch (e) { /* ignore parsing errors */ }
 
       const { data } = await axios.post(`${API_BASE_URL}/wishlist`, { hotWheelId: id }, { headers: { Authorization: token } });
-      Swal.fire('Sucesso', data.message || 'Adicionado à wishlist', 'success');
+      toastSuccess('Sucesso', data.message || 'Adicionado à wishlist');
     } catch (e) {
-      Swal.fire('Erro', 'Não foi possível adicionar à wishlist', 'error');
+      toastError('Erro', 'Não foi possível adicionar à wishlist');
     }
   }
   // const [preview, setPreview] = useState(null);
@@ -139,7 +140,7 @@ const RecognizerPage = () => {
 
   async function reconhecerPorTexto() {
     if (!undersideFile) {
-      Swal.fire('Atenção', 'Selecione a imagem da parte de baixo do carrinho.', 'warning');
+      toastWarning('Atenção', 'Selecione a imagem da parte de baixo do carrinho.');
       return;
     }
     try {
@@ -155,11 +156,11 @@ const RecognizerPage = () => {
         setOcrTexto('');
         setOcrAno(null);
         setOcrTop3([]);
-        Swal.fire('Info', data.mensagem || 'Nada reconhecido', 'info');
+        toastInfo('Info', data.mensagem || 'Nada reconhecido');
       }
     } catch (err) {
       console.error(err);
-      Swal.fire('Erro', 'Falha no OCR de texto', 'error');
+      toastError('Erro', 'Falha no OCR de texto');
     } finally {
       setOcrLoading(false);
     }
