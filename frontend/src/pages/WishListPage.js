@@ -5,6 +5,7 @@ import axios from "axios";
 import { removeFromWishlist as apiRemoveFromWishlist, addToCollection as apiAddToCollection } from '../utils/api';
 import { API_BASE_URL } from "../utils/constants";
 import Swal from "sweetalert2";
+import { toastSuccess, toastError, toastInfo, toastWarning } from '../utils/alerts';
 
 const WishListPage = () => {
   const [wishlist, setWishlist] = useState([]);
@@ -71,7 +72,7 @@ const WishListPage = () => {
           setWishlist(updated);
           // notify other parts of the app
           try { window.dispatchEvent(new CustomEvent('user:wishlist:changed', { detail: resp })); } catch (e) {}
-          Swal.fire("Removido!", "O item foi removido da sua lista de desejos.", "success");
+          toastSuccess('Removido!', 'O item foi removido da sua lista de desejos.');
         } catch (err) {
           console.error("❌ Erro ao remover item da wishlist:", err);
           const status = err && err.status ? ` (status ${err.status})` : '';
@@ -83,7 +84,7 @@ const WishListPage = () => {
               bodyMsg = String(err.body);
             }
           }
-          Swal.fire("Erro!", `Erro ao remover o item.${status} ${bodyMsg ? ' Detalhes: ' + bodyMsg : ''}`.trim(), "error");
+          toastError('Erro!', `Erro ao remover o item.${status} ${bodyMsg ? ' Detalhes: ' + bodyMsg : ''}`.trim());
         }
       }
     });
@@ -92,7 +93,7 @@ const WishListPage = () => {
   const handleMoveToCollection = async (car) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      Swal.fire("Atenção", "Faça login para mover itens para a coleção.", "warning");
+      toastWarning('Atenção', 'Faça login para mover itens para a coleção.');
       return;
     }
 
@@ -110,12 +111,12 @@ const WishListPage = () => {
       try { window.dispatchEvent(new CustomEvent('user:collection:changed', { detail: addResp })); } catch (e) {}
       try { window.dispatchEvent(new CustomEvent('user:wishlist:changed', { detail: remResp })); } catch (e) {}
 
-      Swal.fire("Sucesso", "Item movido para sua coleção.", "success");
+      toastSuccess('Sucesso', 'Item movido para sua coleção.');
     } catch (err) {
       console.error("Erro ao mover item para a coleção:", err);
       // se o backend indicar que já existe na wishlist/coleção, mostrar mensagem apropriada
       const msg = err?.message || err?.response?.data?.message || "Não foi possível mover o item.";
-      Swal.fire("Erro", msg, "error");
+      toastError('Erro', msg);
     }
   };
 
@@ -133,7 +134,7 @@ const WishListPage = () => {
         console.error('❌ Erro ao salvar prioridade:', err);
         // reverter state se falhar
         setWishlist((prev) => prev.map((c) => (c._id === carId ? { ...c, priority: c.priority || 'medium' } : c)));
-        Swal.fire('Erro', 'Não foi possível atualizar a prioridade.', 'error');
+        toastError('Erro', 'Não foi possível atualizar a prioridade.');
       }
     })();
   };
@@ -144,13 +145,13 @@ const WishListPage = () => {
 
   const handleAddCarToWishlist = async () => {
     if (!newCar.name || !newCar.year || !newCar.image) {
-      Swal.fire("Erro!", "Todos os campos são obrigatórios!", "error");
+      toastError('Erro!', 'Todos os campos são obrigatórios!');
       return;
     }
 
     const token = localStorage.getItem("token");
     if (!token) {
-      Swal.fire("Erro!", "Usuário não autenticado!", "error");
+      toastError('Erro!', 'Usuário não autenticado!');
       return;
     }
 
@@ -181,13 +182,13 @@ const WishListPage = () => {
 
       setShowModal(false);
       setNewCar({ name: "", year: "", image: null });
-      Swal.fire("Sucesso!", "Carro adicionado à lista de desejos!", "success");
+      toastSuccess('Sucesso!', 'Carro adicionado à lista de desejos!');
     } catch (err) {
       console.error("Erro ao adicionar carro à wishlist:", err);
       if (err.response?.data?.message === "Carro já existe na lista de desejos") {
-        Swal.fire("Erro!", "Este carro já está na sua lista de desejos!", "warning");
+        toastWarning('Erro!', 'Este carro já está na sua lista de desejos!');
       } else {
-        Swal.fire("Erro!", "Não foi possível adicionar o carro à wishlist.", "error");
+        toastError('Erro!', 'Não foi possível adicionar o carro à wishlist.');
       }
     }
   };

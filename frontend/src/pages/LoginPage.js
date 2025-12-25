@@ -3,6 +3,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
+import { toastSuccess, toastError } from '../utils/alerts';
 import "../css/LoginPage.css";
 import Logo from "../css/logo2.png";
 
@@ -47,29 +48,20 @@ const LoginPage = () => {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.userId);
 
-      Swal.fire({
-        title: "Login realizado!",
-        text: "Bem-vindo de volta!",
-        icon: "success",
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-      });
+      toastSuccess('Login realizado!', 'Bem-vindo de volta!', { position: 'bottom-start', timer: 2000 });
 
       navigate("/home");
     } catch (err) {
-      Swal.fire("Erro!", err.response?.data?.message || "Erro ao fazer login.", "error");
+      toastError('Erro!', err.response?.data?.message || 'Erro ao fazer login.');
     }
   };
 
   const handleRequestSignupCode = async () => {
     if (!email || !password || !confirmPassword) {
-      return Swal.fire("Erro!", "Preencha email e senhas.", "error");
+      return toastError('Erro!', 'Preencha email e senhas.');
     }
     if (password !== confirmPassword) {
-      return Swal.fire("Erro!", "As senhas não coincidem.", "error");
+      return toastError('Erro!', 'As senhas não coincidem.');
     }
     try {
       await axios.post(`${API_BASE_URL}/auth/register`, {
@@ -79,14 +71,14 @@ const LoginPage = () => {
         confirmPassword,
       });
       setRegisterCodeSent(true);
-      Swal.fire("Verificação", "Código enviado ao seu email.", "success");
+      toastSuccess('Verificação', 'Código enviado ao seu email.');
     } catch (err) {
-      Swal.fire("Erro!", err.response?.data?.message || "Erro ao enviar código.", "error");
+      toastError('Erro!', err.response?.data?.message || 'Erro ao enviar código.');
     }
   };
 
   const handleConfirmSignup = async () => {
-    if (!signupCode) return Swal.fire("Erro!", "Informe o código recebido.", "error");
+    if (!signupCode) return toastError('Erro!', 'Informe o código recebido.');
     try {
       const res = await axios.post(`${API_BASE_URL}/auth/confirm-signup`, {
         name,
@@ -98,30 +90,30 @@ const LoginPage = () => {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.userId);
 
-      Swal.fire("Sucesso!", "Conta criada.", "success");
+      toastSuccess('Sucesso!', 'Conta criada.');
       setIsRegistering(false);
       setRegisterCodeSent(false);
       navigate("/home");
     } catch (err) {
-      Swal.fire("Erro!", err.response?.data?.message || "Erro ao confirmar cadastro.", "error");
+      toastError('Erro!', err.response?.data?.message || 'Erro ao confirmar cadastro.');
     }
   };
 
   const handleRequestResetCode = async () => {
-    if (!email) return Swal.fire("Erro!", "Informe o email da conta.", "error");
+    if (!email) return toastError('Erro!', 'Informe o email da conta.');
     try {
       await axios.post(`${API_BASE_URL}/auth/request-reset-code`, { email });
       setResetCodeSent(true);
-      Swal.fire("Verificação", "Código enviado ao seu email.", "success");
+      toastSuccess('Verificação', 'Código enviado ao seu email.');
     } catch (err) {
-      Swal.fire("Erro!", err.response?.data?.message || "Erro ao enviar código.", "error");
+      toastError('Erro!', err.response?.data?.message || 'Erro ao enviar código.');
     }
   };
 
   const handleConfirmReset = async () => {
-    if (!resetCode) return Swal.fire("Erro!", "Informe o código recebido.", "error");
+    if (!resetCode) return toastError('Erro!', 'Informe o código recebido.');
     if (newPassword !== confirmNewPassword) {
-      return Swal.fire("Erro!", "As senhas não coincidem.", "error");
+      return toastError('Erro!', 'As senhas não coincidem.');
     }
     try {
       await axios.post(`${API_BASE_URL}/auth/confirm-reset`, {
@@ -131,11 +123,11 @@ const LoginPage = () => {
         confirmPassword: confirmNewPassword,
       });
 
-      Swal.fire("Sucesso!", "Senha alterada.", "success");
+      toastSuccess('Sucesso!', 'Senha alterada.');
       setIsResetting(false);
       setResetCodeSent(false);
     } catch (err) {
-      Swal.fire("Erro!", err.response?.data?.message || "Erro ao confirmar reset.", "error");
+      toastError('Erro!', err.response?.data?.message || 'Erro ao confirmar reset.');
     }
   };
 
