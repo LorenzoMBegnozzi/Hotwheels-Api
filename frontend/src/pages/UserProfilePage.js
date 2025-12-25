@@ -126,11 +126,11 @@ const UserProfilePage = () => {
           )}
           <div className={styles.userStats}>
             <div className={styles.statItem}>
-              <span>📦</span>
+              <span></span>
               <span>Coleção: {collection.length} itens</span>
             </div>
             <div className={styles.statItem}>
-              <span>💙</span>
+              <span></span>
               <span>Lista de Desejos: {wishlist.length} itens</span>
             </div>
           </div>
