@@ -24,6 +24,18 @@ const RecognizerPage = () => {
       const tokenRaw = localStorage.getItem('token');
       if (!tokenRaw) return Swal.fire('Atenção', 'Faça login para adicionar à coleção', 'warning');
       const token = tokenRaw.startsWith('Bearer ') ? tokenRaw : `Bearer ${tokenRaw}`;
+      // checar duplicata localmente (se disponível)
+      try {
+        const userRaw = localStorage.getItem('user');
+        if (userRaw) {
+          const user = JSON.parse(userRaw);
+          const exists = (user.collection || []).some((c) => String(c._id || c) === String(id));
+          if (exists) {
+            return Swal.fire('Aviso', 'Este modelo já está na sua coleção.', 'info');
+          }
+        }
+      } catch (e) { /* ignore parsing errors */ }
+
       const { data } = await axios.post(`${API_BASE_URL}/collection/add`, { hotWheelId: id }, { headers: { Authorization: token } });
       Swal.fire('Sucesso', data.message || 'Adicionado à coleção', 'success');
     } catch (e) {
@@ -36,6 +48,18 @@ const RecognizerPage = () => {
       const tokenRaw = localStorage.getItem('token');
       if (!tokenRaw) return Swal.fire('Atenção', 'Faça login para adicionar à wishlist', 'warning');
       const token = tokenRaw.startsWith('Bearer ') ? tokenRaw : `Bearer ${tokenRaw}`;
+      // checar duplicata localmente (se disponível)
+      try {
+        const userRaw = localStorage.getItem('user');
+        if (userRaw) {
+          const user = JSON.parse(userRaw);
+          const exists = (user.favorites || []).some((c) => String(c._id || c) === String(id));
+          if (exists) {
+            return Swal.fire('Aviso', 'Este modelo já está na sua lista de desejos.', 'info');
+          }
+        }
+      } catch (e) { /* ignore parsing errors */ }
+
       const { data } = await axios.post(`${API_BASE_URL}/wishlist`, { hotWheelId: id }, { headers: { Authorization: token } });
       Swal.fire('Sucesso', data.message || 'Adicionado à wishlist', 'success');
     } catch (e) {

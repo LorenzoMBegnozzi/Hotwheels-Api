@@ -172,6 +172,13 @@ const HomePage = () => {
         Swal.fire("Atenção", "Você precisa estar logado para adicionar à coleção!", "warning");
         return;
       }
+      // checar duplicata localmente
+      const alreadyInCollection = (user?.collection || []).some((c) => String(c._id || c) === String(hotWheelId));
+      if (alreadyInCollection) {
+        Swal.fire("Aviso", "Este modelo já está na sua coleção.", "info");
+        return;
+      }
+
       const response = await addToCollection(hotWheelId);
       Swal.fire("Sucesso", response.message, "success");
 
@@ -229,14 +236,19 @@ const HomePage = () => {
       const priority = swalContainer ? swalContainer.getAttribute('data-chosen-priority') : null;
       if (!priority) return; // cancelado ou nada escolhido
 
+      // checar duplicata localmente
+      const alreadyInWishlist = (user?.favorites || []).some((c) => String(c._id || c) === String(hotWheelId));
+      if (alreadyInWishlist) {
+        Swal.fire("Aviso", "Este modelo já está na sua lista de desejos.", "info");
+        return;
+      }
+
       const response = await addToWishlist(hotWheelId, priority);
       Swal.fire("Sucesso", response.message, "success");
 
       setUser((prev) => {
         if (!prev) return prev;
         if (response?.favorites) return { ...prev, favorites: response.favorites };
-        const exists = (prev.favorites || []).some((c) => String(c._id || c) === String(hotWheelId));
-        if (exists) return prev;
         // inserir objeto reduzido com prioridade para manter consistência local
         return { ...prev, favorites: [...(prev.favorites || []), { _id: hotWheelId, priority }] };
       });
@@ -460,7 +472,7 @@ const HomePage = () => {
                       className="card-btn add-collection"
                       onClick={() => handleAddToCollection(car._id)}
                     >
-                      Adicionar
+                      Adicionar à coleção
                     </button>
                     <button
                       className="card-btn add-wishlist"
