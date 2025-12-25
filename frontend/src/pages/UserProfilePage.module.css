@@ -105,6 +105,21 @@
   gap: 2rem;
 }
 
+.friendBtn {
+  padding: 8px 12px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.friendBtn[disabled] {
+  background: #6c757d;
+  cursor: default;
+}
+
 @media (max-width: 768px) {
   .userProfileContainer {
     padding: 1rem;

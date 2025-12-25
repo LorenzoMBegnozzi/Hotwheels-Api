@@ -288,3 +288,49 @@ export const searchUsers = async (name) => {
     throw error;
   }
 };
+
+// Friend requests
+export const sendFriendRequest = async (toUserId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/friends/request`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ toUserId })
+    });
+    if (!response.ok) throw new Error('Erro ao enviar solicitação');
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao enviar friend request:', error);
+    throw error;
+  }
+};
+
+export const acceptFriendRequest = async (fromUserId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/friends/accept`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ fromUserId })
+    });
+    if (!response.ok) throw new Error('Erro ao aceitar solicitação');
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao aceitar friend request:', error);
+    throw error;
+  }
+};
+
+export const declineFriendRequest = async (fromUserId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/friends/decline`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ fromUserId })
+    });
+    if (!response.ok) throw new Error('Erro ao recusar solicitação');
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao recusar friend request:', error);
+    throw error;
+  }
+};

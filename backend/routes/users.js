@@ -67,6 +67,8 @@ router.get("/:id", async (req, res) => {
       profilePicture: user.profilePicture,
       collection: userCollection?.collection || [],
       favorites: userCollection?.favorites || [],
+      friendRequests: (user.friendRequests || []).map((f) => String(f)),
+      friends: (user.friends || []).map((f) => String(f)),
     });
   } catch (err) {
     console.error(err);

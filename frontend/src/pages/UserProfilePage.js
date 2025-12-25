@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './UserProfilePage.module.css';
+import { sendFriendRequest } from '../utils/api';
+import { toastSuccess, toastError, toastInfo } from '../utils/alerts';
 import { DEFAULT_PROFILE_IMAGE } from '../utils/constants';
 
 // Custom hooks
@@ -19,6 +21,12 @@ const UserProfilePage = () => {
 
   // Custom hooks
   const { user, collection, wishlist, loading, error } = useUserProfile(userId);
+  const [requesting, setRequesting] = useState(false);
+
+  const currentUserId = localStorage.getItem('userId');
+  const isOwnProfile = currentUserId && String(currentUserId) === String(userId);
+  const alreadyFriend = user && user.friends && Array.isArray(user.friends) && user.friends.some((f) => String(f._id || f) === String(currentUserId));
+  const requestPending = user && user.friendRequests && Array.isArray(user.friendRequests) && user.friendRequests.some((r) => String(r._id || r) === String(currentUserId));
   
   // Determine which data to paginate based on active tab
   const currentData = activeTab === 'collection' ? collection : wishlist;
@@ -87,6 +95,35 @@ const UserProfilePage = () => {
         />
         <div className={styles.userDetails}>
           <h1>{user.name}</h1>
+          {!isOwnProfile && (
+            <div style={{ marginTop: 8 }}>
+              {alreadyFriend ? (
+                <button className={styles.friendBtn} disabled>Amigos</button>
+              ) : requestPending ? (
+                <button className={styles.friendBtn} disabled>Solicitação Enviada</button>
+              ) : (
+                <button
+                  className={styles.friendBtn}
+                  disabled={requesting}
+                  onClick={async () => {
+                    try {
+                      setRequesting(true);
+                      await sendFriendRequest(userId);
+                      toastSuccess('Solicitação enviada', 'Pedido de amizade enviado com sucesso.');
+                    } catch (err) {
+                      console.error('Erro enviando solicitação:', err);
+                      const msg = err?.message || err?.response?.data?.message || 'Erro ao enviar solicitação.';
+                      toastError('Erro', msg);
+                    } finally {
+                      setRequesting(false);
+                    }
+                  }}
+                >
+                  Enviar solicitação de amizade
+                </button>
+              )}
+            </div>
+          )}
           <div className={styles.userStats}>
             <div className={styles.statItem}>
               <span>📦</span>
