@@ -303,7 +303,11 @@ const ProfilePage = () => {
         {showFriends && (
           <section className="hw-card hw-friends-list">
             <h2 className="hw-card-title">
-              <span className="hw-card-icon" aria-hidden="true">🤝</span>
+              <span className="hw-card-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16 11c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-8 0c1.657 0 3-1.343 3-3S9.657 5 8 5 5 6.343 5 8s1.343 3 3 3zm0 2c-2.667 0-8 1.333-8 4v3h14v-3c0-2.667-5.333-4-6-4zm8 0c-.29 0-.63.02-1 .06 1.16.84 2 2 2 3.94v3h6v-3c0-2.667-5.333-4-7-4z" />
+                </svg>
+              </span>
               Meus Amigos
             </h2>
             <div className="hw-requests-list">
@@ -331,7 +335,11 @@ const ProfilePage = () => {
         {friendRequestsDetails && friendRequestsDetails.length > 0 && (
           <section className="hw-card hw-incoming-requests">
             <h2 className="hw-card-title">
-              <span className="hw-card-icon" aria-hidden="true">📬</span>
+              <span className="hw-card-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
+                </svg>
+              </span>
               Solicitações Recebidas
             </h2>
             <div className="hw-requests-list">
@@ -360,7 +368,11 @@ const ProfilePage = () => {
           {/* Avatar */}
           <div className="hw-card">
             <h2 className="hw-card-title">
-              <span className="hw-card-icon" aria-hidden="true">🎨</span>
+              <span className="hw-card-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 3C7 3 3 6.58 3 11c0 2 .99 3.5 2.61 4.5C6.34 17.2 5 18.8 5 20.5 5 21.88 6.12 23 7.5 23 12.75 23 20 20 20 11 20 6.58 16 3 12 3zm-1 5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" />
+                </svg>
+              </span>
               Avatar
             </h2>
 
@@ -385,7 +397,11 @@ const ProfilePage = () => {
           {/* Alterar Senha */}
           <div className="hw-card">
             <h2 className="hw-card-title">
-              <span className="hw-card-icon" aria-hidden="true">🔐</span>
+              <span className="hw-card-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 10V8a6 6 0 1 1 12 0v2h1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h1zm2 0h8V8a4 4 0 0 0-8 0v2z" />
+                </svg>
+              </span>
               Alterar Senha
             </h2>
 
@@ -405,9 +421,16 @@ const ProfilePage = () => {
                     className="hw-eye"
                     onClick={() => setShowCurrent((v) => !v)}
                     aria-label="Mostrar/ocultar senha atual"
-                  >
-                    {showCurrent ? "👁️‍🗨️" : "👁️"}
-                  </button>
+                    dangerouslySetInnerHTML={{ __html: showCurrent ? `
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
+                        <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
+                      </svg>` : `
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>` }}
+                  />
                 </div>
               </div>
 
@@ -426,9 +449,16 @@ const ProfilePage = () => {
                     className="hw-eye"
                     onClick={() => setShowNew((v) => !v)}
                     aria-label="Mostrar/ocultar nova senha"
-                  >
-                    {showNew ? "👁️‍🗨️" : "👁️"}
-                  </button>
+                    dangerouslySetInnerHTML={{ __html: showNew ? `
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
+                        <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
+                      </svg>` : `
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>` }}
+                  />
                 </div>
               </div>
 
@@ -447,9 +477,16 @@ const ProfilePage = () => {
                     className="hw-eye"
                     onClick={() => setShowConfirm((v) => !v)}
                     aria-label="Mostrar/ocultar confirmação"
-                  >
-                    {showConfirm ? "👁️‍🗨️" : "👁️"}
-                  </button>
+                    dangerouslySetInnerHTML={{ __html: showConfirm ? `
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
+                        <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
+                      </svg>` : `
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>` }}
+                  />
                 </div>
               </div>
 
@@ -462,7 +499,11 @@ const ProfilePage = () => {
           {/* Informações da Conta */}
           <div className="hw-card">
             <h2 className="hw-card-title">
-              <span className="hw-card-icon" aria-hidden="true">👤</span>
+              <span className="hw-card-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z" />
+                </svg>
+              </span>
               Informações da Conta
             </h2>
 

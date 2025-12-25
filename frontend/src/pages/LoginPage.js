@@ -231,9 +231,16 @@ const LoginPage = () => {
                   className="toggle-password"
                   onClick={() => setShowPassword((v) => !v)}
                   aria-label="Mostrar/ocultar senha"
-                >
-                  {showPassword ? "👁️‍🗨️" : "👁️"}
-                </button>
+                  dangerouslySetInnerHTML={{ __html: showPassword ? `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
+                      <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
+                    </svg>` : `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>` }}
+                />
               </div>
             </div>
           )}
@@ -295,9 +302,16 @@ const LoginPage = () => {
                       className="toggle-password"
                       onClick={() => setShowNewPassword((v) => !v)}
                       aria-label="Mostrar/ocultar nova senha"
-                    >
-                      {showNewPassword ? "👁️‍🗨️" : "👁️"}
-                    </button>
+                      dangerouslySetInnerHTML={{ __html: showNewPassword ? `
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                          <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
+                          <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
+                        </svg>` : `
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>` }}
+                    />
                   </div>
 
                   <label className="form-label">Confirmar nova senha</label>
