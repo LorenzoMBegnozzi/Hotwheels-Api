@@ -1,0 +1,57 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Build / production
+/build
+/dist
+**/build
+**/dist
+
+# Frontend specific
+/frontend/build/
+
+# Test reports / coverage
+/coverage
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Uploads / generated images
+/uploads/
+uploads/
+
+# Large trained data or binary assets (keep out of git or use LFS)
+*.traineddata
+
+# Certificates and keys
+*.pem
+*.key
+
+# Misc
+tmp/
+temp/
+*.cache
