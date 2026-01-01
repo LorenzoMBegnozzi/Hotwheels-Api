@@ -218,5 +218,55 @@ router.post("/confirm-reset", async (req, res) => {
   }
 });
 
+// Solicitar código para exclusão de conta (recebe email no body, igual ao registro)
+router.post('/request-delete-code', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: 'Email é obrigatório.' });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
+
+    const code = (Math.floor(100000 + Math.random() * 900000)).toString();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+    await VerificationCode.create({ email: user.email, code, type: 'delete', expiresAt });
+
+    try {
+      await sendCodeEmail(user.email, 'Código de verificação - Exclusão de conta', code);
+    } catch (mailErr) {
+      return res.status(500).json({ message: 'Falha ao enviar email.' });
+    }
+
+    res.status(200).json({ message: 'Código de exclusão enviado.', expiresAt });
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao solicitar código de exclusão.' });
+  }
+});
+
+// Confirmar exclusão de conta com código (usuário autenticado)
+router.post('/confirm-delete', authMiddleware, async (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!code) return res.status(400).json({ message: 'Código é obrigatório.' });
+
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
+
+    const record = await VerificationCode.findOne({ email: user.email, type: 'delete', consumed: false }).sort({ createdAt: -1 });
+    if (!record) return res.status(400).json({ message: 'Código não encontrado.' });
+    if (record.code !== code) return res.status(400).json({ message: 'Código inválido.' });
+    if (record.expiresAt < new Date()) return res.status(400).json({ message: 'Código expirado.' });
+
+    // delete user and mark code consumed
+    await User.findByIdAndDelete(user._id);
+    record.consumed = true;
+    await record.save();
+
+    res.status(200).json({ message: 'Conta excluída com sucesso.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao confirmar exclusão.' });
+  }
+});
+
 
 module.exports = router;

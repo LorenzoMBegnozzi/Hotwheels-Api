@@ -4,7 +4,7 @@ const verificationCodeSchema = new mongoose.Schema(
   {
     email: { type: String, required: true, index: true },
     code: { type: String, required: true },
-    type: { type: String, enum: ["signup", "reset"], required: true },
+    type: { type: String, enum: ["signup", "reset", "delete"], required: true },
     expiresAt: { type: Date, required: true },
     consumed: { type: Boolean, default: false },
   },

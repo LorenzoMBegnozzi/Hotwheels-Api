@@ -43,6 +43,10 @@ const ProfilePage = () => {
   const [friendRequestsDetails, setFriendRequestsDetails] = useState([]);
   const [showFriends, setShowFriends] = useState(false);
   const [friendsDetails, setFriendsDetails] = useState([]);
+  const [isRequestingDeleteCode, setIsRequestingDeleteCode] = useState(false);
+  const [deleteCodeSent, setDeleteCodeSent] = useState(false);
+  const [deleteCode, setDeleteCode] = useState('');
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   useEffect(() => {
     const fetchProfileAndStats = async () => {
@@ -199,6 +203,37 @@ const ProfilePage = () => {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const requestDeleteCode = async () => {
+    try {
+      setIsRequestingDeleteCode(true);
+      await axios.post(`${API_BASE_URL}/auth/request-delete-code`, { email: user.email });
+      setDeleteCodeSent(true);
+      toastSuccess('Código enviado', 'Um código foi enviado para o seu email para confirmar a exclusão.');
+    } catch (err) {
+      toastError('Erro', err.response?.data?.message || 'Erro ao solicitar código.');
+    } finally {
+      setIsRequestingDeleteCode(false);
+    }
+  };
+
+  const confirmDeleteAccount = async () => {
+    if (!deleteCode) return toastError('Erro', 'Informe o código enviado por email.');
+    try {
+      setIsDeletingAccount(true);
+      let token = localStorage.getItem("token");
+      if (token && !token.startsWith("Bearer ")) token = `Bearer ${token}`;
+
+      await axios.post(`${API_BASE_URL}/auth/confirm-delete`, { code: deleteCode }, { headers: { Authorization: token } });
+      toastSuccess('Conta excluída', 'Sua conta foi removida com sucesso.');
+      // cleanup local state and logout
+      logout();
+    } catch (err) {
+      toastError('Erro', err.response?.data?.message || 'Erro ao confirmar exclusão.');
+    } finally {
+      setIsDeletingAccount(false);
+    }
   };
 
   const handleAccept = async (fromUserId) => {
@@ -528,6 +563,41 @@ const ProfilePage = () => {
                 Salvar Alterações
               </button>
             </form>
+          </div>
+
+          {/* Delete Account Card */}
+          <div className="hw-card">
+            <h2 className="hw-card-title">
+              <span className="hw-card-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                </svg>
+              </span>
+              Excluir Conta
+            </h2>
+
+            <div className="hw-card-body">
+              {deleteCodeSent ? (
+                <>
+                  <p>Um código foi enviado para seu email. Insira abaixo para confirmar a exclusão da conta.</p>
+                  <input className="hw-input" placeholder="Código recebido" value={deleteCode} onChange={(e) => setDeleteCode(e.target.value)} />
+                  <div style={{ marginTop: 10 }}>
+                    <button className="hw-btn hw-btn-danger" onClick={confirmDeleteAccount} disabled={isDeletingAccount}>
+                      {isDeletingAccount ? 'Excluindo...' : 'Confirmar Exclusão'}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p>Se desejar excluir sua conta, envie um código para seu email para confirmar.</p>
+                  <div style={{ marginTop: 10 }}>
+                    <button className="hw-btn hw-btn-danger" onClick={requestDeleteCode} disabled={isRequestingDeleteCode}>
+                      {isRequestingDeleteCode ? 'Enviando...' : 'Enviar Código de Exclusão'}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </section>
       </main>
