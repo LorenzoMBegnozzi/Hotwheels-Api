@@ -291,7 +291,7 @@ const MyCollection = () => {
           {/* Empty */}
           {filtered.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon">🏎️</div>
+              <div className="empty-icon"></div>
               <div className="empty-title">Nada por aqui ainda</div>
               <div className="empty-text">Adicione seu primeiro Hot Wheel à coleção.</div>
             </div>

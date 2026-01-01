@@ -448,7 +448,7 @@ const HomePage = () => {
                       className="card-img"
                     />
                   ) : (
-                    <div className="card-placeholder">🏎️</div>
+                    <div className="card-placeholder"></div>
                   )}
                 </div>
 

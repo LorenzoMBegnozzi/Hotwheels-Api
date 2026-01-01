@@ -9,8 +9,9 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendCodeEmail(to, subject, code) {
+  const fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER;
   const mailOptions = {
-    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+    from: `Diecast Social <${fromAddress}>`,
     to,
     subject,
     text: `Seu código é: ${code}`,
