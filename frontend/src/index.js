@@ -4,6 +4,7 @@ import './index.css';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { startTokenExpiryWatcher } from './utils/auth';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -14,3 +15,6 @@ root.render(
 );
 
 reportWebVitals();
+
+// start token expiry watcher
+startTokenExpiryWatcher();

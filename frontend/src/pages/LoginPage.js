@@ -48,6 +48,9 @@ const LoginPage = () => {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.userId);
 
+      // notify token watchers
+      try { window.dispatchEvent(new Event('token:updated')); } catch (e) {}
+
       toastSuccess('Login realizado!', 'Bem-vindo de volta!', { position: 'bottom-start', timer: 2000 });
 
       navigate("/home");
@@ -89,6 +92,9 @@ const LoginPage = () => {
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.userId);
+
+      // notify token watchers
+      try { window.dispatchEvent(new Event('token:updated')); } catch (e) {}
 
       toastSuccess('Sucesso!', 'Conta criada.');
       setIsRegistering(false);

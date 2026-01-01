@@ -571,12 +571,12 @@ const HomePage = () => {
         </button>
       </div>
 
-      <img
+      {/* <img
         src="/reconhecedor.png"
         alt="Reconhecer"
         className="recognizer-fab"
         onClick={() => navigate("/reconhecedor")}
-      />
+      /> */}
     </div>
   );
 };

@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { toastSuccess, toastError, toastInfo } from '../utils/alerts';
 import { getUserById, acceptFriendRequest, declineFriendRequest } from '../utils/api';
 import { useNavigate } from "react-router-dom";
+import { logout } from '../utils/auth';
 import "../css/ProfilePage.css";
 import { DEFAULT_PROFILE_IMAGE, API_BASE_URL } from "../utils/constants";
 
@@ -197,8 +198,7 @@ const ProfilePage = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
+    logout();
   };
 
   const handleAccept = async (fromUserId) => {
