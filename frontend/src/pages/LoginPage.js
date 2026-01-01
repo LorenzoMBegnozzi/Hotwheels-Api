@@ -25,6 +25,7 @@ const LoginPage = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [isSendingCode, setIsSendingCode] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -67,6 +68,7 @@ const LoginPage = () => {
       return toastError('Erro!', 'As senhas não coincidem.');
     }
     try {
+      setIsSendingCode(true);
       await axios.post(`${API_BASE_URL}/auth/register`, {
         name,
         email,
@@ -77,6 +79,8 @@ const LoginPage = () => {
       toastSuccess('Verificação', 'Código enviado ao seu email.');
     } catch (err) {
       toastError('Erro!', err.response?.data?.message || 'Erro ao enviar código.');
+    } finally {
+      setIsSendingCode(false);
     }
   };
 
@@ -357,8 +361,14 @@ const LoginPage = () => {
             </div>
           )}
 
-          <button type="button" className="login-btn" onClick={onPrimaryAction}>
-            {primaryText}
+          <button type="button" className="login-btn" onClick={onPrimaryAction} disabled={isSendingCode}>
+            {isSendingCode && isRegistering && !registerCodeSent ? (
+              <>
+                <span className="btn-spinner spinner" aria-hidden="true"></span> Enviando...
+              </>
+            ) : (
+              primaryText
+            )}
           </button>
 
           {/* Links inferiores */}
