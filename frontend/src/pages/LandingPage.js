@@ -24,9 +24,6 @@ const LandingPage = () => {
       <section className="hero">
         <div className="hero-content">
           <div className="hero-badge">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M2 12a10 10 0 1010-10A10 10 0 002 12zm15.7-4.3l-4.9 4.9-2.1-.7-.7-2.1 4.9-4.9L17.7 7.7z" />
-            </svg>
             A Rede Social dos Colecionadores
           </div>
           <h1 className="hero-title">
@@ -153,7 +150,7 @@ const LandingPage = () => {
               <li>Comunidade ativa de colecionadores</li>
               <li>Atualizações constantes com novos recursos</li>
             </ul>
-            <p><strong>Lorenzo Berg</strong> - Desenvolvedor Full Stack e Colecionador<br />lorenzobegnozzi@hotmail.com</p>
+            <p><strong>Lorenzo Marzola Begnozzi</strong> - Desenvolvedor Full Stack e Colecionador<br />lorenzobegnozzi@hotmail.com</p>
           </div>
         </div>
       </section>
