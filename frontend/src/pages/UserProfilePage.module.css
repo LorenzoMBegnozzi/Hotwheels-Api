@@ -17,16 +17,18 @@
 
 .backButton {
   padding: 10px 20px;
-  background: #000000;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  background: transparent;
+  color: #f0f0f5;
+  border: 1px solid #353540;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.2s ease;
+  font-weight: 500;
 }
 
 .backButton:hover {
-  background-color: #0056b3;
+  background: #1c1c24;
+  border-color: #6366f1;
 }
 
 .userInfo {
@@ -34,37 +36,50 @@
   align-items: center;
   gap: 2rem;
   margin-bottom: 3rem;
-  padding: 2rem;
-  background: rgba(20,20,26,0.6);
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  padding: 2.5rem;
+  background: #14141a;
+  border: 1px solid #252530;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 
 .userImage {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
+  width: 140px;
+  height: 140px;
+  border-radius: 20px;
   object-fit: cover;
-  border: 4px solid #007bff;
+  border: 3px solid #6366f1;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.userDetails {
+  flex: 1;
 }
 
 .userDetails h1 {
-  margin: 0 0 1rem 0;
-  color: #333;
+  margin: 0 0 1.5rem 0;
+  color: #f0f0f5;
   font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .userStats {
   display: flex;
   gap: 2rem;
-  font-size: 1.1rem;
-  color: #666;
+  font-size: 1rem;
+  color: #9ca3af;
+  margin-top: 1rem;
 }
 
 .statItem {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.statItem span:last-child {
+  font-weight: 500;
 }
 
 .tabsContainer {
@@ -74,29 +89,30 @@
 .loadingMessage {
   text-align: center;
   font-size: 1.2rem;
-  color: #666;
+  color: #9ca3af;
   margin: 3rem 0;
 }
 
 .errorMessage {
   text-align: center;
   font-size: 1.1rem;
-  color: #dc3545;
+  color: #ef4444;
   margin: 2rem 0;
-  padding: 1rem;
-  background: rgba(220,66,66,0.06);
-  border: 1px solid rgba(220,66,66,0.12);
-  border-radius: 8px;
+  padding: 1.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
 }
 
 .emptyMessage {
   text-align: center;
   font-size: 1.1rem;
-  color: #666;
+  color: #9ca3af;
   margin: 3rem 0;
   padding: 2rem;
-  background: rgba(255,255,255,0.02);
-  border-radius: 8px;
+  background: #14141a;
+  border: 1px solid #252530;
+  border-radius: 12px;
 }
 
 .resultsContainer {
@@ -105,19 +121,52 @@
   gap: 2rem;
 }
 
+/* Friend Button - Melhorado */
 .friendBtn {
-  padding: 8px 12px;
-  background: #007bff;
+  padding: 0.85rem 2rem;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.friendBtn:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.friendBtn:active:not([disabled]) {
+  transform: translateY(0);
 }
 
 .friendBtn[disabled] {
-  background: #6c757d;
-  cursor: default;
+  background: #1c1c24;
+  border: 1px solid #252530;
+  color: #6b7280;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Variação para "Amigos" */
+.friendBtn[disabled]:first-of-type {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+/* Variação para "Solicitação Enviada" */
+.friendBtn[disabled]:not(:first-of-type) {
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
 }
 
 @media (max-width: 768px) {
@@ -129,12 +178,23 @@
   .userInfo {
     flex-direction: column;
     text-align: center;
-    gap: 1rem;
+    gap: 1.5rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .userImage {
+    width: 120px;
+    height: 120px;
+  }
+
+  .userDetails h1 {
+    font-size: 1.75rem;
   }
   
   .userStats {
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem;
+    justify-content: center;
   }
   
   .header {
@@ -145,5 +205,10 @@
   .resultsContainer {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1rem;
+  }
+
+  .friendBtn {
+    width: 100%;
+    justify-content: center;
   }
 }
