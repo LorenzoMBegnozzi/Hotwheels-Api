@@ -87,6 +87,10 @@ const UserProfilePage = () => {
       setFollowActionLoading(false);
     }
   };
+
+  const followButtonLabel = relationship?.isFollowing
+    ? 'Parar de seguir'
+    : (relationship?.isFollowedBy ? 'Seguir de volta' : 'Seguir');
   
   // Determine which data to paginate based on active tab
   const currentData = activeTab === 'collection' ? collection : wishlist;
@@ -164,7 +168,7 @@ const UserProfilePage = () => {
                 disabled={relationshipLoading || followActionLoading}
                 type="button"
               >
-                {relationship?.isFollowing ? 'Parar de seguir' : 'Seguir'}
+                {followButtonLabel}
               </button>
             )}
           </div>
