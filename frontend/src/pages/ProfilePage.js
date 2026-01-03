@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { toastSuccess, toastError, toastInfo } from '../utils/alerts';
-import { getUserById, acceptFriendRequest, declineFriendRequest } from '../utils/api';
 import { useNavigate } from "react-router-dom";
 import { logout } from '../utils/auth';
 import "../css/ProfilePage.css";
@@ -40,9 +39,6 @@ const ProfilePage = () => {
 
   // conta (visual) - sem mudar backend
   const [displayName, setDisplayName] = useState("");
-  const [friendRequestsDetails, setFriendRequestsDetails] = useState([]);
-  const [showFriends, setShowFriends] = useState(false);
-  const [friendsDetails, setFriendsDetails] = useState([]);
   const [isRequestingDeleteCode, setIsRequestingDeleteCode] = useState(false);
   const [deleteCodeSent, setDeleteCodeSent] = useState(false);
   const [deleteCode, setDeleteCode] = useState('');
@@ -98,25 +94,6 @@ const ProfilePage = () => {
         // atualizar user com estatísticas
         setUser((prev) => ({ ...(prev || {}), collectionCount, wishlistCount, monthsActive }));
 
-        // se houver friendRequests, buscar detalhes dos usuários que enviaram
-        try {
-          const reqs = Array.isArray(profile.friendRequests) ? profile.friendRequests : [];
-          if (reqs.length > 0) {
-            const details = await Promise.all(
-              reqs.map(async (id) => {
-                try {
-                  return await getUserById(id);
-                } catch (e) {
-                  return null;
-                }
-              })
-            );
-            const filtered = details.filter(Boolean);
-            setFriendRequestsDetails(filtered);
-          }
-        } catch (e) {
-          // ignore
-        }
       } catch (error) {
         console.error("Erro ao carregar perfil:", error);
       }
@@ -124,34 +101,6 @@ const ProfilePage = () => {
 
     fetchProfileAndStats();
   }, []);
-
-  // quando o user for carregado ou friends mudarem, buscar detalhes dos amigos
-  useEffect(() => {
-    const fetchFriendsDetails = async () => {
-      try {
-        const ids = Array.isArray(user?.friends) ? user.friends : [];
-        if (ids.length === 0) {
-          setFriendsDetails([]);
-          return;
-        }
-
-        const details = await Promise.all(
-          ids.map(async (id) => {
-            try {
-              return await getUserById(id);
-            } catch (e) {
-              return null;
-            }
-          })
-        );
-        setFriendsDetails(details.filter(Boolean));
-      } catch (e) {
-        console.error('Erro ao buscar detalhes dos amigos', e);
-      }
-    };
-
-    fetchFriendsDetails();
-  }, [user?.friends]);
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
@@ -236,32 +185,6 @@ const ProfilePage = () => {
     }
   };
 
-  const handleAccept = async (fromUserId) => {
-    try {
-      await acceptFriendRequest(fromUserId);
-      toastSuccess('Sucesso!', 'Solicitação aceita.');
-
-      // remover da lista local
-      setFriendRequestsDetails((prev) => prev.filter((u) => String(u._id) !== String(fromUserId)));
-      setUser((prev) => ({ ...(prev || {}), friendRequests: (prev?.friendRequests || []).filter((id) => String(id) !== String(fromUserId)), friends: [...(prev?.friends || []), fromUserId] }));
-    } catch (err) {
-      toastError('Erro!', err.message || 'Falha ao aceitar solicitação.');
-    }
-  };
-
-  const handleDecline = async (fromUserId) => {
-    try {
-      await declineFriendRequest(fromUserId);
-      toastInfo('Recusado', 'Solicitação recusada.');
-
-      // remover da lista local
-      setFriendRequestsDetails((prev) => prev.filter((u) => String(u._id) !== String(fromUserId)));
-      setUser((prev) => ({ ...(prev || {}), friendRequests: (prev?.friendRequests || []).filter((id) => String(id) !== String(fromUserId)) }));
-    } catch (err) {
-      toastError('Erro!', err.message || 'Falha ao recusar solicitação.');
-    }
-  };
-
   if (!user) return <p className="profile-loading">Carregando...</p>;
 
   const initials =
@@ -326,77 +249,8 @@ const ProfilePage = () => {
               </div>
             </div>
 
-            <div style={{ marginTop: 12 }}>
-              <button className="hw-btn hw-btn-ghost" onClick={() => setShowFriends((v) => !v)}>
-                {showFriends ? 'Fechar Amigos' : `Amigos (${(user.friends || []).length})`}
-              </button>
-            </div>
           </div>
         </section>
-
-        {/* Friends List (toggle) */}
-        {showFriends && (
-          <section className="hw-card hw-friends-list">
-            <h2 className="hw-card-title">
-              <span className="hw-card-icon" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M16 11c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-8 0c1.657 0 3-1.343 3-3S9.657 5 8 5 5 6.343 5 8s1.343 3 3 3zm0 2c-2.667 0-8 1.333-8 4v3h14v-3c0-2.667-5.333-4-6-4zm8 0c-.29 0-.63.02-1 .06 1.16.84 2 2 2 3.94v3h6v-3c0-2.667-5.333-4-7-4z" />
-                </svg>
-              </span>
-              Meus Amigos
-            </h2>
-            <div className="hw-requests-list">
-              {friendsDetails.length === 0 ? (
-                <div className="hw-request-item">Você ainda não tem amigos adicionados.</div>
-              ) : (
-                friendsDetails.map((f) => (
-                  <div key={f._id} className="hw-request-item hw-friend-item" onClick={() => navigate(`/user/${f._id}`)} style={{ cursor: 'pointer' }}>
-                    <div className="hw-request-user">
-                      <img src={f.profilePicture || DEFAULT_USER_IMG} alt={f.name} onError={(e) => (e.currentTarget.src = DEFAULT_USER_IMG)} />
-                      <div className="hw-request-meta">
-                        <div className="hw-request-name">{f.name}</div>
-                        <div className="hw-request-email">{f.email}</div>
-                      </div>
-                    </div>
-                    <div style={{ color: 'var(--muted)', fontSize: 12 }}>Ver perfil</div>
-                  </div>
-                ))
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* Incoming Friend Requests */}
-        {friendRequestsDetails && friendRequestsDetails.length > 0 && (
-          <section className="hw-card hw-incoming-requests">
-            <h2 className="hw-card-title">
-              <span className="hw-card-icon" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
-                </svg>
-              </span>
-              Solicitações Recebidas
-            </h2>
-            <div className="hw-requests-list">
-              {friendRequestsDetails.map((req) => (
-                <div key={req._id} className="hw-request-item">
-                  <div className="hw-request-user">
-                    <img src={req.profilePicture || DEFAULT_USER_IMG} alt={req.name} onError={(e) => (e.currentTarget.src = DEFAULT_USER_IMG)} />
-                    <div className="hw-request-meta">
-                      <div className="hw-request-name">{req.name}</div>
-                      <div className="hw-request-email">{req.email}</div>
-                    </div>
-                  </div>
-
-                  <div className="hw-request-actions">
-                    <button className="hw-btn hw-btn-primary" onClick={() => handleAccept(req._id)}>Aceitar</button>
-                    <button className="hw-btn hw-btn-ghost" onClick={() => handleDecline(req._id)}>Recusar</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* Grid (3 cards) */}
         <section className="hw-grid-3">

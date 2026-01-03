@@ -121,54 +121,6 @@
   gap: 2rem;
 }
 
-/* Friend Button - Melhorado */
-.friendBtn {
-  padding: 0.85rem 2rem;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.friendBtn:hover:not([disabled]) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
-}
-
-.friendBtn:active:not([disabled]) {
-  transform: translateY(0);
-}
-
-.friendBtn[disabled] {
-  background: #1c1c24;
-  border: 1px solid #252530;
-  color: #6b7280;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* Variação para "Amigos" */
-.friendBtn[disabled]:first-of-type {
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.2);
-  color: #22c55e;
-}
-
-/* Variação para "Solicitação Enviada" */
-.friendBtn[disabled]:not(:first-of-type) {
-  background: rgba(251, 191, 36, 0.1);
-  border: 1px solid rgba(251, 191, 36, 0.2);
-  color: #fbbf24;
-}
-
 @media (max-width: 768px) {
   .userProfileContainer {
     padding: 1rem;
@@ -207,8 +159,4 @@
     gap: 1rem;
   }
 
-  .friendBtn {
-    width: 100%;
-    justify-content: center;
-  }
 }
