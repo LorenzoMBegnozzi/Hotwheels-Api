@@ -247,6 +247,19 @@ const ProfilePage = () => {
                 <div className="hw-stat-value">{user.monthsActive ?? 0}</div>
                 <div className="hw-stat-label">Meses Ativo</div>
               </div>
+
+              <div className="hw-stat">
+                <div className="hw-stat-value">{user.followersCount ?? 0}</div>
+                <div className="hw-stat-label">Seguidores</div>
+              </div>
+              <div className="hw-stat">
+                <div className="hw-stat-value">{user.followingCount ?? 0}</div>
+                <div className="hw-stat-label">Seguindo</div>
+              </div>
+              <div className="hw-stat">
+                <div className="hw-stat-value">{user.friendsCount ?? 0}</div>
+                <div className="hw-stat-label">Amigos</div>
+              </div>
             </div>
 
           </div>
@@ -310,7 +323,8 @@ const ProfilePage = () => {
                     className="hw-eye"
                     onClick={() => setShowCurrent((v) => !v)}
                     aria-label="Mostrar/ocultar senha atual"
-                    dangerouslySetInnerHTML={{ __html: showCurrent ? `
+                    dangerouslySetInnerHTML={{
+                      __html: showCurrent ? `
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
                         <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
@@ -338,7 +352,8 @@ const ProfilePage = () => {
                     className="hw-eye"
                     onClick={() => setShowNew((v) => !v)}
                     aria-label="Mostrar/ocultar nova senha"
-                    dangerouslySetInnerHTML={{ __html: showNew ? `
+                    dangerouslySetInnerHTML={{
+                      __html: showNew ? `
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
                         <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
@@ -366,7 +381,8 @@ const ProfilePage = () => {
                     className="hw-eye"
                     onClick={() => setShowConfirm((v) => !v)}
                     aria-label="Mostrar/ocultar confirmação"
-                    dangerouslySetInnerHTML={{ __html: showConfirm ? `
+                    dangerouslySetInnerHTML={{
+                      __html: showConfirm ? `
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
                         <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />

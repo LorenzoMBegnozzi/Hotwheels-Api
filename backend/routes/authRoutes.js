@@ -109,7 +109,13 @@ router.get("/profile", authMiddleware, async (req, res) => {
     const user = await User.findById(req.user.id).select("-password");
     if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
 
-    res.json(user);
+    const obj = user.toObject();
+    res.json({
+      ...obj,
+      followersCount: Array.isArray(obj.followers) ? obj.followers.length : 0,
+      followingCount: Array.isArray(obj.following) ? obj.following.length : 0,
+      friendsCount: Array.isArray(obj.friends) ? obj.friends.length : 0,
+    });
   } catch (err) {
     res.status(500).json({ message: "Erro ao buscar perfil" });
   }

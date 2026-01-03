@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../models/User");
 const UserCollection = require("../models/UserCollection");
 const mongoose = require("mongoose");
+const auth = require("../middlewares/auth");
 
 // Lista de avatares permitidos (8 opções + padrão)
 const ALLOWED_AVATARS = [
@@ -43,6 +44,131 @@ router.get("/search", async (req, res) => {
   }
 });
 
+// Contagens sociais do usuário autenticado
+router.get("/me/social", auth, async (req, res) => {
+  try {
+    const me = await User.findById(req.user.id).select("followers following friends");
+    if (!me) return res.status(404).json({ message: "Usuário não encontrado" });
+
+    res.json({
+      followersCount: Array.isArray(me.followers) ? me.followers.length : 0,
+      followingCount: Array.isArray(me.following) ? me.following.length : 0,
+      friendsCount: Array.isArray(me.friends) ? me.friends.length : 0,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erro ao buscar contagens sociais" });
+  }
+});
+
+// Relacionamento entre usuário autenticado e um usuário alvo
+router.get("/:id/relationship", auth, async (req, res) => {
+  try {
+    const { id: targetId } = req.params;
+    const meId = req.user.id;
+
+    if (!mongoose.Types.ObjectId.isValid(targetId)) {
+      return res.status(400).json({ message: "ID de usuário inválido" });
+    }
+    if (String(meId) === String(targetId)) {
+      return res.json({ isFollowing: false, isFollowedBy: false, isFriend: false });
+    }
+
+    const [me, target] = await Promise.all([
+      User.findById(meId).select("followers following friends"),
+      User.findById(targetId).select("followers following friends"),
+    ]);
+    if (!me || !target) return res.status(404).json({ message: "Usuário não encontrado" });
+
+    const isFollowing = (me.following || []).some((u) => String(u) === String(targetId));
+    const isFollowedBy = (me.followers || []).some((u) => String(u) === String(targetId));
+    const isFriend = (me.friends || []).some((u) => String(u) === String(targetId));
+
+    res.json({ isFollowing, isFollowedBy, isFriend });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erro ao buscar relacionamento" });
+  }
+});
+
+// Seguir usuário
+router.post("/:id/follow", auth, async (req, res) => {
+  try {
+    const { id: targetId } = req.params;
+    const meId = req.user.id;
+
+    if (!mongoose.Types.ObjectId.isValid(targetId)) {
+      return res.status(400).json({ message: "ID de usuário inválido" });
+    }
+    if (String(meId) === String(targetId)) {
+      return res.status(400).json({ message: "Você não pode seguir a si mesmo" });
+    }
+
+    const [me, target] = await Promise.all([User.findById(meId), User.findById(targetId)]);
+    if (!me || !target) return res.status(404).json({ message: "Usuário não encontrado" });
+
+    me.following = me.following || [];
+    target.followers = target.followers || [];
+    me.friends = me.friends || [];
+    target.friends = target.friends || [];
+
+    const alreadyFollowing = me.following.some((u) => String(u) === String(targetId));
+    if (!alreadyFollowing) me.following.push(targetId);
+
+    const alreadyInFollowers = target.followers.some((u) => String(u) === String(meId));
+    if (!alreadyInFollowers) target.followers.push(meId);
+
+    // Se o outro usuário já me segue, viramos amigos
+    const targetFollowsMe = (target.following || []).some((u) => String(u) === String(meId));
+    if (targetFollowsMe) {
+      if (!me.friends.some((u) => String(u) === String(targetId))) me.friends.push(targetId);
+      if (!target.friends.some((u) => String(u) === String(meId))) target.friends.push(meId);
+    }
+
+    await Promise.all([me.save(), target.save()]);
+
+    res.json({
+      isFollowing: true,
+      isFriend: (me.friends || []).some((u) => String(u) === String(targetId)),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erro ao seguir usuário" });
+  }
+});
+
+// Parar de seguir usuário
+router.delete("/:id/follow", auth, async (req, res) => {
+  try {
+    const { id: targetId } = req.params;
+    const meId = req.user.id;
+
+    if (!mongoose.Types.ObjectId.isValid(targetId)) {
+      return res.status(400).json({ message: "ID de usuário inválido" });
+    }
+    if (String(meId) === String(targetId)) {
+      return res.status(400).json({ message: "Operação inválida" });
+    }
+
+    const [me, target] = await Promise.all([User.findById(meId), User.findById(targetId)]);
+    if (!me || !target) return res.status(404).json({ message: "Usuário não encontrado" });
+
+    me.following = (me.following || []).filter((u) => String(u) !== String(targetId));
+    target.followers = (target.followers || []).filter((u) => String(u) !== String(meId));
+
+    // Amizade é derivada de follow mútuo. Se eu parei de seguir, remove amizade.
+    me.friends = (me.friends || []).filter((u) => String(u) !== String(targetId));
+    target.friends = (target.friends || []).filter((u) => String(u) !== String(meId));
+
+    await Promise.all([me.save(), target.save()]);
+
+    res.json({ isFollowing: false, isFriend: false });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erro ao parar de seguir" });
+  }
+});
+
 // Buscar usuário por ID (deve vir DEPOIS da rota /search)
 router.get("/:id", async (req, res) => {
   try {
@@ -67,6 +193,9 @@ router.get("/:id", async (req, res) => {
       profilePicture: user.profilePicture,
       collection: userCollection?.collection || [],
       favorites: userCollection?.favorites || [],
+      followersCount: Array.isArray(user.followers) ? user.followers.length : 0,
+      followingCount: Array.isArray(user.following) ? user.following.length : 0,
+      friendsCount: Array.isArray(user.friends) ? user.friends.length : 0,
     });
   } catch (err) {
     console.error(err);
@@ -74,7 +203,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-module.exports = router;
 // Atualizar avatar do usuário
 router.put('/:id/avatar', async (req, res) => {
   try {
@@ -109,3 +237,5 @@ router.put('/:id/avatar', async (req, res) => {
     res.status(500).json({ message: 'Erro ao atualizar avatar' });
   }
 });
+
+module.exports = router;

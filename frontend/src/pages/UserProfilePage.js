@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './UserProfilePage.module.css';
 import { DEFAULT_PROFILE_IMAGE } from '../utils/constants';
@@ -11,17 +11,82 @@ import { usePagination } from '../hooks/usePagination';
 import TabNavigation from '../components/common/TabNavigation';
 import CarItem from '../components/common/CarItem';
 import Pagination from '../components/common/Pagination';
+import { followUser, getUserRelationship, unfollowUser } from '../utils/api';
+import { toastError } from '../utils/alerts';
 
 const UserProfilePage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('collection');
+  const [relationship, setRelationship] = useState(null);
+  const [relationshipLoading, setRelationshipLoading] = useState(false);
+  const [followActionLoading, setFollowActionLoading] = useState(false);
 
   // Custom hooks
   const { user, collection, wishlist, loading, error } = useUserProfile(userId);
 
   const currentUserId = localStorage.getItem('userId');
   const isOwnProfile = currentUserId && String(currentUserId) === String(userId);
+  const isLoggedIn = !!localStorage.getItem('token');
+
+  useEffect(() => {
+    const loadRelationship = async () => {
+      if (isOwnProfile) {
+        setRelationship(null);
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setRelationship(null);
+        return;
+      }
+
+      try {
+        setRelationshipLoading(true);
+        const rel = await getUserRelationship(userId);
+        setRelationship(rel);
+      } catch (e) {
+        setRelationship(null);
+      } finally {
+        setRelationshipLoading(false);
+      }
+    };
+
+    loadRelationship();
+  }, [userId, isOwnProfile]);
+
+  const handleToggleFollow = async () => {
+    if (!isLoggedIn) {
+      toastError('Erro', 'Você precisa estar logado para seguir usuários.');
+      return;
+    }
+
+    try {
+      setFollowActionLoading(true);
+
+      if (relationship?.isFollowing) {
+        const res = await unfollowUser(userId);
+        setRelationship((prev) => ({ ...(prev || {}), ...res }));
+      } else {
+        const res = await followUser(userId);
+        setRelationship((prev) => ({ ...(prev || {}), ...res }));
+      }
+
+      // Recarrega para refletir follow-back / amizade
+      try {
+        const rel = await getUserRelationship(userId);
+        setRelationship(rel);
+      } catch (e) {
+        // ignore
+      }
+    } catch (e) {
+      const status = e?.status ? ` (${e.status})` : '';
+      toastError('Erro', `${e?.message || 'Falha ao seguir'}${status}`);
+    } finally {
+      setFollowActionLoading(false);
+    }
+  };
   
   // Determine which data to paginate based on active tab
   const currentData = activeTab === 'collection' ? collection : wishlist;
@@ -89,7 +154,20 @@ const UserProfilePage = () => {
           className={styles.userImage} 
         />
         <div className={styles.userDetails}>
-          <h1>{user.name}</h1>
+          <div className={styles.userTitleRow}>
+            <h1>{user.name}</h1>
+
+            {!isOwnProfile && isLoggedIn && (
+              <button
+                className={styles.backButton}
+                onClick={handleToggleFollow}
+                disabled={relationshipLoading || followActionLoading}
+                type="button"
+              >
+                {relationship?.isFollowing ? 'Parar de seguir' : 'Seguir'}
+              </button>
+            )}
+          </div>
           <div className={styles.userStats}>
             <div className={styles.statItem}>
               <span></span>

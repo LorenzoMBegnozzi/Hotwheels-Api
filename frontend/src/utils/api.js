@@ -27,6 +27,77 @@ export const getUserById = async (userId) => {
   }
 };
 
+export const getUserRelationship = async (userId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/${userId}/relationship`, {
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      let details = null;
+      try { details = await response.clone().json(); } catch (e) { try { details = await response.clone().text(); } catch (e2) { details = null; } }
+      const msg = (details && details.message) ? details.message : (typeof details === 'string' && details ? details : 'Erro ao buscar relacionamento');
+      const err = new Error(msg);
+      err.status = response.status;
+      err.body = details;
+      throw err;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao buscar relacionamento:', error);
+    throw error;
+  }
+};
+
+export const followUser = async (userId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/${userId}/follow`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      let details = null;
+      try { details = await response.clone().json(); } catch (e) { try { details = await response.clone().text(); } catch (e2) { details = null; } }
+      const msg = (details && details.message) ? details.message : (typeof details === 'string' && details ? details : 'Erro ao seguir usuário');
+      const err = new Error(msg);
+      err.status = response.status;
+      err.body = details;
+      throw err;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao seguir usuário:', error);
+    throw error;
+  }
+};
+
+export const unfollowUser = async (userId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/${userId}/follow`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      let details = null;
+      try { details = await response.clone().json(); } catch (e) { try { details = await response.clone().text(); } catch (e2) { details = null; } }
+      const msg = (details && details.message) ? details.message : (typeof details === 'string' && details ? details : 'Erro ao parar de seguir');
+      const err = new Error(msg);
+      err.status = response.status;
+      err.body = details;
+      throw err;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao parar de seguir:', error);
+    throw error;
+  }
+};
+
 // Collection related API functions
 export const getUserCollection = async (userId) => {
   try {
