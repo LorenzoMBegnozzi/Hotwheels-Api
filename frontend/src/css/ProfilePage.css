@@ -255,6 +255,346 @@ body,
 }
 
 /* ==================================
+   SECTION HEADERS / HELPERS
+================================== */
+
+.hw-section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 1.25rem;
+}
+
+.hw-section-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.hw-section-subtitle {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.hw-muted {
+  color: var(--muted);
+}
+
+.hw-empty {
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.hw-btn-icon {
+  padding: 0.75rem 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hw-btn-small {
+  padding: 0.55rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+}
+
+/* ==================================
+   POSTS (PROFILE)
+================================== */
+
+.hw-profile-posts {
+  margin-bottom: 2.5rem;
+}
+
+.hw-posts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 1100px) {
+  .hw-posts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .hw-posts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hw-post-tile {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  cursor: pointer;
+  display: block;
+  text-align: left;
+}
+
+.hw-post-tile:hover {
+  border-color: var(--border2);
+}
+
+.hw-post-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hw-post-text {
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  background: var(--panel);
+}
+
+.hw-post-text-inner {
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hw-post-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.75rem 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--text);
+  font-weight: 700;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.0) 100%);
+  pointer-events: none;
+}
+
+.hw-settings {
+  margin-top: 1rem;
+}
+
+/* ==================================
+   POST MODAL (INSTAGRAM-LIKE)
+================================== */
+
+.hw-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: grid;
+  place-items: center;
+  z-index: 200;
+  padding: 1.5rem;
+}
+
+.hw-modal {
+  width: min(1100px, 100%);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+@media (max-width: 900px) {
+  .hw-modal {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hw-modal-head-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hw-modal-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hw-modal-close:hover {
+  border-color: var(--accent1);
+  background: var(--panel2);
+}
+
+.hw-modal-media {
+  background: #000;
+  display: grid;
+  place-items: center;
+  min-height: 420px;
+}
+
+.hw-modal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  cursor: pointer;
+}
+
+.hw-modal-side {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.hw-modal-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.hw-modal-title {
+  font-weight: 800;
+}
+
+.hw-modal-subtitle {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.hw-modal-caption {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.9rem;
+  line-height: 1.35;
+}
+
+.hw-modal-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.hw-modal-stats-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hw-modal-stats-right {
+  display: flex;
+  gap: 0.75rem;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.hw-like-btn {
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text);
+  padding: 0.55rem 0.9rem;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.hw-like-btn:hover {
+  border-color: var(--accent1);
+  background: var(--panel2);
+}
+
+.hw-like-btn.liked {
+  border-color: var(--accent2);
+}
+
+.hw-danger-btn {
+  border: 1px solid var(--danger);
+  background: transparent;
+  color: var(--danger);
+  padding: 0.55rem 0.9rem;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.hw-danger-btn:hover {
+  background: var(--danger);
+  color: white;
+}
+
+.hw-modal-comments {
+  flex: 1;
+  overflow: auto;
+  padding-right: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.hw-comment {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.75rem 0.85rem;
+}
+
+.hw-comment-name {
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+
+.hw-comment-text {
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.hw-modal-commentbox {
+  display: grid;
+  grid-template-columns: 1fr 140px;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.hw-modal-commentbox .hw-btn-primary {
+  width: 100%;
+}
+
+@media (max-width: 520px) {
+  .hw-modal-commentbox {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==================================
    GRID CARDS
 ================================== */
 

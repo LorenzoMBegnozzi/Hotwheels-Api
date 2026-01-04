@@ -8,6 +8,7 @@ import WishListPage from "./pages/WishListPage";
 import ProfilePage from "./pages/ProfilePage";
 import RecognizerPage from "./pages/RecognizerPage";
 import UserProfilePage from "./pages/UserProfilePage";
+import FeedPage from "./pages/FeedPage";
 
 const AppRoutes = () => {
   return (
@@ -20,6 +21,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/lista-de-desejos" element={<WishListPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/feed" element={<FeedPage />} />
         <Route path="/reconhecedor" element={<RecognizerPage />} />
         <Route path="/user/:userId" element={<UserProfilePage />} />
       </Routes>

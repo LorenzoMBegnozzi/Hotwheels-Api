@@ -162,14 +162,24 @@ const UserProfilePage = () => {
             <h1>{user.name}</h1>
 
             {!isOwnProfile && isLoggedIn && (
-              <button
-                className={styles.backButton}
-                onClick={handleToggleFollow}
-                disabled={relationshipLoading || followActionLoading}
-                type="button"
-              >
-                {followButtonLabel}
-              </button>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                <button
+                  className={styles.backButton}
+                  onClick={() => navigate(`/feed?userId=${userId}`)}
+                  type="button"
+                >
+                  Ver publicações
+                </button>
+
+                <button
+                  className={styles.backButton}
+                  onClick={handleToggleFollow}
+                  disabled={relationshipLoading || followActionLoading}
+                  type="button"
+                >
+                  {followButtonLabel}
+                </button>
+              </div>
             )}
           </div>
           <div className={styles.userStats}>

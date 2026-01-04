@@ -2,11 +2,33 @@ import { API_BASE_URL } from './constants';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
+  let token = localStorage.getItem('token');
+  if (token && !String(token).startsWith('Bearer ')) token = `Bearer ${token}`;
   return {
     'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` })
+    ...(token && { 'Authorization': token })
   };
+};
+
+// Helper: parse errors with body
+const buildHttpError = async (response, fallbackMessage) => {
+  let details = null;
+  try {
+    details = await response.clone().json();
+  } catch (e) {
+    try {
+      details = await response.clone().text();
+    } catch (e2) {
+      details = null;
+    }
+  }
+  const msg = (details && details.message)
+    ? details.message
+    : (typeof details === 'string' && details ? details : fallbackMessage);
+  const err = new Error(msg);
+  err.status = response.status;
+  err.body = details;
+  throw err;
 };
 
 // User related API functions
@@ -34,13 +56,7 @@ export const getUserRelationship = async (userId) => {
     });
 
     if (!response.ok) {
-      let details = null;
-      try { details = await response.clone().json(); } catch (e) { try { details = await response.clone().text(); } catch (e2) { details = null; } }
-      const msg = (details && details.message) ? details.message : (typeof details === 'string' && details ? details : 'Erro ao buscar relacionamento');
-      const err = new Error(msg);
-      err.status = response.status;
-      err.body = details;
-      throw err;
+      await buildHttpError(response, 'Erro ao buscar relacionamento');
     }
 
     return await response.json();
@@ -58,13 +74,7 @@ export const followUser = async (userId) => {
     });
 
     if (!response.ok) {
-      let details = null;
-      try { details = await response.clone().json(); } catch (e) { try { details = await response.clone().text(); } catch (e2) { details = null; } }
-      const msg = (details && details.message) ? details.message : (typeof details === 'string' && details ? details : 'Erro ao seguir usuário');
-      const err = new Error(msg);
-      err.status = response.status;
-      err.body = details;
-      throw err;
+      await buildHttpError(response, 'Erro ao seguir usuário');
     }
 
     return await response.json();
@@ -82,18 +92,117 @@ export const unfollowUser = async (userId) => {
     });
 
     if (!response.ok) {
-      let details = null;
-      try { details = await response.clone().json(); } catch (e) { try { details = await response.clone().text(); } catch (e2) { details = null; } }
-      const msg = (details && details.message) ? details.message : (typeof details === 'string' && details ? details : 'Erro ao parar de seguir');
-      const err = new Error(msg);
-      err.status = response.status;
-      err.body = details;
-      throw err;
+      await buildHttpError(response, 'Erro ao parar de seguir');
     }
 
     return await response.json();
   } catch (error) {
     console.error('Erro ao parar de seguir:', error);
+    throw error;
+  }
+};
+
+// =========================
+// Feed API
+// =========================
+
+export const fetchFeedPosts = async (options = {}) => {
+  try {
+    const authorId = options?.authorId;
+    const qs = authorId ? `?authorId=${encodeURIComponent(authorId)}` : '';
+
+    const response = await fetch(`${API_BASE_URL}/feed${qs}`, {
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      await buildHttpError(response, 'Erro ao buscar feed');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao buscar feed:', error);
+    throw error;
+  }
+};
+
+export const createFeedPost = async ({ text, imageFile }) => {
+  try {
+    const token = localStorage.getItem('token');
+    const form = new FormData();
+    form.append('text', text);
+    if (imageFile) form.append('image', imageFile);
+
+    const response = await fetch(`${API_BASE_URL}/feed`, {
+      method: 'POST',
+      headers: {
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+      },
+      body: form,
+    });
+
+    if (!response.ok) {
+      await buildHttpError(response, 'Erro ao criar publicação');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao criar publicação:', error);
+    throw error;
+  }
+};
+
+export const likeFeedPost = async (postId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/feed/${postId}/like`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      await buildHttpError(response, 'Erro ao curtir');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao curtir:', error);
+    throw error;
+  }
+};
+
+export const addFeedComment = async (postId, text) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/feed/${postId}/comments`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ text }),
+    });
+
+    if (!response.ok) {
+      await buildHttpError(response, 'Erro ao comentar');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao comentar:', error);
+    throw error;
+  }
+};
+
+export const deleteFeedPost = async (postId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/feed/${postId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      await buildHttpError(response, 'Erro ao excluir publicação');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao excluir publicação:', error);
     throw error;
   }
 };

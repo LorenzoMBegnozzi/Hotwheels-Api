@@ -346,6 +346,14 @@ const HomePage = () => {
             Minha Lista de Desejos
           </button>
 
+          <button
+            className="user-search-btn"
+            onClick={() => navigate('/feed')}
+            title="Feed"
+          >
+            Feed
+          </button>
+
           <div className="profile-icon" title="Meu perfil" onClick={() => navigate("/profile")}>
             {user?.name?.[0]?.toUpperCase() || "U"}
           </div>
