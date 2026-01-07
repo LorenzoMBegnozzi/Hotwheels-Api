@@ -8,7 +8,10 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN?.split(",") || ["http://localhost:3000"],
+  credentials: true
+}));
 
 // Servir a pasta uploads corretamente
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
