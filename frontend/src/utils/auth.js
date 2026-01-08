@@ -152,9 +152,7 @@ const resetInactivityTimer = () => {
 };
 
 export const startInactivityWatcher = (timeoutMs = INACTIVITY_TIMEOUT_MS) => {
-  // allow custom timeout
-  const t = typeof timeoutMs === 'number' ? timeoutMs : INACTIVITY_TIMEOUT_MS;
-  // set constant (not necessary to overwrite, but respect passed value)
+  // allow custom timeout (currently not altering behavior, kept for API compatibility)
   // setup handler
   _activityHandler = () => resetInactivityTimer();
 

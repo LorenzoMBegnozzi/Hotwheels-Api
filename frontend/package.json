@@ -18,7 +18,7 @@
     "sweetalert2": "^11.16.0"
   },
   "scripts": {
-    "start": "serve -s build -l $PORT",
+    "start": "node scripts/start-serve.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

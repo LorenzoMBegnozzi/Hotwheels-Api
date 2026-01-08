@@ -206,7 +206,7 @@ const HomePage = () => {
         </div>
       `;
 
-      const { isConfirmed, value: chosen } = await Swal.fire({
+      await Swal.fire({
         title: 'Escolha a prioridade',
         html,
         showCancelButton: true,

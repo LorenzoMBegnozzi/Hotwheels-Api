@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../css/RecognizerPage.css';
 import '../css/HomePage.css';
-import Swal from 'sweetalert2';
 import { toastSuccess, toastError, toastInfo, toastWarning } from '../utils/alerts';
 import { API_BASE_URL } from '../utils/constants';
 
@@ -267,6 +266,11 @@ const RecognizerPage = () => {
           ) : (
             <p>Nenhum match textual encontrado.</p>
           )}
+        </div>
+      )}
+      {ocrAno && (
+        <div style={{ marginTop: '20px', padding: '12px', border: '1px solid #eee', borderRadius: '6px' }}>
+          <strong>Ano detectado:</strong> {ocrAno}
         </div>
       )}
       {/* Mensagem de tentativa visual desativada */}

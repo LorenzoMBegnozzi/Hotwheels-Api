@@ -195,11 +195,11 @@ const LandingPage = () => {
           <div className="footer-logo">Diecast <span style={{color:'#6366f1'}}>Social</span></div>
           <p className="footer-text">A plataforma completa para colecionadores de Hot Wheels</p>
           <div className="footer-links">
-            <a href="#" className="footer-link">Sobre</a>
+            <button type="button" className="footer-link" onClick={() => navigate('/about')}>Sobre</button>
             <a href="#features" className="footer-link">Recursos</a>
-            <a href="#" className="footer-link">Contato</a>
-            <a href="#" className="footer-link">Privacidade</a>
-            <a href="#" className="footer-link">Termos</a>
+            <button type="button" className="footer-link" onClick={() => navigate('/contact')}>Contato</button>
+            <button type="button" className="footer-link" onClick={() => navigate('/privacy')}>Privacidade</button>
+            <button type="button" className="footer-link" onClick={() => navigate('/terms')}>Termos</button>
           </div>
           <div className="footer-bottom">© 2024 Diecast Social. Desenvolvido por Lorenzo Marzola Begnozzi</div>
         </div>

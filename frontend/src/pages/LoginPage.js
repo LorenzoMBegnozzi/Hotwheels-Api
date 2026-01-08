@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
 import { useNavigate, useLocation } from "react-router-dom";
-import Swal from "sweetalert2";
+// Swal removed: not used directly in this file
 import { toastSuccess, toastError } from '../utils/alerts';
 import "../css/LoginPage.css";
 import Logo from "../css/logo2.png";
@@ -141,15 +141,7 @@ const LoginPage = () => {
     }
   };
 
-  const title = isRegistering
-    ? registerCodeSent
-      ? "Confirmar Cadastro"
-      : "Criar Conta"
-    : isResetting
-      ? resetCodeSent
-        ? "Confirmar Redefinição"
-        : "Redefinir Senha"
-      : "Login";
+  // `title` was removed because it's not used in the current layout
 
   const subtitle = isRegistering
     ? "Crie sua conta para começar!"

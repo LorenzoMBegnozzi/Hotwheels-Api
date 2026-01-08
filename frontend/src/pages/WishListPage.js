@@ -5,7 +5,7 @@ import axios from "axios";
 import { removeFromWishlist as apiRemoveFromWishlist, addToCollection as apiAddToCollection } from '../utils/api';
 import { API_BASE_URL } from "../utils/constants";
 import Swal from "sweetalert2";
-import { toastSuccess, toastError, toastInfo, toastWarning } from '../utils/alerts';
+import { toastSuccess, toastError, toastWarning } from '../utils/alerts';
 
 const WishListPage = () => {
   const [wishlist, setWishlist] = useState([]);
