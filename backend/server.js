@@ -23,11 +23,27 @@ const defaultOrigins = [
 const allowedOrigins = parseOrigins(process.env.CORS_ORIGIN);
 const originAllowList = allowedOrigins.length ? allowedOrigins : defaultOrigins;
 
+const isAllowedByPattern = (origin) => {
+  try {
+    const u = new URL(origin);
+    const host = u.hostname.toLowerCase();
+    // Railway typical domains
+    if (host.endsWith('.up.railway.app')) return true;
+    if (host.endsWith('.railway.app')) return true;
+    return false;
+  } catch {
+    return false;
+  }
+};
+
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow same-origin / server-to-server / curl (no Origin header)
     if (!origin) return callback(null, true);
+    // Allow all if configured
+    if (originAllowList.includes('*')) return callback(null, true);
     if (originAllowList.includes(origin)) return callback(null, true);
+    if (isAllowedByPattern(origin)) return callback(null, true);
     return callback(null, false);
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
