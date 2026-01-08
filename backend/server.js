@@ -76,7 +76,10 @@ app.use("/api/feed", require("./routes/feedRoutes"));
 ========================= */
 
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok" });
+  res.status(200).json({
+    status: "ok",
+    mongo: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
+  });
 });
 
 /* =========================
@@ -93,19 +96,38 @@ if (!mongoUri) {
   process.exit(1);
 }
 
-const PORT = process.env.PORT || 5000;
+const PORT =
+  Number(process.env.PORT) ||
+  Number(process.env.RAILWAY_PUBLIC_PORT) ||
+  Number(process.env.RAILWAY_PORT) ||
+  5000;
 
-mongoose
-  .connect(mongoUri)
-  .then(() => {
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 API rodando na porta ${PORT}`);
+  if (process.env.PORT && Number(process.env.PORT) !== PORT) {
+    console.log(
+      `[PORT] process.env.PORT=${process.env.PORT} (resolved PORT=${PORT})`
+    );
+  }
+});
+
+const connectMongoWithRetry = async () => {
+  try {
+    await mongoose.connect(mongoUri);
     console.log("✅ MongoDB conectado");
+  } catch (err) {
+    console.error("❌ Erro ao conectar no MongoDB (vai tentar novamente)");
+    console.error(err?.message || err);
+    setTimeout(connectMongoWithRetry, 5000);
+  }
+};
 
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`🚀 API rodando na porta ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("❌ Erro ao conectar no MongoDB");
-    console.error(err);
-    process.exit(1);
-  });
+mongoose.connection.on("disconnected", () => {
+  console.warn("⚠️ MongoDB desconectado");
+});
+
+mongoose.connection.on("error", (err) => {
+  console.error("❌ MongoDB erro:", err?.message || err);
+});
+
+connectMongoWithRetry();
