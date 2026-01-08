@@ -9,7 +9,10 @@ const mongoose = require('mongoose');
 const HotWheel = require('../models/HotWheel');
 
 async function run() {
-  const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/hotwheels';
+  const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+  if (!mongoUri) {
+    throw new Error('Missing MongoDB connection string. Set MONGODB_URI (recommended) or MONGO_URI.');
+  }
   await mongoose.connect(mongoUri);
   console.log('[migration] Connected to MongoDB');
   const cursor = HotWheel.find().cursor();

@@ -6,7 +6,12 @@ const UserCollection = require('../models/UserCollection');
 const HotWheel = require('../models/HotWheel');
 
 async function migrate() {
-  await mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+  const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+  if (!mongoUri) {
+    throw new Error('Missing MongoDB connection string. Set MONGODB_URI (recommended) or MONGO_URI.');
+  }
+
+  await mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
   console.log('Conectado ao MongoDB para migração');
 
   const all = await UserCollection.find({});
