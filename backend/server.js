@@ -79,9 +79,9 @@ mongoose
   .then(() => console.log("✅ MongoDB conectado"))
   .catch((err) => console.log("❌ Erro ao conectar ao MongoDB:", err));
 
-// Servir frontend (build) quando disponível, mantendo /api separado
-const FRONTEND_BUILD = path.join(__dirname, "..", "frontend", "build");
-app.use(express.static(FRONTEND_BUILD));
+// // Servir frontend (build) quando disponível, mantendo /api separado
+// const FRONTEND_BUILD = path.join(__dirname, "..", "frontend", "build");
+// app.use(express.static(FRONTEND_BUILD));
 
 // SPA fallback para qualquer rota que não seja /api/*
 app.get(/^\/(?!api\/).*/, (req, res) => {
