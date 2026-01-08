@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 
@@ -70,33 +71,43 @@ app.use("/api/feed", require("./routes/feedRoutes"));
 /* =========================
    MongoDB
 ========================= */
-// Mongo URI literal do Railway
 const mongoUri = process.env.MONGODB_URI;
 
 if (!mongoUri) {
-  console.error("❌ MONGO URI NÃO DEFINIDA");
-  process.exit(1); // para o container se não tiver Mongo
+  console.error("❌ MONGODB_URI NÃO DEFINIDA");
+  process.exit(1); // derruba o container se não tiver Mongo
 }
 
 mongoose
-  .connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(mongoUri) // opções antigas não são mais necessárias no mongoose 8+
   .then(() => console.log("✅ MongoDB conectado"))
   .catch((err) => {
-    console.error("❌ Erro ao conectar ao MongoDB:", err);
+    console.error("❌ Erro ao conectar ao MongoDB:", err?.message || err);
     process.exit(1);
   });
 
 /* =========================
    Frontend (opcional)
 ========================= */
+// Se você estiver deployando apenas o backend (root dir = backend),
+// provavelmente NÃO existirá ../frontend/build no container do Railway.
+// Então condicionamos o uso do build.
 const FRONTEND_BUILD = path.join(__dirname, "..", "frontend", "build");
+const FRONTEND_INDEX = path.join(FRONTEND_BUILD, "index.html");
 
-app.use(express.static(FRONTEND_BUILD));
+if (fs.existsSync(FRONTEND_INDEX)) {
+  console.log("🟢 Frontend build encontrado. Servindo arquivos estáticos...");
+  app.use(express.static(FRONTEND_BUILD));
 
-// SPA fallback: qualquer rota que não seja /api/*
-app.get(/^\/(?!api\/).*/, (req, res) => {
-  res.sendFile(path.join(FRONTEND_BUILD, "index.html"));
-});
+  // SPA fallback: qualquer rota que não seja /api/*
+  app.get(/^\/(?!api\/).*/, (req, res) => {
+    res.sendFile(FRONTEND_INDEX);
+  });
+} else {
+  console.log(
+    "ℹ️ Frontend build não encontrado em ../frontend/build. Servindo apenas API."
+  );
+}
 
 /* =========================
    Healthcheck
