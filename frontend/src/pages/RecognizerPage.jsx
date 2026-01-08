@@ -1,10 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import '../css/RecognizerPage.css';
 import '../css/HomePage.css';
 import { toastSuccess, toastError, toastInfo, toastWarning } from '../utils/alerts';
-import { API_BASE_URL } from '../utils/constants';
+import { api } from '../utils/api';
 
 const RecognizerPage = () => {
   const navigate = useNavigate();
@@ -36,7 +35,7 @@ const RecognizerPage = () => {
         }
       } catch (e) { /* ignore parsing errors */ }
 
-      const { data } = await axios.post(`${API_BASE_URL}/collection/add`, { hotWheelId: id }, { headers: { Authorization: token } });
+      const { data } = await api.post(`/api/collection/add`, { hotWheelId: id }, { headers: { Authorization: token } });
       toastSuccess('Sucesso', data.message || 'Adicionado à coleção');
     } catch (e) {
       toastError('Erro', 'Não foi possível adicionar à coleção');
@@ -60,7 +59,7 @@ const RecognizerPage = () => {
         }
       } catch (e) { /* ignore parsing errors */ }
 
-      const { data } = await axios.post(`${API_BASE_URL}/wishlist`, { hotWheelId: id }, { headers: { Authorization: token } });
+      const { data } = await api.post(`/api/wishlist`, { hotWheelId: id }, { headers: { Authorization: token } });
       toastSuccess('Sucesso', data.message || 'Adicionado à wishlist');
     } catch (e) {
       toastError('Erro', 'Não foi possível adicionar à wishlist');
@@ -72,7 +71,7 @@ const RecognizerPage = () => {
   // const fileInputRef = useRef(null);
   const undersideInputRef = useRef(null);
 
-  const backendBase = `${API_BASE_URL}/recognizer`;
+  const backendBase = `/api/recognizer`;
 
   // function onFileChange(e) {
   //   const f = e.target.files[0];
@@ -146,7 +145,7 @@ const RecognizerPage = () => {
       setOcrLoading(true);
       const form = new FormData();
       form.append('file', undersideFile);
-      const { data } = await axios.post(`${backendBase}/text`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const { data } = await api.post(`${backendBase}/text`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
       if (data.status === 'ok') {
         setOcrTexto(data.texto || '');
         setOcrAno(data.anoDetectado || null);

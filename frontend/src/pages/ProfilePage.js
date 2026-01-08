@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { toastSuccess, toastError, toastInfo } from '../utils/alerts';
 import { useNavigate } from "react-router-dom";
 import { logout } from '../utils/auth';
 import "../css/ProfilePage.css";
-import { DEFAULT_PROFILE_IMAGE, API_BASE_URL } from "../utils/constants";
-import { addFeedComment, deleteFeedPost, fetchFeedPosts, likeFeedPost } from '../utils/api';
+import { DEFAULT_PROFILE_IMAGE } from "../utils/constants";
+import { api, addFeedComment, deleteFeedPost, fetchFeedPosts, likeFeedPost } from '../utils/api';
 
 const DEFAULT_USER_IMG = DEFAULT_PROFILE_IMAGE;
 
@@ -60,7 +59,7 @@ const ProfilePage = () => {
         let token = localStorage.getItem("token");
         if (token && !token.startsWith("Bearer ")) token = `Bearer ${token}`;
 
-        const response = await axios.get(`${API_BASE_URL}/auth/profile`, {
+        const response = await api.get(`/api/auth/profile`, {
           headers: token ? { Authorization: token } : {},
         });
 
@@ -72,7 +71,7 @@ const ProfilePage = () => {
         // buscar contagens: coleção e wishlist (endpoints exigem auth)
         let collectionCount = 0;
         try {
-          const colRes = await axios.get(`${API_BASE_URL}/collection/${profile._id}`, {
+          const colRes = await api.get(`/api/collection/${profile._id}`, {
             headers: token ? { Authorization: token } : {},
           });
           collectionCount = Array.isArray(colRes.data?.collection) ? colRes.data.collection.length : 0;
@@ -82,7 +81,7 @@ const ProfilePage = () => {
 
         let wishlistCount = 0;
         try {
-          const wishRes = await axios.get(`${API_BASE_URL}/wishlist`, {
+          const wishRes = await api.get(`/api/wishlist`, {
             headers: token ? { Authorization: token } : {},
           });
           wishlistCount = Array.isArray(wishRes.data?.favorites) ? wishRes.data.favorites.length : 0;
@@ -133,8 +132,8 @@ const ProfilePage = () => {
       let token = localStorage.getItem("token");
       if (token && !token.startsWith("Bearer ")) token = `Bearer ${token}`;
 
-      await axios.put(
-        `${API_BASE_URL}/auth/update-password`,
+      await api.put(
+        `/api/auth/update-password`,
         { currentPassword, newPassword },
         { headers: { Authorization: token } }
       );
@@ -153,8 +152,8 @@ const ProfilePage = () => {
       let token = localStorage.getItem("token");
       if (token && !token.startsWith("Bearer ")) token = `Bearer ${token}`;
 
-      await axios.put(
-        `${API_BASE_URL}/users/${user._id}/avatar`,
+      await api.put(
+        `/api/users/${user._id}/avatar`,
         { profilePicture: selectedAvatar },
         { headers: { Authorization: token } }
       );
@@ -264,7 +263,7 @@ const ProfilePage = () => {
   const requestDeleteCode = async () => {
     try {
       setIsRequestingDeleteCode(true);
-      await axios.post(`${API_BASE_URL}/auth/request-delete-code`, { email: user.email });
+      await api.post(`/api/auth/request-delete-code`, { email: user.email });
       setDeleteCodeSent(true);
       toastSuccess('Código enviado', 'Um código foi enviado para o seu email para confirmar a exclusão.');
     } catch (err) {
@@ -281,7 +280,7 @@ const ProfilePage = () => {
       let token = localStorage.getItem("token");
       if (token && !token.startsWith("Bearer ")) token = `Bearer ${token}`;
 
-      await axios.post(`${API_BASE_URL}/auth/confirm-delete`, { code: deleteCode }, { headers: { Authorization: token } });
+      await api.post(`/api/auth/confirm-delete`, { code: deleteCode }, { headers: { Authorization: token } });
       toastSuccess('Conta excluída', 'Sua conta foi removida com sucesso.');
       // cleanup local state and logout
       logout();

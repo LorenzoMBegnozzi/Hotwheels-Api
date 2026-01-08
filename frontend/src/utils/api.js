@@ -1,4 +1,12 @@
-import { API_BASE_URL } from './constants';
+import axios from 'axios';
+import { API_BASE_URL, API_URL } from './constants';
+
+// Centralized axios client.
+// Always use absolute API origin when available (REACT_APP_API_URL), fallback to localhost.
+// Usage: api.get('/api/hotwheels')
+export const api = axios.create({
+  baseURL: API_URL,
+});
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {

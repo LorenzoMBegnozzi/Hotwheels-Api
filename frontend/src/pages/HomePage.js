@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "../css/HomePage.css";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { toastSuccess, toastError, toastInfo, toastWarning } from '../utils/alerts';
 import { useNavigate } from "react-router-dom";
-import { DEFAULT_PROFILE_IMAGE, API_BASE_URL } from "../utils/constants";
+import { DEFAULT_PROFILE_IMAGE } from "../utils/constants";
 import {
+  api,
   searchHotWheels,
   searchUsers,
   addToCollection,
@@ -45,7 +45,7 @@ const HomePage = () => {
         let token = localStorage.getItem("token");
         if (token && !token.startsWith("Bearer ")) token = `Bearer ${token}`;
 
-        const response = await axios.get(`${API_BASE_URL}/auth/profile`, {
+        const response = await api.get(`/api/auth/profile`, {
           headers: { Authorization: token },
         });
 
@@ -56,14 +56,14 @@ const HomePage = () => {
 
         if (userData?._id) {
           try {
-            const colRes = await axios.get(`${API_BASE_URL}/collection/${userData._id}`, {
+            const colRes = await api.get(`/api/collection/${userData._id}`, {
               headers: { Authorization: token },
             });
             collection = colRes.data?.collection || [];
           } catch (e) {}
 
           try {
-            const favRes = await axios.get(`${API_BASE_URL}/wishlist/user/${userData._id}`, {
+            const favRes = await api.get(`/api/wishlist/user/${userData._id}`, {
               headers: { Authorization: token },
             });
             favorites = favRes.data?.favorites || [];

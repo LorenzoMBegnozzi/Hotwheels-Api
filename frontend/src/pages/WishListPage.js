@@ -1,9 +1,7 @@
 import React, { useMemo, useEffect, useState } from "react";
 import "../css/Wishlist.css";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import { removeFromWishlist as apiRemoveFromWishlist, addToCollection as apiAddToCollection } from '../utils/api';
-import { API_BASE_URL } from "../utils/constants";
+import { api, removeFromWishlist as apiRemoveFromWishlist, addToCollection as apiAddToCollection } from '../utils/api';
 import Swal from "sweetalert2";
 import { toastSuccess, toastError, toastWarning } from '../utils/alerts';
 
@@ -26,7 +24,7 @@ const WishListPage = () => {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("Usuário não autenticado. Faça login.");
 
-        const response = await axios.get(`${API_BASE_URL}/wishlist`, {
+        const response = await api.get(`/api/wishlist`, {
           headers: { "x-auth-token": token },
         });
 
@@ -127,7 +125,7 @@ const WishListPage = () => {
     // persistir no backend
     (async () => {
       try {
-        await axios.put(`${API_BASE_URL}/wishlist/${carId}/priority`, { priority: newPriority }, {
+        await api.put(`/api/wishlist/${carId}/priority`, { priority: newPriority }, {
           headers: { "x-auth-token": localStorage.getItem("token"), "Content-Type": "application/json" }
         });
       } catch (err) {
@@ -162,15 +160,15 @@ const WishListPage = () => {
 
     try {
       // 1) cria carro custom (mesmo fluxo da coleção)
-      const createRes = await axios.post(`${API_BASE_URL}/collection/add-custom`, formData, {
+      const createRes = await api.post(`/api/collection/add-custom`, formData, {
         headers: { "x-auth-token": token, "Content-Type": "multipart/form-data" },
       });
 
       const createdCar = createRes.data.car;
 
       // 2) adiciona na wishlist
-      const wishlistRes = await axios.post(
-        `${API_BASE_URL}/wishlist`,
+      const wishlistRes = await api.post(
+        `/api/wishlist`,
         { hotWheelId: createdCar._id },
         { headers: { "x-auth-token": token, "Content-Type": "application/json" } }
       );

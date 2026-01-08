@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { toastSuccess, toastError } from '../utils/alerts';
 import "../css/MyCollection.css";
-import { API_BASE_URL } from "../utils/constants";
+import { api } from "../utils/api";
 
 const MyCollection = () => {
   const [collection, setCollection] = useState([]);
@@ -24,7 +23,7 @@ const MyCollection = () => {
       if (!token || !userId) return;
 
       try {
-        const response = await axios.get(`${API_BASE_URL}/collection/${userId}`, {
+        const response = await api.get(`/api/collection/${userId}`, {
           headers: { "x-auth-token": token },
         });
 
@@ -61,7 +60,7 @@ const MyCollection = () => {
     formData.append("image", newCar.image);
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/collection/add-custom`, formData, {
+      const response = await api.post(`/api/collection/add-custom`, formData, {
         headers: { "x-auth-token": token, "Content-Type": "multipart/form-data" },
       });
 
@@ -100,7 +99,7 @@ const MyCollection = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${API_BASE_URL}/collection/${userId}/${carId}`, {
+          await api.delete(`/api/collection/${userId}/${carId}`, {
             headers: { "x-auth-token": token },
           });
 

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { API_BASE_URL } from "../utils/constants";
+import { api } from "../utils/api";
 import { useNavigate, useLocation } from "react-router-dom";
 // Swal removed: not used directly in this file
 import { toastSuccess, toastError } from '../utils/alerts';
@@ -41,7 +40,7 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post(`${API_BASE_URL}/auth/login`, {
+      const res = await api.post(`/api/auth/login`, {
         email,
         password,
       });
@@ -69,7 +68,7 @@ const LoginPage = () => {
     }
     try {
       setIsSendingCode(true);
-      await axios.post(`${API_BASE_URL}/auth/register`, {
+      await api.post(`/api/auth/register`, {
         name,
         email,
         password,
@@ -87,7 +86,7 @@ const LoginPage = () => {
   const handleConfirmSignup = async () => {
     if (!signupCode) return toastError('Erro!', 'Informe o código recebido.');
     try {
-      const res = await axios.post(`${API_BASE_URL}/auth/confirm-signup`, {
+      const res = await api.post(`/api/auth/confirm-signup`, {
         name,
         email,
         password,
@@ -112,7 +111,7 @@ const LoginPage = () => {
   const handleRequestResetCode = async () => {
     if (!email) return toastError('Erro!', 'Informe o email da conta.');
     try {
-      await axios.post(`${API_BASE_URL}/auth/request-reset-code`, { email });
+      await api.post(`/api/auth/request-reset-code`, { email });
       setResetCodeSent(true);
       toastSuccess('Verificação', 'Código enviado ao seu email.');
     } catch (err) {
@@ -126,7 +125,7 @@ const LoginPage = () => {
       return toastError('Erro!', 'As senhas não coincidem.');
     }
     try {
-      await axios.post(`${API_BASE_URL}/auth/confirm-reset`, {
+      await api.post(`/api/auth/confirm-reset`, {
         email,
         code: resetCode,
         newPassword,

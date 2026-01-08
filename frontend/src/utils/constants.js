@@ -1,7 +1,22 @@
 // Application constants
-// Use REACT_APP_API_URL in production; fallback to relative '/api' for local dev
-const rawBase = process.env.REACT_APP_API_URL || process.env.REACT_APP_API_BASE_URL || '/api';
-export const API_BASE_URL = rawBase.startsWith('/') ? rawBase : `/${rawBase}`;
+// - In production: set REACT_APP_API_URL to your backend origin (e.g. https://...railway.app)
+// - In local dev: default to http://localhost:5000
+// - Legacy support: if REACT_APP_API_URL is set to a path like '/api', keep it as-is
+
+const rawApiUrl = (process.env.REACT_APP_API_URL || process.env.REACT_APP_API_BASE_URL || '').trim();
+
+const trimTrailingSlashes = (s) => String(s || '').replace(/\/+$/, '');
+const joinUrl = (base, path) => `${trimTrailingSlashes(base)}${path}`;
+
+export const API_URL = rawApiUrl && !rawApiUrl.startsWith('/')
+  ? trimTrailingSlashes(rawApiUrl)
+  : 'http://localhost:5000';
+
+// When rawApiUrl is a path ('/api'), use it directly.
+// Otherwise build it from the API origin.
+export const API_BASE_URL = rawApiUrl && rawApiUrl.startsWith('/')
+  ? rawApiUrl
+  : joinUrl(API_URL, '/api');
 
 export const ROUTES = {
   HOME: '/',
