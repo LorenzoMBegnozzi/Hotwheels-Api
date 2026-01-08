@@ -1,6 +1,6 @@
 // Application constants
-// Use env when provided (e.g., ngrok), fallback to relative '/api' for CRA proxy/dev
-const rawBase = process.env.REACT_APP_API_BASE_URL || '/api';
+// Use REACT_APP_API_URL in production; fallback to relative '/api' for local dev
+const rawBase = process.env.REACT_APP_API_URL || process.env.REACT_APP_API_BASE_URL || '/api';
 export const API_BASE_URL = rawBase.startsWith('/') ? rawBase : `/${rawBase}`;
 
 export const ROUTES = {
