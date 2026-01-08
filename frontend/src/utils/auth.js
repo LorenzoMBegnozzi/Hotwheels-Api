@@ -17,17 +17,38 @@ export const removeToken = () => {
   localStorage.removeItem('token');
 };
 
+const stripBearer = (token) => {
+  const t = String(token || '').trim();
+  return t.toLowerCase().startsWith('bearer ') ? t.slice(7).trim() : t;
+};
+
+// JWT payload is base64url-encoded (not standard base64).
+const decodeBase64Url = (base64Url) => {
+  const input = String(base64Url || '').replace(/-/g, '+').replace(/_/g, '/');
+  const pad = input.length % 4;
+  const padded = pad ? input + '='.repeat(4 - pad) : input;
+  return atob(padded);
+};
+
+const tryDecodeJwtPayload = (token) => {
+  const raw = stripBearer(token);
+  const parts = raw.split('.');
+  if (parts.length < 2) return null;
+  try {
+    const json = decodeBase64Url(parts[1]);
+    return JSON.parse(json);
+  } catch (error) {
+    return null;
+  }
+};
+
 export const getUserFromToken = () => {
   const token = getToken();
   if (!token) return null;
-  
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload;
-  } catch (error) {
-    console.error('Erro ao decodificar token:', error);
-    return null;
-  }
+
+  const payload = tryDecodeJwtPayload(token);
+  if (!payload) return null;
+  return payload;
 };
 
 export const logout = () => {
@@ -93,22 +114,21 @@ const scheduleExpiryFromToken = () => {
   clearExpiryTimeout();
   const token = getToken();
   if (!token) return;
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    if (!payload || !payload.exp) return;
-    const expiresAt = payload.exp * 1000; // exp is in seconds
-    const msUntilExpiry = expiresAt - Date.now();
-    if (msUntilExpiry <= 0) {
-      handleTokenExpired();
-      return;
-    }
-    // schedule the expiry handler
-    _tokenExpiryTimeout = setTimeout(() => {
-      handleTokenExpired();
-    }, msUntilExpiry + 50); // small buffer
-  } catch (e) {
-    console.error('Erro ao agendar expiração do token', e);
+
+  const payload = tryDecodeJwtPayload(token);
+  if (!payload || !payload.exp) return;
+
+  const expiresAt = payload.exp * 1000; // exp is in seconds
+  const msUntilExpiry = expiresAt - Date.now();
+  if (msUntilExpiry <= 0) {
+    handleTokenExpired();
+    return;
   }
+
+  // schedule the expiry handler
+  _tokenExpiryTimeout = setTimeout(() => {
+    handleTokenExpired();
+  }, msUntilExpiry + 50); // small buffer
 };
 
 export const startTokenExpiryWatcher = () => {

@@ -7,16 +7,39 @@ const path = require("path");
 const app = express();
 
 // Middleware
-app.use(express.json());
 // Configure CORS: allow localhost (dev) and Railway frontend domain (production)
+const parseOrigins = (value) =>
+  String(value || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
 const defaultOrigins = [
   'http://localhost:3000',
-  'https://frontend-production-d39a.up.railway.app'
+  'http://127.0.0.1:3000',
+  'https://frontend-production-d39a.up.railway.app',
 ];
-app.use(cors({
-  origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : defaultOrigins,
-  credentials: true
-}));
+
+const allowedOrigins = parseOrigins(process.env.CORS_ORIGIN);
+const originAllowList = allowedOrigins.length ? allowedOrigins : defaultOrigins;
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow same-origin / server-to-server / curl (no Origin header)
+    if (!origin) return callback(null, true);
+    if (originAllowList.includes(origin)) return callback(null, true);
+    return callback(null, false);
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
+  credentials: false,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+app.use(express.json());
 
 // Servir a pasta uploads corretamente
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
