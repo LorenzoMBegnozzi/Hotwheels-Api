@@ -1,22 +1,35 @@
 // Application constants
-// - In production: set REACT_APP_API_URL to your backend origin (e.g. https://...railway.app)
-// - In local dev: default to http://localhost:5000
-// - Legacy support: if REACT_APP_API_URL is set to a path like '/api', keep it as-is
+// - Production (Railway): set REACT_APP_API_URL=https://<backend>.up.railway.app
+// - Local dev: defaults to http://localhost:5000
+// - Legacy: if REACT_APP_API_URL is a path like '/api', it will be respected
 
-const rawApiUrl = (process.env.REACT_APP_API_URL || process.env.REACT_APP_API_BASE_URL || '').trim();
+const rawApiUrl = (
+  process.env.REACT_APP_API_URL ||
+  process.env.REACT_APP_API_BASE_URL ||
+  ''
+).trim();
 
 const trimTrailingSlashes = (s) => String(s || '').replace(/\/+$/, '');
 const joinUrl = (base, path) => `${trimTrailingSlashes(base)}${path}`;
 
-export const API_URL = rawApiUrl && !rawApiUrl.startsWith('/')
-  ? trimTrailingSlashes(rawApiUrl)
+// Origin (scheme + host + optional port)
+export const API_URL = rawApiUrl
+  ? rawApiUrl.startsWith('/')
+    // Edge case: someone set '/api' — treat as localhost origin
+    ? 'http://localhost:5000'
+    : trimTrailingSlashes(rawApiUrl)
   : 'http://localhost:5000';
 
-// When rawApiUrl is a path ('/api'), use it directly.
-// Otherwise build it from the API origin.
+// Base API path used by fetch/axios
 export const API_BASE_URL = rawApiUrl && rawApiUrl.startsWith('/')
+  // If rawApiUrl is '/api', use it directly
   ? rawApiUrl
+  // Otherwise, append '/api' to the origin
   : joinUrl(API_URL, '/api');
+
+/* =========================
+   App constants
+========================= */
 
 export const ROUTES = {
   HOME: '/',
@@ -25,17 +38,17 @@ export const ROUTES = {
   COLLECTION: '/my-collection',
   WISHLIST: '/wishlist',
   RECOGNIZER: '/recognizer',
-  USER_PROFILE: '/user/:userId'
+  USER_PROFILE: '/user/:userId',
 };
 
 export const PAGINATION = {
   ITEMS_PER_PAGE: 12,
-  DEFAULT_PAGE: 1
+  DEFAULT_PAGE: 1,
 };
 
 export const TABS = {
   COLLECTION: 'collection',
-  WISHLIST: 'wishlist'
+  WISHLIST: 'wishlist',
 };
 
 export const MESSAGES = {
@@ -50,8 +63,8 @@ export const MESSAGES = {
   REMOVE_SUCCESS: 'Item removido com sucesso!',
   REMOVE_ERROR: 'Erro ao remover item.',
   SEARCH_ERROR: 'Erro ao buscar dados.',
-  NETWORK_ERROR: 'Erro de conexão. Tente novamente.'
+  NETWORK_ERROR: 'Erro de conexão. Tente novamente.',
 };
 
-// Imagem padrão única para todos os usuários (svg estilizado)
+// Default profile image
 export const DEFAULT_PROFILE_IMAGE = '/default-user.png';
