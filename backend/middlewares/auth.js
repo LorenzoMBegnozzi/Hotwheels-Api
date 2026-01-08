@@ -13,6 +13,13 @@ const authMiddleware = (req, res, next) => {
       token = token.slice(7).trim(); // Remove "Bearer " do token
     }
 
+    if (!process.env.JWT_SECRET) {
+      console.error("❌ JWT_SECRET não configurado no servidor.");
+      return res
+        .status(500)
+        .json({ message: "Configuração do servidor ausente (JWT_SECRET)." });
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded; // Adiciona o usuário decodificado ao request
     console.log("✅ Usuário autenticado:", req.user);

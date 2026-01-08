@@ -10,6 +10,16 @@ const { sendCodeEmail } = require("../utils/emailService");
 
 const router = express.Router();
 
+const getJwtSecretOrRespond = (res) => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    return res
+      .status(500)
+      .json({ message: "Configuração do servidor ausente (JWT_SECRET)." });
+  }
+  return secret;
+};
+
 // Configuração do multer para upload de imagens
 const storage = multer.diskStorage({
   destination: "uploads/",
@@ -72,7 +82,9 @@ router.post("/confirm-signup", async (req, res) => {
     record.consumed = true;
     await record.save();
 
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const jwtSecret = getJwtSecretOrRespond(res);
+    if (!jwtSecret) return;
+    const token = jwt.sign({ id: newUser._id }, jwtSecret, { expiresIn: "1h" });
     res.status(201).json({ message: "Conta criada com sucesso.", token, userId: newUser._id });
   } catch (err) {
     res.status(500).json({ message: "Erro ao confirmar cadastro." });
@@ -95,7 +107,9 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Senha incorreta" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const jwtSecret = getJwtSecretOrRespond(res);
+    if (!jwtSecret) return;
+    const token = jwt.sign({ id: user._id }, jwtSecret, { expiresIn: "1h" });
     res.json({ token, userId: user._id });
   } catch (err) {
     console.error("Erro no login:", err);
