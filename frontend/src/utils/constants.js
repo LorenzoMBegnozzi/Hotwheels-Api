@@ -67,4 +67,4 @@ export const MESSAGES = {
 };
 
 // Default profile image
-export const DEFAULT_PROFILE_IMAGE = '/default-user.png';
+export const DEFAULT_PROFILE_IMAGE = '/avatars/default-user.png';

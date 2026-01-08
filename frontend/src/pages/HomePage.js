@@ -60,14 +60,14 @@ const HomePage = () => {
               headers: { Authorization: token },
             });
             collection = colRes.data?.collection || [];
-          } catch (e) {}
+          } catch (e) { }
 
           try {
             const favRes = await api.get(`/api/wishlist/user/${userData._id}`, {
               headers: { Authorization: token },
             });
             favorites = favRes.data?.favorites || [];
-          } catch (e) {}
+          } catch (e) { }
         }
 
         setUser({ ...userData, collection, favorites });
@@ -125,7 +125,7 @@ const HomePage = () => {
           const newFavorites = payload?.favorites || prev.favorites || [];
           return { ...prev, favorites: newFavorites };
         });
-      } catch (err) {}
+      } catch (err) { }
     };
 
     window.addEventListener('user:collection:changed', onCollectionChanged);
@@ -298,6 +298,22 @@ const HomePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
+  // ====================
+  // Avatar helper (FIX)
+  // ====================
+  const resolveAvatar = (p) => {
+    if (!p) return DEFAULT_PROFILE_IMAGE;
+
+    // Se já for URL absoluta (CDN, backend, etc.)
+    if (p.startsWith("http://") || p.startsWith("https://")) {
+      return p;
+    }
+
+    // Garante caminho absoluto no frontend (/avatars/...)
+    return p.startsWith("/") ? p : `/${p}`;
+  };
+
+
   return (
     <div className="hw-page">
       <header className="hw-header">
@@ -443,84 +459,87 @@ const HomePage = () => {
       <div className={`cards-grid ${viewMode === "list" ? "list-view" : ""}`}>
         {activeTab === "hotwheels"
           ? currentItems.map((car) => (
-              <div className="card" key={car._id}>
-                <div
-                  className="card-image"
-                  onClick={() => car.imageUrl && setPopupImage(car.imageUrl)}
-                  style={{ cursor: car.imageUrl ? "pointer" : "default" }}
-                >
-                  {car.imageUrl ? (
-                    <img
-                      src={car.imageUrl}
-                      alt={car.name || car.modelName || "Hot Wheels"}
-                      className="card-img"
-                    />
-                  ) : (
-                    <div className="card-placeholder"></div>
-                  )}
-                </div>
-
-                <div className="card-content">
-                  <div
-                    className="card-title"
-                    style={{ color: "#ffffffff" }}
-                    title={car.name || car.modelName || car.title}
-                  >
-                    {car.name || car.modelName || car.title || "Modelo"}
-                  </div>
-                  <div className="card-year">Ano: {car.year ?? "-"}</div>
-
-                  <div className="card-buttons">
-                    <button
-                      className="card-btn add-collection"
-                      onClick={() => handleAddToCollection(car._id)}
-                    >
-                      Adicionar à coleção
-                    </button>
-                    <button
-                      className="card-btn add-wishlist"
-                      onClick={() => handleAddToWishlist(car._id)}
-                    >
-                      Desejar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))
-          : currentItems.map((u) => (
-              <div className="card" key={u._id}>
-                <div className="card-image">
+            <div className="card" key={car._id}>
+              <div
+                className="card-image"
+                onClick={() => car.imageUrl && setPopupImage(car.imageUrl)}
+                style={{ cursor: car.imageUrl ? "pointer" : "default" }}
+              >
+                {car.imageUrl ? (
                   <img
-                    src={u.profilePicture || DEFAULT_PROFILE_IMAGE}
-                    alt={u.name}
-                    className="user-avatar"
+                    src={car.imageUrl}
+                    alt={car.name || car.modelName || "Hot Wheels"}
+                    className="card-img"
                   />
+                ) : (
+                  <div className="card-placeholder"></div>
+                )}
+              </div>
+
+              <div className="card-content">
+                <div
+                  className="card-title"
+                  style={{ color: "#ffffffff" }}
+                  title={car.name || car.modelName || car.title}
+                >
+                  {car.name || car.modelName || car.title || "Modelo"}
                 </div>
+                <div className="card-year">Ano: {car.year ?? "-"}</div>
 
-                <div className="card-content">
-                  <div
-                    className="card-title"
-                    style={{ color: "#ffffffff" }}
-                    title={u.name || u.email}
+                <div className="card-buttons">
+                  <button
+                    className="card-btn add-collection"
+                    onClick={() => handleAddToCollection(car._id)}
                   >
-                    {u.name || u.email || 'Usuário'}
-                  </div>
-                  <div className="card-year">
-                    Coleção: {u.collection?.length || 0} • Favoritos: {u.favorites?.length || 0}
-                  </div>
-
-                  <div className="card-buttons">
-                    <button
-                      className="card-btn add-collection"
-                      onClick={() => navigate(`/user/${u._id}`)}
-                    >
-                      Ver Perfil
-                    </button>
-                    {/* back button removed per request */}
-                  </div>
+                    Adicionar à coleção
+                  </button>
+                  <button
+                    className="card-btn add-wishlist"
+                    onClick={() => handleAddToWishlist(car._id)}
+                  >
+                    Desejar
+                  </button>
                 </div>
               </div>
-            ))}
+            </div>
+          ))
+          : currentItems.map((u) => (
+            <div className="card" key={u._id}>
+              <div className="card-image">
+                <img
+                  src={resolveAvatar(u.profilePicture)}
+                  alt={u.name}
+                  className="user-avatar"
+                  onError={(e) => {
+                    e.currentTarget.src = DEFAULT_PROFILE_IMAGE;
+                  }}
+                />
+              </div>
+
+              <div className="card-content">
+                <div
+                  className="card-title"
+                  style={{ color: "#ffffffff" }}
+                  title={u.name || u.email}
+                >
+                  {u.name || u.email || 'Usuário'}
+                </div>
+                <div className="card-year">
+                  Coleção: {u.collection?.length || 0} • Favoritos: {u.favorites?.length || 0}
+                </div>
+
+                <div className="card-buttons">
+                  <button
+                    className="card-btn add-collection"
+                    onClick={() => navigate(`/user/${u._id}`)}
+                  >
+                    Ver Perfil
+                  </button>
+                  {/* back button removed per request */}
+                </div>
+              </div>
+            </div>
+          ))}
       </div>
 
       {popupImage && (
