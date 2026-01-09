@@ -543,8 +543,9 @@
     font-size: 0.88rem;
   }
 
+  /* melhor do que forçar 3 colunas fixas */
   .cards-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 1.2rem;
     padding: 0 2rem;
   }
@@ -570,12 +571,12 @@
 }
 
 /* =========================
-   RESPONSIVE - MOBILE
+   RESPONSIVE - MOBILE (SEMPRE 2 colunas)
 ========================= */
 @media (max-width: 768px) {
   .hw-page {
     min-height: 100dvh;
-    padding-bottom: 80px; /* espaço para bottom nav */
+    padding-bottom: 80px;
   }
 
   .hw-header {
@@ -594,7 +595,6 @@
     justify-content: flex-end;
   }
 
-  /* Esconder botões do header no mobile */
   .header-actions .user-search-btn {
     display: none;
   }
@@ -635,9 +635,10 @@
     justify-content: center;
   }
 
-  /* ===== CARDS: 2 COLUNAS NO MOBILE (igual app Hot Wheels) ===== */
-  .cards-grid {
-    grid-template-columns: repeat(2, 1fr);
+  /* ✅ 2 colunas SEMPRE no mobile (inclusive list-view) */
+  .cards-grid,
+  .cards-grid.list-view {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 0.75rem;
     padding: 0 1rem;
   }
@@ -703,19 +704,17 @@
     order: 10;
   }
 
-  /* Mostrar bottom nav no mobile */
   .bottom-nav {
     display: block;
   }
 
-  /* Ajustar FAB para não cobrir o menu */
   .recognizer-fab {
     bottom: 90px;
   }
 }
 
 /* =========================
-   MOBILE PEQUENO
+   AJUSTES FINOS - Mobile pequeno
 ========================= */
 @media (max-width: 520px) {
   .stats-bar {
@@ -728,7 +727,8 @@
 }
 
 @media (max-width: 480px) {
-  .cards-grid {
+  .cards-grid,
+  .cards-grid.list-view {
     gap: 0.6rem;
     padding: 0 0.75rem !important;
   }
@@ -786,22 +786,12 @@
   }
 }
 
-/* Mobile MUITO pequeno: 1 coluna */
-@media (max-width: 360px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .card-buttons {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* FAB menor no mobile */
 @media (max-width: 600px) {
   .recognizer-fab {
     width: 60px;
     height: 60px;
-    bottom: 90px; /* acima do bottom nav */
+    bottom: 90px;
     right: 16px;
     border-radius: 14px;
   }
