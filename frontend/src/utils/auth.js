@@ -1,16 +1,20 @@
 import Swal from 'sweetalert2';
 
-// Authentication utility functions
+// =========================
+// Token helpers
+// =========================
+
 export const isAuthenticated = () => {
-  return !!localStorage.getItem('token');
+  const t = localStorage.getItem('token');
+  return !!t && String(t).trim() !== '';
 };
 
-export const getToken = () => {
-  return localStorage.getItem('token');
-};
+export const getToken = () => localStorage.getItem('token');
 
 export const setToken = (token) => {
-  localStorage.setItem('token', token);
+  if (token == null) return;
+  localStorage.setItem('token', String(token));
+  try { window.dispatchEvent(new Event('token:updated')); } catch (e) {}
 };
 
 export const removeToken = () => {
@@ -22,22 +26,32 @@ const stripBearer = (token) => {
   return t.toLowerCase().startsWith('bearer ') ? t.slice(7).trim() : t;
 };
 
-// JWT payload is base64url-encoded (not standard base64).
+// JWT payload é base64url (não base64 padrão)
 const decodeBase64Url = (base64Url) => {
-  const input = String(base64Url || '').replace(/-/g, '+').replace(/_/g, '/');
-  const pad = input.length % 4;
-  const padded = pad ? input + '='.repeat(4 - pad) : input;
-  return atob(padded);
+  try {
+    const input = String(base64Url || '').replace(/-/g, '+').replace(/_/g, '/');
+    if (!input) return null;
+
+    const pad = input.length % 4;
+    const padded = pad ? input + '='.repeat(4 - pad) : input;
+
+    return atob(padded);
+  } catch {
+    return null;
+  }
 };
 
 const tryDecodeJwtPayload = (token) => {
   const raw = stripBearer(token);
-  const parts = raw.split('.');
-  if (parts.length < 2) return null;
+  const parts = String(raw || '').split('.');
+  if (parts.length !== 3) return null;
+
+  const decoded = decodeBase64Url(parts[1]);
+  if (!decoded) return null;
+
   try {
-    const json = decodeBase64Url(parts[1]);
-    return JSON.parse(json);
-  } catch (error) {
+    return JSON.parse(decoded);
+  } catch {
     return null;
   }
 };
@@ -45,10 +59,7 @@ const tryDecodeJwtPayload = (token) => {
 export const getUserFromToken = () => {
   const token = getToken();
   if (!token) return null;
-
-  const payload = tryDecodeJwtPayload(token);
-  if (!payload) return null;
-  return payload;
+  return tryDecodeJwtPayload(token);
 };
 
 export const logout = () => {
@@ -56,12 +67,19 @@ export const logout = () => {
   window.location.href = '/';
 };
 
+// =========================
+// Watchers
+// =========================
+
 let _tokenExpiryTimeout = null;
 let _inactivityTimeout = null;
-const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
-const _activityEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'click'];
 
+const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000;
+const _activityEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'click'];
 let _activityHandler = null;
+
+// Para não registrar listeners duplicados (StrictMode pode chamar 2x)
+let _watcherStarted = false;
 
 const clearExpiryTimeout = () => {
   if (_tokenExpiryTimeout) {
@@ -70,13 +88,21 @@ const clearExpiryTimeout = () => {
   }
 };
 
+const clearInactivityTimeout = () => {
+  if (_inactivityTimeout) {
+    clearTimeout(_inactivityTimeout);
+    _inactivityTimeout = null;
+  }
+};
+
 export const handleTokenExpired = () => {
   clearExpiryTimeout();
   removeToken();
+
   Swal.fire({
     icon: 'warning',
     title: 'Sessão expirada',
-    text: 'Sua sessão expirou por inatividade. Faça login novamente.',
+    text: 'Sua sessão expirou. Faça login novamente.',
     timer: 3000,
     timerProgressBar: true,
     showConfirmButton: false,
@@ -86,18 +112,13 @@ export const handleTokenExpired = () => {
 };
 
 const doLogoutAndRedirect = () => {
-  // cleanup
   clearExpiryTimeout();
-  if (_inactivityTimeout) {
-    clearTimeout(_inactivityTimeout);
-    _inactivityTimeout = null;
-  }
+  clearInactivityTimeout();
   removeToken();
   window.location.href = '/login';
 };
 
 const handleInactivityExpiry = () => {
-  // show confirm alert, then logout
   Swal.fire({
     icon: 'warning',
     title: 'Foi desconectado por inatividade',
@@ -112,84 +133,79 @@ const handleInactivityExpiry = () => {
 
 const scheduleExpiryFromToken = () => {
   clearExpiryTimeout();
+
   const token = getToken();
   if (!token) return;
+
+  const raw = stripBearer(token);
+  if (raw.split('.').length !== 3) return;
 
   const payload = tryDecodeJwtPayload(token);
   if (!payload || !payload.exp) return;
 
-  const expiresAt = payload.exp * 1000; // exp is in seconds
+  const expiresAt = payload.exp * 1000; // exp em segundos
   const msUntilExpiry = expiresAt - Date.now();
+
   if (msUntilExpiry <= 0) {
     handleTokenExpired();
     return;
   }
 
-  // schedule the expiry handler
   _tokenExpiryTimeout = setTimeout(() => {
     handleTokenExpired();
-  }, msUntilExpiry + 50); // small buffer
+  }, msUntilExpiry + 50);
 };
 
-export const startTokenExpiryWatcher = () => {
-  // schedule initially
-  scheduleExpiryFromToken();
-
-  // when token is changed in other tabs
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'token') {
-      scheduleExpiryFromToken();
-    }
-  });
-
-  // custom event when token is updated in this tab
-  window.addEventListener('token:updated', () => {
-    scheduleExpiryFromToken();
-  });
-  // start inactivity watcher
-  startInactivityWatcher();
-};
-
-export const stopTokenExpiryWatcher = () => {
-  clearExpiryTimeout();
-  window.removeEventListener('token:updated', scheduleExpiryFromToken);
-};
-
-const clearInactivityTimeout = () => {
-  if (_inactivityTimeout) {
-    clearTimeout(_inactivityTimeout);
-    _inactivityTimeout = null;
-  }
-};
-
-const resetInactivityTimer = () => {
+const resetInactivityTimer = (timeoutMs = INACTIVITY_TIMEOUT_MS) => {
   clearInactivityTimeout();
   const token = getToken();
   if (!token) return;
+
   _inactivityTimeout = setTimeout(() => {
     handleInactivityExpiry();
-  }, INACTIVITY_TIMEOUT_MS);
+  }, timeoutMs);
 };
 
 export const startInactivityWatcher = (timeoutMs = INACTIVITY_TIMEOUT_MS) => {
-  // allow custom timeout (currently not altering behavior, kept for API compatibility)
-  // setup handler
-  _activityHandler = () => resetInactivityTimer();
+  _activityHandler = () => resetInactivityTimer(timeoutMs);
 
   _activityEvents.forEach((ev) => window.addEventListener(ev, _activityHandler));
-  // listen to token changes to reset timer
+
   window.addEventListener('token:updated', _activityHandler);
   window.addEventListener('storage', (e) => { if (e.key === 'token') _activityHandler(); });
 
-  // start first timer
-  resetInactivityTimer();
+  resetInactivityTimer(timeoutMs);
 };
 
 export const stopInactivityWatcher = () => {
   clearInactivityTimeout();
+
   if (_activityHandler) {
     _activityEvents.forEach((ev) => window.removeEventListener(ev, _activityHandler));
     window.removeEventListener('token:updated', _activityHandler);
     _activityHandler = null;
   }
+};
+
+export const startTokenExpiryWatcher = () => {
+  if (_watcherStarted) return; // evita duplicar listeners
+  _watcherStarted = true;
+
+  scheduleExpiryFromToken();
+  startInactivityWatcher();
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'token') scheduleExpiryFromToken();
+  });
+
+  window.addEventListener('token:updated', scheduleExpiryFromToken);
+};
+
+export const stopTokenExpiryWatcher = () => {
+  _watcherStarted = false;
+
+  clearExpiryTimeout();
+  stopInactivityWatcher();
+
+  window.removeEventListener('token:updated', scheduleExpiryFromToken);
 };

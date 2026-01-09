@@ -17,4 +17,7 @@ root.render(
 reportWebVitals();
 
 // start token expiry watcher
-startTokenExpiryWatcher();
+const token = (localStorage.getItem('token') || '').replace(/^Bearer\s+/i, '').trim();
+if (token.split('.').length === 3) {
+  startTokenExpiryWatcher();
+}

@@ -40,13 +40,19 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     try {
-      const res = await api.post(`/api/auth/login`, {
+      const res = await api.post(`/auth/login`, {
         email,
         password,
       });
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("userId", res.data.userId);
+      // Defensive: only store token if it looks like a JWT (two or three parts separated by '.')
+      const tokenCandidate = res?.data?.token;
+      if (typeof tokenCandidate === 'string' && tokenCandidate.split('.').length >= 2) {
+        localStorage.setItem('token', tokenCandidate);
+      } else {
+        console.warn('Recebido token inválido do servidor, não será salvo no localStorage', tokenCandidate);
+      }
+      localStorage.setItem('userId', res.data.userId);
 
       // notify token watchers
       try { window.dispatchEvent(new Event('token:updated')); } catch (e) {}
@@ -68,7 +74,7 @@ const LoginPage = () => {
     }
     try {
       setIsSendingCode(true);
-      await api.post(`/api/auth/register`, {
+      await api.post(`/auth/register`, {
         name,
         email,
         password,
@@ -86,15 +92,21 @@ const LoginPage = () => {
   const handleConfirmSignup = async () => {
     if (!signupCode) return toastError('Erro!', 'Informe o código recebido.');
     try {
-      const res = await api.post(`/api/auth/confirm-signup`, {
+      const res = await api.post(`/auth/confirm-signup`, {
         name,
         email,
         password,
         code: signupCode,
       });
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("userId", res.data.userId);
+      // Defensive: only store token if it looks like a JWT
+      const tokenCandidate2 = res?.data?.token;
+      if (typeof tokenCandidate2 === 'string' && tokenCandidate2.split('.').length >= 2) {
+        localStorage.setItem('token', tokenCandidate2);
+      } else {
+        console.warn('Recebido token inválido do servidor, não será salvo no localStorage', tokenCandidate2);
+      }
+      localStorage.setItem('userId', res.data.userId);
 
       // notify token watchers
       try { window.dispatchEvent(new Event('token:updated')); } catch (e) {}
@@ -111,7 +123,7 @@ const LoginPage = () => {
   const handleRequestResetCode = async () => {
     if (!email) return toastError('Erro!', 'Informe o email da conta.');
     try {
-      await api.post(`/api/auth/request-reset-code`, { email });
+      await api.post(`/auth/request-reset-code`, { email });
       setResetCodeSent(true);
       toastSuccess('Verificação', 'Código enviado ao seu email.');
     } catch (err) {
@@ -125,7 +137,7 @@ const LoginPage = () => {
       return toastError('Erro!', 'As senhas não coincidem.');
     }
     try {
-      await api.post(`/api/auth/confirm-reset`, {
+      await api.post(`/auth/confirm-reset`, {
         email,
         code: resetCode,
         newPassword,
@@ -190,11 +202,11 @@ const LoginPage = () => {
           {/* Cadastro: Nome */}
           {isRegistering && !registerCodeSent && (
             <div className="form-group">
-              <label className="form-label">Nome</label>
+              <label className="form-label">Nome de usuário</label>
               <input
                 type="text"
                 className="form-input"
-                placeholder="Seu nome"
+                placeholder="Seu nome de usuário"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />

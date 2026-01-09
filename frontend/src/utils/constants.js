@@ -1,31 +1,16 @@
-// Application constants
-// - Production (Railway): set REACT_APP_API_URL=https://<backend>.up.railway.app
-// - Local dev: defaults to http://localhost:5000
-// - Legacy: if REACT_APP_API_URL is a path like '/api', it will be respected
+// frontend/src/utils/constants.js
 
-const rawApiUrl = (
-  process.env.REACT_APP_API_URL ||
-  process.env.REACT_APP_API_BASE_URL ||
-  ''
-).trim();
+// Base do backend (origem). Em produção no Railway: REACT_APP_API_URL=https://<backend>.up.railway.app
+// Em dev local: default http://localhost:5000
+const raw = (process.env.REACT_APP_API_URL || '').trim();
 
 const trimTrailingSlashes = (s) => String(s || '').replace(/\/+$/, '');
-const joinUrl = (base, path) => `${trimTrailingSlashes(base)}${path}`;
 
-// Origin (scheme + host + optional port)
-export const API_URL = rawApiUrl
-  ? rawApiUrl.startsWith('/')
-    // Edge case: someone set '/api' — treat as localhost origin
-    ? 'http://localhost:5000'
-    : trimTrailingSlashes(rawApiUrl)
-  : 'http://localhost:5000';
+// origem do backend
+export const API_URL = (raw || 'http://localhost:5000').replace(/\/+$/, '');
 
-// Base API path used by fetch/axios
-export const API_BASE_URL = rawApiUrl && rawApiUrl.startsWith('/')
-  // If rawApiUrl is '/api', use it directly
-  ? rawApiUrl
-  // Otherwise, append '/api' to the origin
-  : joinUrl(API_URL, '/api');
+// base da API (todas as rotas começam com /api no backend)
+export const API_BASE_URL = `${API_URL}/api`;
 
 /* =========================
    App constants
@@ -66,5 +51,5 @@ export const MESSAGES = {
   NETWORK_ERROR: 'Erro de conexão. Tente novamente.',
 };
 
-// Default profile image
+// Default profile image (precisa existir em: frontend/public/avatars/default-user.png)
 export const DEFAULT_PROFILE_IMAGE = '/avatars/default-user.png';
