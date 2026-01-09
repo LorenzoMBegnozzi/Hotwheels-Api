@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import MyCollection from "./pages/MyCollection";
 import WishListPage from "./pages/WishListPage";
 import ProfilePage from "./pages/ProfilePage";
+import ProfileSettingsPage from "./pages/ProfileSettingsPage";
 import RecognizerPage from "./pages/RecognizerPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import FeedPage from "./pages/FeedPage";
@@ -21,6 +22,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/lista-de-desejos" element={<WishListPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/settings" element={<ProfileSettingsPage />} />
         <Route path="/feed" element={<FeedPage />} />
         <Route path="/reconhecedor" element={<RecognizerPage />} />
         <Route path="/user/:userId" element={<UserProfilePage />} />

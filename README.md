@@ -49,6 +49,13 @@ npm run dev
 cd ../frontend
 npm install
 ```
+2. Configure a URL do backend (necessário para carregar imagens de `/uploads` em produção):
+
+- Local: crie `frontend/.env` (ou use o `frontend/.env.example`) com:
+	`REACT_APP_API_URL=http://localhost:5000`
+- Railway/produção: configure a variável de ambiente do serviço do frontend:
+	`REACT_APP_API_URL=https://hotwheels-api-production.up.railway.app`
+
 2. Inicie o projeto:
 ```bash
 npm start

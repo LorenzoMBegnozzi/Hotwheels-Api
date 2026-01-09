@@ -13,19 +13,35 @@ const trimTrailingSlashes = (s) => String(s || '').replace(/\/+$/, '');
 const joinUrl = (base, path) => `${trimTrailingSlashes(base)}${path}`;
 
 // Origin (scheme + host + optional port)
+const isPathOnlyApiUrl = rawApiUrl?.startsWith('/');
 export const API_URL = rawApiUrl
-  ? rawApiUrl.startsWith('/')
+  ? (isPathOnlyApiUrl
     // Edge case: someone set '/api' — treat as localhost origin
     ? 'http://localhost:5000'
-    : trimTrailingSlashes(rawApiUrl)
+    : trimTrailingSlashes(rawApiUrl))
   : 'http://localhost:5000';
 
 // Base API path used by fetch/axios
-export const API_BASE_URL = rawApiUrl && rawApiUrl.startsWith('/')
+export const API_BASE_URL = isPathOnlyApiUrl
   // If rawApiUrl is '/api', use it directly
   ? rawApiUrl
   // Otherwise, append '/api' to the origin
   : joinUrl(API_URL, '/api');
+
+// Convert a relative backend asset path (e.g. '/uploads/x.png') into an absolute URL
+// so it works when frontend and backend are hosted on different origins (Railway).
+export const resolveApiAssetUrl = (value) => {
+  const s = String(value || '').trim();
+  if (!s) return '';
+
+  // Already absolute or browser-local
+  if (/^https?:\/\//i.test(s) || /^data:/i.test(s) || /^blob:/i.test(s)) return s;
+
+  // Backend-served assets are exposed at the API origin.
+  if (s.startsWith('/')) return joinUrl(API_URL, s);
+
+  return s;
+};
 
 /* =========================
    App constants

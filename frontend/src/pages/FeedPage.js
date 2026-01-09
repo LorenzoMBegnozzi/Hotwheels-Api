@@ -4,6 +4,7 @@ import '../css/FeedPage.css';
 import { toastError, toastSuccess } from '../utils/alerts';
 import { createFeedPost, fetchFeedPosts, likeFeedPost, addFeedComment, deleteFeedPost } from '../utils/api';
 import { isAuthenticated } from '../utils/auth';
+import { resolveApiAssetUrl } from '../utils/constants';
 
 const initialsFromName = (name) => {
   const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
@@ -222,10 +223,10 @@ const FeedPage = () => {
                 <div className="post-text">{post.text}</div>
                 {post.image ? (
                   <img
-                    src={post.image}
+                    src={resolveApiAssetUrl(post.image)}
                     alt="Post"
                     className="post-image"
-                    onClick={() => window.open(post.image, '_blank')}
+                    onClick={() => window.open(resolveApiAssetUrl(post.image), '_blank')}
                   />
                 ) : null}
               </div>

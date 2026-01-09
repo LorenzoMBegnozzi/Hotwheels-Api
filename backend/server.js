@@ -71,10 +71,15 @@ app.use("/api/feed", require("./routes/feedRoutes"));
 /* =========================
    MongoDB
 ========================= */
-const mongoUri = process.env.MONGODB_URI;
+const mongoUri =
+  process.env.MONGODB_URI ||
+  process.env.MONGO_URI ||
+  process.env.MONGO_URL;
 
 if (!mongoUri) {
-  console.error("❌ MONGODB_URI NÃO DEFINIDA");
+  console.error(
+    "❌ MongoDB URI não definida. Configure MONGODB_URI (recomendado) ou MONGO_URI."
+  );
   process.exit(1); // derruba o container se não tiver Mongo
 }
 
