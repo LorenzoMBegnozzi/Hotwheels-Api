@@ -298,7 +298,13 @@ const MyCollection = () => {
             filtered.map((car) => (
               <div key={car._id} className="collection-card">
                 <div className="card-image">
-                  <img src={car.imageUrl || "https://via.placeholder.com/600x400"} alt={car.name} />
+                  <img
+                    src={car.imageUrl || "https://via.placeholder.com/600x400"}
+                    alt={car.name}
+                    loading="lazy"
+                    decoding="async"
+                    fetchpriority="low"
+                  />
                 </div>
 
                 <div className="card-content">

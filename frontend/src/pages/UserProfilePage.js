@@ -162,6 +162,9 @@ const UserProfilePage = () => {
           src={resolveAvatar(user.profilePicture)} 
           alt={user.name} 
           className={styles.userImage}
+          width="140"
+          height="140"
+          decoding="async"
           onError={(e) => {
             e.currentTarget.src = DEFAULT_PROFILE_IMAGE;
           }}

@@ -293,6 +293,9 @@
   border: 1px solid #252530;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  content-visibility: auto;
+  contain: layout paint;
+  contain-intrinsic-size: 320px 460px;
 }
 
 .card:hover {
@@ -336,6 +339,7 @@
   position: relative;
   z-index: 1;
   border-radius: 10px;
+  display: block;
 }
 
 .user-avatar {
@@ -347,6 +351,7 @@
   z-index: 1;
   border: 1px solid #353540;
   background: #0a0a0f;
+  display: block;
 }
 
 .card-content {

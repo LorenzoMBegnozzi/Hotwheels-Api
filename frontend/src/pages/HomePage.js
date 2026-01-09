@@ -473,6 +473,9 @@ const HomePage = () => {
                     src={car.imageUrl}
                     alt={car.name || car.modelName || "Hot Wheels"}
                     className="card-img"
+                    loading="lazy"
+                    decoding="async"
+                    fetchpriority="low"
                   />
                 ) : (
                   <div className="card-placeholder"></div>
@@ -523,6 +526,9 @@ const HomePage = () => {
                   src={resolveAvatar(u.profilePicture)}
                   alt={u.name}
                   className="user-avatar"
+                  loading="lazy"
+                  decoding="async"
+                  fetchpriority="low"
                   onError={(e) => {
                     e.currentTarget.src = DEFAULT_PROFILE_IMAGE;
                   }}
@@ -574,6 +580,8 @@ const HomePage = () => {
           <img
             src={popupImage}
             alt="Hot Wheels grande"
+            decoding="async"
+            fetchpriority="high"
             style={{
               width: "400px",
               height: "400px",

@@ -243,7 +243,7 @@ const ProfileSettingsPage = () => {
                     }`}
                     onClick={() => setSelectedAvatar(src)}
                   >
-                    <img src={src} alt="avatar" />
+                    <img src={src} alt="avatar" loading="lazy" decoding="async" fetchpriority="low" />
                   </button>
                 ))}
               </div>

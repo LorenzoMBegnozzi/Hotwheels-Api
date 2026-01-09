@@ -7,6 +7,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  content-visibility: auto;
+  contain: layout paint;
+  contain-intrinsic-size: 320px 360px;
 }
 
 /* Variação para quando não há botões de ação (perfil de usuário) */
@@ -36,6 +39,7 @@
   height: 100%;
   object-fit: contain; /* Mudado para 'contain' para mostrar a imagem inteira */
   transition: transform 0.2s ease;
+  display: block;
 }
 
 .carItem:hover .carImage {

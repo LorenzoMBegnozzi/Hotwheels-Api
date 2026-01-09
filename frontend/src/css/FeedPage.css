@@ -137,6 +137,9 @@
   margin-bottom: 1.5rem;
   overflow: hidden;
   transition: all 0.2s;
+  content-visibility: auto;
+  contain: layout paint;
+  contain-intrinsic-size: 700px 900px;
 }
 
 .post-card:hover {

@@ -339,6 +339,9 @@ body,
   cursor: pointer;
   display: block;
   text-align: left;
+  content-visibility: auto;
+  contain: layout paint;
+  contain-intrinsic-size: 320px 320px;
 }
 
 .hw-post-tile:hover {

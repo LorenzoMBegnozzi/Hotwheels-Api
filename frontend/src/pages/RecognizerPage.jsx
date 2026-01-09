@@ -202,7 +202,7 @@ const RecognizerPage = () => {
       {/* Mantém apenas preview underside para contexto do OCR */}
       {undersidePreview && (
         <div className="preview-card" style={{ marginTop: '16px' }}>
-          <img src={undersidePreview} alt="Preview underside" className="preview-image fixed" />
+          <img src={undersidePreview} alt="Preview underside" className="preview-image fixed" decoding="async" />
         </div>
       )}
       <button
@@ -254,7 +254,7 @@ const RecognizerPage = () => {
               {ocrTop3.map(c => (
                 <div key={c.id} className="car-item">
                   <h4>{c.nome}</h4>
-                  <img src={c.url} alt={c.nome} className="car-image" />
+                  <img src={c.url} alt={c.nome} className="car-image" loading="lazy" decoding="async" fetchpriority="low" />
                   <div className="buttons">
                     <button className="search-button" onClick={() => addToCollection(c.id)}>Coleção</button>
                     <button className="search-button" onClick={() => addToWishlist(c.id)}>Wishlist</button>

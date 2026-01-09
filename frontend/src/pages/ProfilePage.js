@@ -228,6 +228,10 @@ const ProfilePage = () => {
               src={user?.profilePicture || DEFAULT_USER_IMG}
               alt={user.name}
               className="hw-avatar-img"
+              width="160"
+              height="160"
+              decoding="async"
+              fetchpriority="high"
               onError={(e) => (e.currentTarget.src = DEFAULT_USER_IMG)}
             />
             <div className="hw-avatar-fallback" aria-hidden="true">
@@ -299,6 +303,9 @@ const ProfilePage = () => {
                         src={resolveApiAssetUrl(post.image)}
                         alt="Publicação"
                         className="hw-post-thumb"
+                        loading="lazy"
+                        decoding="async"
+                        fetchpriority="low"
                       />
                     ) : (
                       <div className="hw-post-text">
@@ -328,6 +335,8 @@ const ProfilePage = () => {
                     src={resolveApiAssetUrl(activePost.image)}
                     alt="Publicação"
                     className="hw-modal-image"
+                    decoding="async"
+                    fetchpriority="high"
                     onClick={() => window.open(resolveApiAssetUrl(activePost.image), '_blank')}
                   />
                 ) : null}

@@ -13,6 +13,9 @@ const CarItem = ({ car, onAddToCollection, onAddToWishlist, showActions = true }
           src={car.imageUrl || '/default-car-image.png'}
           alt={car.name}
           className={styles.carImage}
+          loading="lazy"
+          decoding="async"
+          fetchpriority="low"
           onError={handleImageError}
         />
       </div>
@@ -44,4 +47,4 @@ const CarItem = ({ car, onAddToCollection, onAddToWishlist, showActions = true }
   );
 };
 
-export default CarItem;
+export default React.memo(CarItem);

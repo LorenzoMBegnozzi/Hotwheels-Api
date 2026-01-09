@@ -283,6 +283,9 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: default;
   position: relative;
+  content-visibility: auto;
+  contain: layout paint;
+  contain-intrinsic-size: 320px 520px;
 }
 
 .collection-card:hover {
@@ -317,6 +320,7 @@
   object-fit: contain;
   position: relative;
   z-index: 1;
+  display: block;
 }
 
 /* card-menu removed: button with three dots was removed from JSX */

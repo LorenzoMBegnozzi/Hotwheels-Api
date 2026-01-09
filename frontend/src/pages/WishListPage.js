@@ -396,6 +396,9 @@ const WishListPage = () => {
                         <img
                           src={car.imageUrl || "https://via.placeholder.com/600x400"}
                           alt={car.name}
+                          loading="lazy"
+                          decoding="async"
+                          fetchpriority="low"
                         />
                       </div>
 

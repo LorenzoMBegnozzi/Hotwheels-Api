@@ -226,6 +226,9 @@ const FeedPage = () => {
                     src={resolveApiAssetUrl(post.image)}
                     alt="Post"
                     className="post-image"
+                    loading="lazy"
+                    decoding="async"
+                    fetchpriority="low"
                     onClick={() => window.open(resolveApiAssetUrl(post.image), '_blank')}
                   />
                 ) : null}
