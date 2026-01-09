@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { api, removeFromWishlist as apiRemoveFromWishlist, addToCollection as apiAddToCollection } from '../utils/api';
 import Swal from "sweetalert2";
 import { toastSuccess, toastError, toastWarning } from '../utils/alerts';
+import { FaTrash } from 'react-icons/fa';
 
 const WishListPage = () => {
   const [wishlist, setWishlist] = useState([]);
@@ -413,7 +414,7 @@ const WishListPage = () => {
                             className="card-btn btn-move"
                             onClick={() => handleMoveToCollection(car)}
                           >
-                            ✓ Mover p/ Coleção
+                            Mover p/ Coleção
                           </button>
 
                           <button
@@ -421,8 +422,9 @@ const WishListPage = () => {
                             className="card-btn btn-delete"
                             onClick={() => removeFromWishlist(car._id)}
                             title="Excluir"
+                            aria-label="Excluir"
                           >
-                            🗑️
+                            <FaTrash aria-hidden="true" />
                           </button>
                         </div>
                       </div>
