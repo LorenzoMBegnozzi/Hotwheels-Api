@@ -579,6 +579,8 @@
     padding-bottom: 80px;
   }
 
+
+
   .hw-header {
     padding: 0.9rem 1.25rem;
     flex-direction: column;
@@ -674,9 +676,12 @@
   }
 
   .card-btn {
-    padding: 0.5rem 0.35rem;
+    padding: 0.55rem 0.45rem;
     font-size: 0.7rem;
-    border-radius: 5px;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .user-avatar {
@@ -727,6 +732,7 @@
 }
 
 @media (max-width: 480px) {
+
   .cards-grid,
   .cards-grid.list-view {
     gap: 0.6rem;

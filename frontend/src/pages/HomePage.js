@@ -493,7 +493,7 @@ const HomePage = () => {
                     className="card-btn add-collection"
                     onClick={() => handleAddToCollection(car._id)}
                   >
-                    Adicionar à coleção
+                    Garagem
                   </button>
                   <button
                     className="card-btn add-wishlist"
