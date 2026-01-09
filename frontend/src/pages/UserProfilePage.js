@@ -22,6 +22,12 @@ const UserProfilePage = () => {
   const [relationshipLoading, setRelationshipLoading] = useState(false);
   const [followActionLoading, setFollowActionLoading] = useState(false);
 
+  const resolveAvatar = (p) => {
+    if (!p) return DEFAULT_PROFILE_IMAGE;
+    if (p.startsWith('http://') || p.startsWith('https://')) return p;
+    return p.startsWith('/') ? p : `/${p}`;
+  };
+
   // Custom hooks
   const { user, collection, wishlist, loading, error } = useUserProfile(userId);
 
@@ -153,9 +159,12 @@ const UserProfilePage = () => {
 
       <div className={styles.userInfo}>
         <img 
-          src={DEFAULT_PROFILE_IMAGE} 
+          src={resolveAvatar(user.profilePicture)} 
           alt={user.name} 
-          className={styles.userImage} 
+          className={styles.userImage}
+          onError={(e) => {
+            e.currentTarget.src = DEFAULT_PROFILE_IMAGE;
+          }}
         />
         <div className={styles.userDetails}>
           <div className={styles.userTitleRow}>
