@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 // Swal removed: not used directly in this file
 import { toastSuccess, toastError } from '../utils/alerts';
 import "../css/LoginPage.css";
-import Logo from "../css/logo2.png";
 
 const LoginPage = () => {
   const [name, setName] = useState("");
@@ -177,7 +176,7 @@ const LoginPage = () => {
       <div className="login-container">
         <div className="logo-section">
           <div className="logo-icon">
-            <img src={Logo} alt="Logo" className="logo-image" />
+            <img src="/logo2.jpg" alt="Diecast Social" className="logo-image" />
           </div>
 
           <h1 className="logo-title">

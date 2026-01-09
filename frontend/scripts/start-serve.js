@@ -8,7 +8,10 @@ const buildIndexPath = path.join(process.cwd(), 'build', 'index.html');
 
 let child;
 
-if (fs.existsSync(buildIndexPath)) {
+const nodeEnv = String(process.env.NODE_ENV || '').toLowerCase();
+const isProd = nodeEnv === 'production';
+
+if (isProd && fs.existsSync(buildIndexPath)) {
   const args = ['-s', 'build', '-l', String(port)];
 
   // Resolve the package root and point to its build entry
@@ -17,10 +20,13 @@ if (fs.existsSync(buildIndexPath)) {
 
   child = spawn(process.execPath, [serveBin, ...args], { stdio: 'inherit' });
 } else {
-  console.log(
-    `[start] build/ not found. Starting CRA dev server instead (PORT=${port}).\n` +
-      '        If you want the production server, run: npm run build && npm start'
-  );
+  if (isProd) {
+    console.log(
+      `[start] NODE_ENV=production but build/ not found. Starting CRA dev server instead (PORT=${port}).`
+    );
+  } else {
+    console.log(`[start] Starting CRA dev server (PORT=${port}).`);
+  }
 
   const reactScriptsStart = require.resolve('react-scripts/scripts/start');
   child = spawn(process.execPath, [reactScriptsStart], {

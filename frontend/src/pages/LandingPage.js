@@ -11,7 +11,7 @@ const LandingPage = () => {
       <header>
         <div className="header-content">
           <div className="logo">
-            <div className="logo-icon">HW</div>
+            <div className="logo-icon">DS</div>
             <div className="logo-text">Diecast <span className="logo-accent">Social</span></div>
           </div>
           <div className="header-actions">

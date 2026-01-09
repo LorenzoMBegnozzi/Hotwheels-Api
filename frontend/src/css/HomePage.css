@@ -10,9 +10,8 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: #0a0a0f;
   min-height: 100vh;
-  min-width: 100vw;
-  width: 100vw;
-  height: 100vh;
+  min-width: 0;
+  width: 100%;
   color: #f0f0f5;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -236,7 +235,6 @@
   color: white;
 }
 
-
 /* Action Buttons */
 .action-buttons {
   display: flex;
@@ -271,13 +269,15 @@
   transform: translateY(-2px);
 }
 
-/* Cards Grid */
+/* =========================
+   CARDS GRID - Desktop e Mobile
+========================= */
 .cards-grid {
   max-width: 1400px;
   margin: 2rem auto;
   padding: 0 3rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
@@ -437,7 +437,7 @@
   font-weight: 500;
 }
 
-/* Seu FAB (mantido e adaptado pro tema) */
+/* FAB Recognizer */
 .recognizer-fab {
   position: fixed;
   bottom: 24px;
@@ -464,10 +464,145 @@
   transform: scale(.92);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* =========================
+   BOTTOM NAVIGATION (Mobile)
+========================= */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #14141a;
+  border-top: 1px solid #252530;
+  padding: 0.75rem 0.5rem;
+  z-index: 150;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.bottom-nav-items {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: #9ca3af;
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+  flex: 1;
+  max-width: 80px;
+}
+
+.bottom-nav-item:active {
+  background: #1c1c24;
+}
+
+.bottom-nav-item.active {
+  color: #6366f1;
+}
+
+.bottom-nav-icon {
+  font-size: 1.5rem;
+  transition: transform 0.2s;
+}
+
+.bottom-nav-item:active .bottom-nav-icon {
+  transform: scale(0.9);
+}
+
+.bottom-nav-label {
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* =========================
+   RESPONSIVE - TABLET
+========================= */
+@media (max-width: 1024px) {
   .hw-header {
-    padding: 1rem 1.5rem;
+    padding: 1rem 2rem;
+  }
+
+  .header-actions {
+    gap: 0.75rem;
+  }
+
+  .user-search-btn {
+    padding: 0.55rem 1rem;
+    font-size: 0.88rem;
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+    padding: 0 2rem;
+  }
+
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    padding: 1.25rem;
+  }
+
+  .search-bar {
+    flex-wrap: wrap;
+  }
+
+  .search-bar select {
+    min-width: 0;
+  }
+}
+
+/* =========================
+   RESPONSIVE - MOBILE
+========================= */
+@media (max-width: 768px) {
+  .hw-page {
+    min-height: 100dvh;
+    padding-bottom: 80px; /* espaço para bottom nav */
+  }
+
+  .hw-header {
+    padding: 0.9rem 1.25rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .logo {
+    justify-content: center;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* Esconder botões do header no mobile */
+  .header-actions .user-search-btn {
+    display: none;
+  }
+
+  .profile-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
   }
 
   .stats-bar,
@@ -475,283 +610,199 @@
   .cards-grid,
   .action-buttons,
   .pagination {
-    padding: 0 1.5rem;
-  }
-
-  .stats-bar {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .cards-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
   }
 
   .search-bar {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
 
   .search-input,
-  .search-bar select {
+  .search-bar select,
+  .search-btn {
     width: 100%;
+  }
+
+  .search-btn {
+    padding: 0.85rem 1rem;
+  }
+
+  .view-toggle {
+    margin-left: 0 !important;
+    justify-content: center;
+  }
+
+  /* ===== CARDS: 2 COLUNAS NO MOBILE (igual app Hot Wheels) ===== */
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    padding: 0 1rem;
+  }
+
+  .card {
+    border-radius: 10px;
+  }
+
+  .card-image {
+    height: 140px;
+    padding: 0.75rem;
+  }
+
+  .card-content {
+    padding: 0.85rem;
+  }
+
+  .card-title {
+    font-size: 0.82rem;
+    min-height: auto;
+    margin-bottom: 0.35rem;
+    line-height: 1.3;
+  }
+
+  .card-year {
+    font-size: 0.72rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .card-buttons {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+  }
+
+  .card-btn {
+    padding: 0.5rem 0.35rem;
+    font-size: 0.7rem;
+    border-radius: 5px;
+  }
+
+  .user-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 12px;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .pagination-btn {
+    flex: 1 1 140px;
+    padding: 0.7rem 1rem;
+  }
+
+  .pagination-info {
+    width: 100%;
+    text-align: center;
+    order: 10;
+  }
+
+  /* Mostrar bottom nav no mobile */
+  .bottom-nav {
+    display: block;
+  }
+
+  /* Ajustar FAB para não cobrir o menu */
+  .recognizer-fab {
+    bottom: 90px;
+  }
+}
+
+/* =========================
+   MOBILE PEQUENO
+========================= */
+@media (max-width: 520px) {
+  .stats-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cards-grid {
+    gap: 0.6rem;
+    padding: 0 0.75rem !important;
+  }
+
+  .card-image {
+    height: 120px;
+    padding: 0.5rem;
+  }
+
+  .card-content {
+    padding: 0.7rem;
+  }
+
+  .card-title {
+    font-size: 0.75rem;
+  }
+
+  .card-year {
+    font-size: 0.68rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-btn {
+    padding: 0.45rem 0.25rem;
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .logo-text {
+    font-size: 1.25rem;
+  }
+
+  .stats-bar,
+  .search-container,
+  .cards-grid,
+  .action-buttons,
+  .pagination {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .toggle-btn {
+    width: 100%;
+  }
+
+  .view-toggle {
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+/* Mobile MUITO pequeno: 1 coluna */
+@media (max-width: 360px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-buttons {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 600px) {
   .recognizer-fab {
-    width: 58px;
-    height: 58px;
-    bottom: 16px;
+    width: 60px;
+    height: 60px;
+    bottom: 90px; /* acima do bottom nav */
     right: 16px;
     border-radius: 14px;
   }
-
-  /* ===== Melhor base (evita scroll lateral e bug de 100vh em mobile) ===== */
-  .hw-page {
-    min-width: 0;
-    width: 100%;
-    height: auto;
-    min-height: 100dvh;
-    /* melhor que 100vh em mobile */
-  }
-
-  /* =========================
-   HEADER: quebra bonito no mobile
-========================= */
-  @media (max-width: 1024px) {
-    .hw-header {
-      padding: 1rem 2rem;
-    }
-
-    .header-actions {
-      gap: 0.75rem;
-    }
-
-    .user-search-btn {
-      padding: 0.55rem 1rem;
-      font-size: 0.88rem;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .hw-header {
-      padding: 0.9rem 1.25rem;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 10px;
-    }
-
-    .logo {
-      justify-content: center;
-    }
-
-    .header-actions {
-      width: 100%;
-      justify-content: center;
-      flex-wrap: wrap;
-      /* ESSENCIAL */
-      gap: 10px;
-    }
-
-    .user-search-btn {
-      padding: 0.55rem 0.9rem;
-      font-size: 0.85rem;
-      border-radius: 8px;
-      flex: 1 1 180px;
-      /* botões quebram em linhas */
-      text-align: center;
-    }
-
-    .profile-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      flex: 0 0 auto;
-    }
-  }
-
-  @media (max-width: 420px) {
-    .logo-text {
-      font-size: 1.25rem;
-    }
-
-    .user-search-btn {
-      flex: 1 1 100%;
-    }
-  }
-
-  /* =========================
-   PADDINGS: em telas pequenas
-========================= */
-  @media (max-width: 768px) {
-
-    .stats-bar,
-    .search-container,
-    .cards-grid,
-    .action-buttons,
-    .pagination {
-      padding-left: 1.25rem !important;
-      padding-right: 1.25rem !important;
-    }
-  }
-
-  @media (max-width: 420px) {
-
-    .stats-bar,
-    .search-container,
-    .cards-grid,
-    .action-buttons,
-    .pagination {
-      padding-left: 1rem !important;
-      padding-right: 1rem !important;
-    }
-  }
-
-  /* =========================
-   STATS: vira grid responsivo
-========================= */
-  .stats-bar {
-    flex-wrap: wrap;
-  }
-
-  @media (max-width: 1024px) {
-    .stats-bar {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-    }
-
-    .stat-card {
-      padding: 1.25rem;
-    }
-  }
-
-  @media (max-width: 520px) {
-    .stats-bar {
-      grid-template-columns: 1fr;
-    }
-
-    .stat-value {
-      font-size: 1.8rem;
-    }
-  }
-
-  /* =========================
-   SEARCH BAR: layout em grid no mobile
-========================= */
-  @media (max-width: 1024px) {
-    .search-bar {
-      flex-wrap: wrap;
-    }
-
-    .search-bar select {
-      min-width: 0;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .search-bar {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0.75rem;
-    }
-
-    .search-input,
-    .search-bar select,
-    .search-btn {
-      width: 100%;
-    }
-
-    .search-btn {
-      padding: 0.85rem 1rem;
-    }
-
-    /* coloca o view-toggle abaixo do botão buscar */
-    .view-toggle {
-      margin-left: 0 !important;
-      justify-content: center;
-    }
-  }
-
-  @media (max-width: 420px) {
-    .toggle-btn {
-      width: 100%;
-    }
-
-    .view-toggle {
-      width: 100%;
-      gap: 0.5rem;
-    }
-
-    .toggle-btn {
-      flex: 1;
-      text-align: center;
-    }
-  }
-
-  /* =========================
-   CARDS: menor em celulares
-========================= */
-  @media (max-width: 768px) {
-    .cards-grid {
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1rem;
-    }
-
-    .card-content {
-      padding: 1.15rem;
-    }
-
-    .card-image {
-      height: 210px;
-      padding: 1rem;
-    }
-  }
-
-  @media (max-width: 420px) {
-    .cards-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .card-buttons {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  /* =========================
-   PAGINAÇÃO: quebrar linha no mobile
-========================= */
-  @media (max-width: 768px) {
-    .pagination {
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      padding-top: 1.5rem;
-      padding-bottom: 1.5rem;
-    }
-
-    .pagination-btn {
-      flex: 1 1 140px;
-      padding: 0.7rem 1rem;
-    }
-
-    .pagination-info {
-      width: 100%;
-      text-align: center;
-      order: 10;
-    }
-  }
-
-  /* =========================
-   FAB: bom ajuste em telas pequenas
-========================= */
-  @media (max-width: 600px) {
-    .recognizer-fab {
-      width: 60px;
-      height: 60px;
-      bottom: 16px;
-      right: 16px;
-      border-radius: 14px;
-    }
-  }
-
 }

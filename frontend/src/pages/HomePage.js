@@ -14,6 +14,8 @@ import {
 } from "../utils/api";
 import FIXED_CATEGORY_FILTERS from "../utils/categories";
 import { isAuthenticated } from "../utils/auth";
+import { FaSearch, FaBox, FaHeart, FaNewspaper, FaUsers } from 'react-icons/fa';
+
 
 const HomePage = () => {
   const [popupImage, setPopupImage] = useState(null);
@@ -604,6 +606,57 @@ const HomePage = () => {
         className="recognizer-fab"
         onClick={() => navigate("/reconhecedor")}
       /> */}
+
+      {/* Bottom Navigation (Mobile) */}
+      <nav className="bottom-nav">
+        <div className="bottom-nav-items">
+          <div
+            className={`bottom-nav-item ${activeTab === 'hotwheels' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('hotwheels');
+              setCurrentPage(1);
+            }}
+          >
+            <div className="bottom-nav-icon"><FaSearch /></div>
+            <div className="bottom-nav-label">Buscar</div>
+          </div>
+
+          <div
+            className="bottom-nav-item"
+            onClick={() => navigate('/minha-colecao')}
+          >
+            <div className="bottom-nav-icon"><FaBox /></div>
+            <div className="bottom-nav-label">Coleção</div>
+          </div>
+
+          <div
+            className="bottom-nav-item"
+            onClick={() => navigate('/lista-de-desejos')}
+          >
+            <div className="bottom-nav-icon"><FaHeart /></div>
+            <div className="bottom-nav-label">Desejos</div>
+          </div>
+
+          <div
+            className="bottom-nav-item"
+            onClick={() => navigate('/feed')}
+          >
+            <div className="bottom-nav-icon"><FaNewspaper /></div>
+            <div className="bottom-nav-label">Feed</div>
+          </div>
+
+          <div
+            className={`bottom-nav-item ${activeTab === 'users' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('users');
+              setCurrentPage(1);
+            }}
+          >
+            <div className="bottom-nav-icon"><FaUsers /></div>
+            <div className="bottom-nav-label">Usuários</div>
+          </div>
+        </div>
+      </nav>
     </div>
   );
 };
