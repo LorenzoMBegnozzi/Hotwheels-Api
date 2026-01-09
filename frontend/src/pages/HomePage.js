@@ -15,6 +15,7 @@ import {
 import FIXED_CATEGORY_FILTERS from "../utils/categories";
 import { isAuthenticated } from "../utils/auth";
 import { FaSearch, FaBox, FaHeart, FaNewspaper, FaUsers } from 'react-icons/fa';
+import { GiHomeGarage } from 'react-icons/gi';
 
 
 const HomePage = () => {
@@ -492,14 +493,24 @@ const HomePage = () => {
                   <button
                     className="card-btn add-collection"
                     onClick={() => handleAddToCollection(car._id)}
+                    aria-label="Adicionar à garagem"
+                    title="Garagem"
                   >
-                    Garagem
+                    <span className="card-btn-icon" aria-hidden="true">
+                      <GiHomeGarage />
+                    </span>
+                    <span className="card-btn-text">Garagem</span>
                   </button>
                   <button
                     className="card-btn add-wishlist"
                     onClick={() => handleAddToWishlist(car._id)}
+                    aria-label="Adicionar à lista de desejos"
+                    title="Desejar"
                   >
-                    Desejar
+                    <span className="card-btn-icon" aria-hidden="true">
+                      <FaHeart />
+                    </span>
+                    <span className="card-btn-text">Desejar</span>
                   </button>
                 </div>
               </div>

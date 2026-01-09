@@ -385,6 +385,16 @@
   font-size: 0.85rem;
   background: #0a0a0f;
   color: #f0f0f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+/* Por padrão (desktop/tablet), manter o texto visível */
+.card-btn-icon {
+  display: none;
+  line-height: 0;
 }
 
 .add-collection:hover {
@@ -682,6 +692,16 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  /* No celular: substituir texto por ícones */
+  .card-btn-text {
+    display: none;
+  }
+
+  .card-btn-icon {
+    display: inline-flex;
+    font-size: 1.3rem;
   }
 
   .user-avatar {
