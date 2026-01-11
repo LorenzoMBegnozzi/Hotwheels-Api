@@ -91,31 +91,31 @@
 }
 
 /* Stats Bar */
-.stats-bar {
+.home-page .stats-bar {
   max-width: 1400px;
-  margin: 2rem auto 0;
+  margin: 1.25rem auto 0;
   padding: 0 3rem;
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
-.stat-card {
+.home-page .stat-card {
   flex: 1;
   background: #14141a;
   border: 1px solid #252530;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1rem;
   text-align: center;
   transition: all 0.2s;
 }
 
-.stat-card:hover {
+.home-page .stat-card:hover {
   border-color: #353540;
   transform: translateY(-2px);
 }
 
-.stat-value {
-  font-size: 2rem;
+.home-page .stat-value {
+  font-size: 1.5rem;
   font-weight: 700;
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   -webkit-background-clip: text;
@@ -124,8 +124,8 @@
   margin-bottom: 0.25rem;
 }
 
-.stat-label {
-  font-size: 0.85rem;
+.home-page .stat-label {
+  font-size: 0.7rem;
   color: #9ca3af;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -565,15 +565,19 @@
     padding: 0 2rem;
   }
 
-  .stats-bar {
+  .home-page .stats-bar {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
     flex-wrap: wrap;
   }
 
-  .stat-card {
-    padding: 1.25rem;
+  .home-page .stat-card {
+    padding: 0.95rem;
+  }
+
+  .home-page .stat-value {
+    font-size: 1.4rem;
   }
 
   .search-bar {
@@ -629,6 +633,18 @@
   .pagination {
     padding-left: 1.25rem !important;
     padding-right: 1.25rem !important;
+  }
+
+  .home-page .stat-card {
+    padding: 0.85rem;
+  }
+
+  .home-page .stat-value {
+    font-size: 1.3rem;
+  }
+
+  .home-page .stat-label {
+    font-size: 0.68rem;
   }
 
   .search-bar {
@@ -747,12 +763,12 @@
    AJUSTES FINOS - Mobile pequeno
 ========================= */
 @media (max-width: 520px) {
-  .stats-bar {
+  .home-page .stats-bar {
     grid-template-columns: 1fr;
   }
 
-  .stat-value {
-    font-size: 1.8rem;
+  .home-page .stat-value {
+    font-size: 1.2rem;
   }
 }
 

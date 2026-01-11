@@ -507,6 +507,11 @@
     padding: 1rem 1.5rem;
   }
 
+  /* No mobile: esconder botão Home */
+  .mc-page .home-btn-home {
+    display: none !important;
+  }
+
   .main-container {
     padding: 1.5rem;
   }

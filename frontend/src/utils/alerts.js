@@ -1,4 +1,25 @@
-import Swal from 'sweetalert2';
+import BaseSwal from 'sweetalert2';
+
+// SweetAlert2 can cause scroll jumps depending on CSS/layout.
+// These defaults mitigate that and keep UX stable across the app.
+const Swal = BaseSwal.mixin({
+  heightAuto: false,
+  scrollbarPadding: false,
+  returnFocus: false,
+});
+
+export const fireModalPreserveScroll = async (options) => {
+  const x = window.scrollX || 0;
+  const y = window.scrollY || 0;
+  try {
+    return await Swal.fire(options);
+  } finally {
+    // Restore scroll after SweetAlert2 locks/unlocks body.
+    requestAnimationFrame(() => {
+      try { window.scrollTo(x, y); } catch (e) { /* ignore */ }
+    });
+  }
+};
 
 const defaultToast = (icon, title, text, opts = {}) => {
   return Swal.fire({

@@ -1,0 +1,133 @@
+:root {
+  --header-bg: rgba(20, 20, 26, 0.85);
+  --header-border: rgba(37, 37, 48, 0.9);
+  --header-text: #f0f0f5;
+  --header-muted: #9ca3af;
+  --header-accent: #6366f1;
+  --header-accent-2: #8b5cf6;
+  --header-danger: #dc2626;
+}
+
+/* Desktop-only global header */
+.app-header {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .app-header {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 1100;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--header-border);
+    backdrop-filter: blur(16px) saturate(180%);
+  }
+
+  .app-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .app-header-brand {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .app-header-logo {
+    color: #fff;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .app-header-accent {
+    color: var(--header-accent);
+  }
+
+  .app-header-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .app-header-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--header-muted);
+    border: 1px solid transparent;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    font-weight: 700;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  .app-header-link:hover {
+    background: rgba(99, 102, 241, 0.10);
+    color: var(--header-text);
+  }
+
+  .app-header-link.active {
+    background: rgba(99, 102, 241, 0.18);
+    color: var(--header-accent);
+    border-color: rgba(99, 102, 241, 0.25);
+  }
+
+  .app-header-link-icon {
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .app-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .app-header-btn {
+    background: transparent;
+    border: 1px solid rgba(53, 53, 64, 0.9);
+    color: var(--header-text);
+    padding: 0.55rem 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .app-header-btn:hover {
+    background: rgba(28, 28, 36, 0.8);
+    border-color: rgba(99, 102, 241, 0.7);
+  }
+
+  .app-header-btn.danger {
+    border-color: rgba(220, 38, 38, 0.9);
+    color: var(--header-danger);
+  }
+
+  .app-header-btn.danger:hover {
+    background: rgba(220, 38, 38, 0.10);
+    border-color: rgba(220, 38, 38, 1);
+  }
+
+  /* Hide page-specific headers on desktop (keep only the global one) */
+  .app-shell .hw-header,
+  .app-shell .mc-header,
+  .app-shell .wl-header,
+  .app-shell .subscription-plans-page header {
+    display: none !important;
+  }
+}

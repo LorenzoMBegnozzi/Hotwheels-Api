@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import { Swal } from "../utils/alerts";
 import { useNavigate } from "react-router-dom";
 
 import { toastSuccess, toastError, toastInfo } from "../utils/alerts";
@@ -198,7 +198,7 @@ const ProfileSettingsPage = () => {
             Voltar
           </button>
 
-          <button className="hw-btn hw-btn-ghost" onClick={() => navigate("/home")}>
+          <button className="hw-btn hw-btn-ghost hw-btn-home" onClick={() => navigate("/home")}>
             Home
           </button>
 

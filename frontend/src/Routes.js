@@ -10,22 +10,27 @@ import ProfileSettingsPage from "./pages/ProfileSettingsPage";
 import RecognizerPage from "./pages/RecognizerPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import FeedPage from "./pages/FeedPage";
+import AppLayout from "./components/layout/AppLayout";
 
 const AppRoutes = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/home" element={<HomePage />} />
         <Route path="/register" element={<LoginPage />} />
-        <Route path="/minha-colecao" element={<MyCollection />} /> 
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/lista-de-desejos" element={<WishListPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/profile/settings" element={<ProfileSettingsPage />} />
-        <Route path="/feed" element={<FeedPage />} />
-        <Route path="/reconhecedor" element={<RecognizerPage />} />
-        <Route path="/user/:userId" element={<UserProfilePage />} />
+
+        {/* Rotas do app com menu fixo */}
+        <Route element={<AppLayout />}>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/minha-colecao" element={<MyCollection />} />
+          <Route path="/lista-de-desejos" element={<WishListPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/settings" element={<ProfileSettingsPage />} />
+          <Route path="/feed" element={<FeedPage />} />
+          <Route path="/reconhecedor" element={<RecognizerPage />} />
+          <Route path="/user/:userId" element={<UserProfilePage />} />
+        </Route>
       </Routes>
     </Router>
   );

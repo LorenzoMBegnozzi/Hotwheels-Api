@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "../css/HomePage.css";
-import Swal from "sweetalert2";
-import { toastSuccess, toastError, toastInfo, toastWarning } from '../utils/alerts';
+import { Swal, fireModalPreserveScroll, toastSuccess, toastError, toastInfo, toastWarning } from '../utils/alerts';
 import { useNavigate } from "react-router-dom";
 import { DEFAULT_PROFILE_IMAGE } from "../utils/constants";
 import {
@@ -147,8 +146,6 @@ const HomePage = () => {
     setCurrentPage(1);
   }, [yearFilter, results]);
 
-  useEffect(() => window.scrollTo(0, 0), [currentPage]);
-
   // ==================== Hot Wheels ====================
   const handleSearchHotWheels = async (showAlert = true) => {
     try {
@@ -209,7 +206,8 @@ const HomePage = () => {
         </div>
       `;
 
-      await Swal.fire({
+      let chosenPriority = null;
+      await fireModalPreserveScroll({
         title: 'Escolha a prioridade',
         html,
         showCancelButton: true,
@@ -220,18 +218,15 @@ const HomePage = () => {
           container.querySelectorAll('.swal-priority-btn').forEach((btn) => {
             btn.addEventListener('click', () => {
               const p = btn.getAttribute('data-priority');
+              chosenPriority = p;
               // fechar o modal retornando o valor via resolve
               Swal.close();
-              // armazenar escolhido em dataset temporário para recuperar abaixo
-              container.setAttribute('data-chosen-priority', p);
             });
           });
         }
       });
 
-      // recuperar o escolhido
-      const swalContainer = Swal.getHtmlContainer();
-      const priority = swalContainer ? swalContainer.getAttribute('data-chosen-priority') : null;
+      const priority = chosenPriority;
       if (!priority) return; // cancelado ou nada escolhido
 
       // checar duplicata localmente
@@ -318,7 +313,7 @@ const HomePage = () => {
 
 
   return (
-    <div className="hw-page">
+    <div className="hw-page home-page">
       <header className="hw-header">
         <div className="logo" style={{ cursor: "default" }}>
           <div className="logo-text">
@@ -437,7 +432,7 @@ const HomePage = () => {
             </>
           )}
 
-          <button className="search-btn" onClick={onSearchClick}>
+          <button type="button" className="search-btn" onClick={onSearchClick}>
             Buscar
           </button>
           <div className="view-toggle" style={{ marginLeft: 12 }}>
@@ -494,6 +489,7 @@ const HomePage = () => {
 
                 <div className="card-buttons">
                   <button
+                    type="button"
                     className="card-btn add-collection"
                     onClick={() => handleAddToCollection(car._id)}
                     aria-label="Adicionar à garagem"
@@ -505,6 +501,7 @@ const HomePage = () => {
                     <span className="card-btn-text">Garagem</span>
                   </button>
                   <button
+                    type="button"
                     className="card-btn add-wishlist"
                     onClick={() => handleAddToWishlist(car._id)}
                     aria-label="Adicionar à lista de desejos"
@@ -549,6 +546,7 @@ const HomePage = () => {
 
                 <div className="card-buttons">
                   <button
+                    type="button"
                     className="card-btn add-collection"
                     onClick={() => navigate(`/user/${u._id}`)}
                   >

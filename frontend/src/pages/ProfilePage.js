@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
-import { toastSuccess, toastError } from '../utils/alerts';
+import { Swal, toastSuccess, toastError } from '../utils/alerts';
 import { useNavigate } from "react-router-dom";
 import { logout } from '../utils/auth';
 import "../css/ProfilePage.css";
@@ -198,7 +197,7 @@ const ProfilePage = () => {
         </div>
 
         <div className="hw-header-actions">
-          <button className="hw-btn hw-btn-ghost" onClick={() => navigate("/home")}>
+          <button className="hw-btn hw-btn-ghost hw-btn-home" onClick={() => navigate("/home")}>
             Home
           </button>
 

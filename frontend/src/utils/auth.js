@@ -1,4 +1,4 @@
-import Swal from 'sweetalert2';
+import { Swal } from './alerts';
 
 // Authentication utility functions
 export const isAuthenticated = () => {

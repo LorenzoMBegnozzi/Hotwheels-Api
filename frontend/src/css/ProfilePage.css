@@ -922,6 +922,11 @@ body,
     flex-wrap: wrap;
   }
 
+  /* No mobile: esconder botão Home */
+  .hw-header-actions .hw-btn-home {
+    display: none !important;
+  }
+
   .hw-header-actions {
     width: 100%;
     margin-top: 0.75rem;

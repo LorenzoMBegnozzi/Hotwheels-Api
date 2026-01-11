@@ -2,8 +2,7 @@ import React, { useMemo, useEffect, useState } from "react";
 import "../css/Wishlist.css";
 import { Link } from "react-router-dom";
 import { api, removeFromWishlist as apiRemoveFromWishlist, addToCollection as apiAddToCollection } from '../utils/api';
-import Swal from "sweetalert2";
-import { toastSuccess, toastError, toastWarning } from '../utils/alerts';
+import { Swal, toastSuccess, toastError, toastWarning } from '../utils/alerts';
 import { FaTrash } from 'react-icons/fa';
 
 const WishListPage = () => {
@@ -253,7 +252,7 @@ const WishListPage = () => {
         </div>
 
         <div className="header-actions">
-          <Link to="/home" className="home-btn">
+          <Link to="/home" className="home-btn home-btn-home">
             Home
           </Link>
           <div className="profile-icon" title="Perfil">

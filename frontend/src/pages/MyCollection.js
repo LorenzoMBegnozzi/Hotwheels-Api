@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import Swal from "sweetalert2";
-import { toastSuccess, toastError } from '../utils/alerts';
+import { Swal, toastSuccess, toastError } from '../utils/alerts';
 import "../css/MyCollection.css";
 import { api } from "../utils/api";
 
@@ -188,7 +187,7 @@ const MyCollection = () => {
         </div>
 
         <div className="header-actions">
-          <Link to="/home" className="home-btn">
+          <Link to="/home" className="home-btn home-btn-home">
             Home
           </Link>
           <div className="profile-icon" title="Perfil">

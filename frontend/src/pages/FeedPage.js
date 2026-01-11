@@ -162,9 +162,6 @@ const FeedPage = () => {
     <div className="feed-page">
       <header className="feed-header">
         <div className="feed-logo">Diecast <span className="feed-logo-accent">Social Feed</span></div>
-        <div className="feed-actions">
-          <button className="feed-btn" onClick={() => navigate('/home')}>Home</button>
-        </div>
       </header>
 
       <div className="feed-container">
