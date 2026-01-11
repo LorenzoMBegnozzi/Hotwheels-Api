@@ -200,8 +200,8 @@ const LoginPage = () => {
             </div>
           )}
 
-          {/* Email (não aparece no passo 2 do reset, como você já fazia) */}
-          {!isResetting && (
+          {/* Email (no reset, aparece no passo 1 e some no passo 2) */}
+          {!(isResetting && resetCodeSent) && (
             <div className="form-group">
               <label className="form-label">E-mail</label>
               <input
