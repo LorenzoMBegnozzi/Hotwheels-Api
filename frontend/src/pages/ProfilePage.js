@@ -220,6 +220,19 @@ const ProfilePage = () => {
       </header>
 
       <main className="hw-container">
+        <div className="profile-mobile-actions" aria-label="Ações do perfil">
+          <button
+            className="hw-btn hw-btn-ghost"
+            type="button"
+            onClick={() => navigate("/profile/settings")}
+          >
+            Configurações
+          </button>
+          <button className="hw-btn hw-btn-danger" type="button" onClick={handleLogout}>
+            Sair
+          </button>
+        </div>
+
         {/* Profile Header */}
         <section className="hw-profile-header">
           <div className="hw-avatar-wrap">
