@@ -10,6 +10,7 @@ import ProfileSettingsPage from "./pages/ProfileSettingsPage";
 import RecognizerPage from "./pages/RecognizerPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import FeedPage from "./pages/FeedPage";
+import UsersPage from "./pages/UsersPage";
 import AppLayout from "./components/layout/AppLayout";
 
 const AppRoutes = () => {
@@ -23,6 +24,7 @@ const AppRoutes = () => {
         {/* Rotas do app com menu fixo */}
         <Route element={<AppLayout />}>
           <Route path="/home" element={<HomePage />} />
+          <Route path="/users" element={<UsersPage />} />
           <Route path="/minha-colecao" element={<MyCollection />} />
           <Route path="/lista-de-desejos" element={<WishListPage />} />
           <Route path="/profile" element={<ProfilePage />} />

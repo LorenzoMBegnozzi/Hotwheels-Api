@@ -197,32 +197,6 @@
   border-color: #6366f1;
 }
 
-.view-toggle {
-  display: flex;
-  gap: 0.5rem;
-  background: #14141a;
-  padding: 0.25rem;
-  border-radius: 8px;
-  border: 1px solid #252530;
-}
-
-.toggle-btn {
-  padding: 0.5rem 1rem;
-  background: transparent;
-  border: none;
-  color: #9ca3af;
-  cursor: pointer;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.toggle-btn.active {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: white;
-}
-
 /* Cards Grid */
 .cards-grid {
   display: grid;

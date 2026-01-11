@@ -7,6 +7,42 @@
   --menu-height: 74px;
 }
 
+/* Mobile top bar (title only) */
+.app-mobile-topbar {
+  display: none;
+}
+
+@media (max-width: 899px) {
+  .app-mobile-topbar {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+    background: rgba(20, 20, 26, 0.85);
+    border-bottom: 1px solid rgba(37, 37, 48, 0.9);
+    backdrop-filter: blur(16px) saturate(180%);
+  }
+
+  .app-mobile-topbar-inner {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+  }
+
+  .app-mobile-topbar-logo {
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+  }
+
+  .app-mobile-topbar-accent {
+    color: var(--menu-accent);
+  }
+}
+
 /* Shell wrapper to keep fixed menu from covering content */
 .app-shell {
   min-height: 100dvh;
@@ -34,8 +70,8 @@
   height: var(--menu-height);
   padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
 }
 
 .app-menu-link {
@@ -76,9 +112,43 @@
 
 .app-menu-label {
   margin-top: 6px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  .app-menu-inner {
+    gap: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .app-menu-icon {
+    font-size: 18px;
+  }
+
+  .app-menu-label {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  /* Em telas bem pequenas, mostra so icones para nao apertar */
+  .app-menu-label {
+    display: none;
+  }
+}
+
+/* Mobile: hide page-specific top headers inside AppLayout */
+@media (max-width: 899px) {
+  .app-shell .hw-header,
+  .app-shell .mc-header,
+  .app-shell .wl-header,
+  .app-shell .feed-header {
+    display: none !important;
+  }
 }
 
 /* Desktop: keep the old top headers; hide the mobile bottom menu */

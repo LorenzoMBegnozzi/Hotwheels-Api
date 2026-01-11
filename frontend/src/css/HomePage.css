@@ -207,34 +207,6 @@
   transform: translateY(-1px);
 }
 
-/* View toggle (grid / list) */
-.view-toggle {
-  display: flex;
-  gap: 0.5rem;
-  background: #14141a;
-  padding: 0.25rem;
-  border-radius: 8px;
-  border: 1px solid #252530;
-  margin-left: 8px;
-}
-
-.toggle-btn {
-  padding: 0.45rem 0.9rem;
-  background: transparent;
-  border: none;
-  color: #9ca3af;
-  cursor: pointer;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  transition: all 0.15s;
-}
-
-.toggle-btn.active {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: white;
-}
-
 /* Action Buttons */
 .action-buttons {
   display: flex;
@@ -595,36 +567,26 @@
 @media (max-width: 768px) {
   .hw-page {
     min-height: 100dvh;
-    padding-bottom: 80px;
+    /* O AppLayout j e1 adiciona padding-bottom por causa do AppMenu */
+    padding-bottom: 0;
   }
 
-
-
+  /* No mobile, usar apenas o menu global inferior (AppMenu). */
   .hw-header {
-    padding: 0.9rem 1.25rem;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-
-  .logo {
-    justify-content: center;
-  }
-
-  .header-actions {
-    width: 100%;
-    justify-content: flex-end;
-  }
-
-  .header-actions .user-search-btn {
     display: none;
   }
 
-  .profile-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
+  .home-page .stats-bar {
+    margin-top: 1rem;
   }
+
+  .search-container {
+    margin: 1.25rem auto;
+  }
+
+
+
+
 
   .stats-bar,
   .search-container,
@@ -652,6 +614,7 @@
     grid-template-columns: 1fr;
     gap: 0.75rem;
   }
+
 
   .search-input,
   .search-bar select,
@@ -751,7 +714,7 @@
   }
 
   .bottom-nav {
-    display: block;
+    display: none;
   }
 
   .recognizer-fab {

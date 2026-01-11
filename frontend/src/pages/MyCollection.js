@@ -13,7 +13,6 @@ const MyCollection = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [yearFilter, setYearFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
-  const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
 
   useEffect(() => {
     const fetchCollection = async () => {
@@ -260,26 +259,10 @@ const MyCollection = () => {
             ))}
           </select>
 
-          <div className="view-toggle">
-            <button
-              type="button"
-              className={`toggle-btn ${viewMode === "grid" ? "active" : ""}`}
-              onClick={() => setViewMode("grid")}
-            >
-              Grid
-            </button>
-            <button
-              type="button"
-              className={`toggle-btn ${viewMode === "list" ? "active" : ""}`}
-              onClick={() => setViewMode("list")}
-            >
-              Lista
-            </button>
-          </div>
         </div>
 
         {/* Cards */}
-        <div className={`cards-grid ${viewMode === "list" ? "list-view" : ""}`}>
+        <div className="cards-grid">
           {/* Add Card */}
           <div className="add-card" onClick={() => setShowModal(true)} role="button" tabIndex={0}>
             <div className="add-icon">+</div>

@@ -1,12 +1,13 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FaHome, FaNewspaper, FaHeart, FaUser } from 'react-icons/fa';
+import { FaHome, FaNewspaper, FaHeart, FaUser, FaUsers } from 'react-icons/fa';
 import { GiHomeGarage } from 'react-icons/gi';
 
 import '../../css/AppMenu.css';
 
 const navItems = [
   { to: '/home', label: 'Home', Icon: FaHome },
+  { to: '/users', label: 'Usuários', Icon: FaUsers },
   { to: '/feed', label: 'Feed', Icon: FaNewspaper },
   { to: '/minha-colecao', label: 'Coleção', Icon: GiHomeGarage },
   { to: '/lista-de-desejos', label: 'Desejos', Icon: FaHeart },

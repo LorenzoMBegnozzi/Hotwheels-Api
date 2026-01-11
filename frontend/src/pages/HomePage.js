@@ -17,7 +17,7 @@ import { FaSearch, FaBox, FaHeart, FaNewspaper, FaUsers } from 'react-icons/fa';
 import { GiHomeGarage } from 'react-icons/gi';
 
 
-const HomePage = () => {
+const HomePage = ({ initialTab = "hotwheels" }) => {
   const [popupImage, setPopupImage] = useState(null);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
@@ -26,10 +26,15 @@ const HomePage = () => {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
   const [user, setUser] = useState(null);
-  const [activeTab, setActiveTab] = useState("hotwheels");
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [userResults, setUserResults] = useState([]);
+
+  useEffect(() => {
+    setActiveTab(initialTab);
+    setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialTab]);
 
   const itemsPerPage = 24;
   const navigate = useNavigate();
@@ -324,7 +329,7 @@ const HomePage = () => {
         <div className="header-actions">
           {activeTab === "hotwheels" ? (
             <button
-              className="user-search-btn"
+              className="user-search-btn user-tab-toggle"
               onClick={() => {
                 setActiveTab("users");
                 setCurrentPage(1);
@@ -334,7 +339,7 @@ const HomePage = () => {
             </button>
           ) : (
             <button
-              className="user-search-btn"
+              className="user-search-btn user-tab-toggle"
               onClick={() => {
                 setActiveTab("hotwheels");
                 setCurrentPage(1);
@@ -351,7 +356,7 @@ const HomePage = () => {
           >
             Minha Coleção
           </button>
-
+            className="user-search-btn header-link-btn"
           <button
             className="user-search-btn"
             onClick={() => navigate('/lista-de-desejos')}
@@ -359,7 +364,7 @@ const HomePage = () => {
           >
             Minha Lista de Desejos
           </button>
-
+            className="user-search-btn header-link-btn"
           <button
             className="user-search-btn"
             onClick={() => navigate('/feed')}
@@ -367,7 +372,7 @@ const HomePage = () => {
           >
             Feed
           </button>
-
+            className="user-search-btn header-link-btn"
           <div className="profile-icon" title="Meu perfil" onClick={() => navigate("/profile")}>
             {user?.name?.[0]?.toUpperCase() || "U"}
           </div>
@@ -435,26 +440,10 @@ const HomePage = () => {
           <button type="button" className="search-btn" onClick={onSearchClick}>
             Buscar
           </button>
-          <div className="view-toggle" style={{ marginLeft: 12 }}>
-            <button
-              type="button"
-              className={`toggle-btn ${viewMode === "grid" ? "active" : ""}`}
-              onClick={() => setViewMode("grid")}
-            >
-              Grid
-            </button>
-            <button
-              type="button"
-              className={`toggle-btn ${viewMode === "list" ? "active" : ""}`}
-              onClick={() => setViewMode("list")}
-            >
-              Lista
-            </button>
-          </div>
         </div>
       </div>
 
-      <div className={`cards-grid ${viewMode === "list" ? "list-view" : ""}`}>
+      <div className="cards-grid">
         {activeTab === "hotwheels"
           ? currentItems.map((car) => (
             <div className="card" key={car._id}>
