@@ -202,6 +202,10 @@ const ProfilePage = () => {
             Home
           </button>
 
+          <button className="hw-btn hw-btn-ghost" onClick={() => navigate("/assinatura")}>
+            Assinatura
+          </button>
+
           <button
             className="hw-btn hw-btn-ghost hw-btn-icon"
             type="button"

@@ -1,0 +1,450 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Scoped styles for the subscription plans page.
+   This intentionally mirrors the provided layout/CSS while avoiding global overrides. */
+
+.subscription-plans-page {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0a0a0f;
+  min-height: 100vh;
+  color: #f0f0f5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.subscription-plans-page * {
+  box-sizing: border-box;
+}
+
+/* Header */
+.subscription-plans-page header {
+  background: linear-gradient(180deg, #14141a 0%, #0a0a0f 100%);
+  padding: 1.2rem 3rem;
+  border-bottom: 1px solid #252530;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.subscription-plans-page .logo {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.subscription-plans-page .logo-text {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.subscription-plans-page .logo-accent {
+  color: #6366f1;
+}
+
+.subscription-plans-page .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.subscription-plans-page .home-btn {
+  background: transparent;
+  border: 1px solid #353540;
+  color: #f0f0f5;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.subscription-plans-page .home-btn:hover {
+  background: #1c1c24;
+  border-color: #6366f1;
+}
+
+.subscription-plans-page .danger-btn {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.subscription-plans-page .danger-btn:hover {
+  background: #dc2626;
+  color: #fff;
+}
+
+/* Main Container */
+.subscription-plans-page .main-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 4rem 3rem;
+}
+
+/* Current plan banner */
+.subscription-plans-page .current-banner {
+  background: #14141a;
+  border: 1px solid #252530;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  margin: 0 0 2.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subscription-plans-page .current-banner-title {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.subscription-plans-page .current-banner-sub {
+  color: #9ca3af;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.subscription-plans-page .current-banner-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Page Header */
+.subscription-plans-page .page-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  width: 100%;
+  display: block !important;
+}
+
+.subscription-plans-page .page-badge {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #818cf8;
+  margin-bottom: 1.5rem;
+}
+
+.subscription-plans-page .page-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 1rem;
+  text-align: center;
+  width: 100%;
+  display: block !important;
+  justify-content: initial !important;
+  align-items: initial !important;
+}
+
+.subscription-plans-page .page-subtitle {
+  font-size: 1.2rem;
+  color: #9ca3af;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* Pricing Grid */
+.subscription-plans-page .pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 420px));
+  gap: 2rem;
+  margin-bottom: 4rem;
+  justify-content: center;
+  width: 100%;
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Pricing Card */
+.subscription-plans-page .pricing-card {
+  background: #14141a;
+  border: 1px solid #252530;
+  border-radius: 20px;
+  padding: 2.5rem;
+  transition: all 0.3s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.subscription-plans-page .pricing-card:hover {
+  transform: translateY(-8px);
+  border-color: #353540;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.subscription-plans-page .pricing-card.featured {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border: 2px solid #6366f1;
+  transform: scale(1.05);
+}
+
+.subscription-plans-page .pricing-card.featured:hover {
+  transform: scale(1.08) translateY(-8px);
+  box-shadow: 0 20px 60px rgba(99, 102, 241, 0.3);
+}
+
+.subscription-plans-page .popular-badge {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.subscription-plans-page .plan-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  line-height: 1;
+  color: #818cf8;
+  margin-bottom: 1.5rem;
+}
+
+.subscription-plans-page .plan-icon svg {
+  display: block;
+}
+
+.subscription-plans-page .plan-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.subscription-plans-page .plan-description {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.subscription-plans-page .plan-price {
+  margin-bottom: 2rem;
+}
+
+.subscription-plans-page .price-amount {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subscription-plans-page .price-period {
+  font-size: 1rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.subscription-plans-page .price-free {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #10b981;
+}
+
+.subscription-plans-page .plan-features {
+  list-style: none;
+  margin: 0 0 2rem;
+  padding: 0;
+  flex: 1;
+}
+
+.subscription-plans-page .feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.subscription-plans-page .feature-icon {
+  width: 20px;
+  height: 20px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #6366f1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.subscription-plans-page .feature-text {
+  line-height: 1.5;
+}
+
+.subscription-plans-page .plan-cta {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.subscription-plans-page .btn-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border: none;
+  color: white;
+}
+
+.subscription-plans-page .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+.subscription-plans-page .btn-secondary {
+  background: #1c1c24;
+  border: 1px solid #252530;
+  color: #f0f0f5;
+}
+
+.subscription-plans-page .btn-secondary:hover {
+  background: #252530;
+  border-color: #353540;
+}
+
+.subscription-plans-page .plan-cta:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* FAQ Section */
+.subscription-plans-page .faq-section {
+  margin-top: 6rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.subscription-plans-page .faq-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.subscription-plans-page .faq-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.subscription-plans-page .faq-subtitle {
+  color: #9ca3af;
+  font-size: 1.1rem;
+}
+
+.subscription-plans-page .faq-item {
+  background: #14141a;
+  border: 1px solid #252530;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.subscription-plans-page .faq-item:hover {
+  border-color: #353540;
+}
+
+.subscription-plans-page .faq-question {
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.subscription-plans-page .faq-answer {
+  color: #9ca3af;
+  line-height: 1.6;
+  margin-top: 1rem;
+}
+
+.subscription-plans-page .faq-icon {
+  transition: transform 0.2s;
+}
+
+.subscription-plans-page .faq-item.active .faq-icon {
+  transform: rotate(180deg);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .subscription-plans-page .pricing-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 420px));
+  }
+
+  .subscription-plans-page .pricing-card.featured {
+    transform: scale(1);
+  }
+
+  .subscription-plans-page .pricing-card.featured:hover {
+    transform: scale(1.02) translateY(-8px);
+  }
+}
+
+@media (max-width: 768px) {
+  .subscription-plans-page header {
+    padding: 1rem 1.5rem;
+  }
+
+  .subscription-plans-page .main-container {
+    padding: 2rem 1.5rem;
+  }
+
+  .subscription-plans-page .page-title {
+    font-size: 2.5rem;
+  }
+
+  .subscription-plans-page .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .subscription-plans-page .pricing-card {
+    padding: 2rem;
+  }
+
+  .subscription-plans-page .pricing-card.featured {
+    transform: scale(1);
+  }
+
+  .subscription-plans-page .current-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

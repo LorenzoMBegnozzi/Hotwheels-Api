@@ -10,6 +10,8 @@ import ProfileSettingsPage from "./pages/ProfileSettingsPage";
 import RecognizerPage from "./pages/RecognizerPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import FeedPage from "./pages/FeedPage";
+import SubscriptionPlansPage from "./pages/SubscriptionPlansPage";
+import SubscriptionSuccessPage from "./pages/SubscriptionSuccessPage";
 
 const AppRoutes = () => {
   return (
@@ -23,6 +25,8 @@ const AppRoutes = () => {
         <Route path="/lista-de-desejos" element={<WishListPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/settings" element={<ProfileSettingsPage />} />
+        <Route path="/assinatura" element={<SubscriptionPlansPage />} />
+        <Route path="/assinatura/sucesso" element={<SubscriptionSuccessPage />} />
         <Route path="/feed" element={<FeedPage />} />
         <Route path="/reconhecedor" element={<RecognizerPage />} />
         <Route path="/user/:userId" element={<UserProfilePage />} />

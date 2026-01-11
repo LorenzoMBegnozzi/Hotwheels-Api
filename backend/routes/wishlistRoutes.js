@@ -3,6 +3,7 @@ const authMiddleware = require("../middlewares/auth");
 const UserCollection = require("../models/UserCollection");
 const router = express.Router();
 const mongoose = require("mongoose");
+const { assertCanAdd } = require("../utils/enforcePlanLimit");
 
 // Helper: extrai um id válido (24 hex) a partir de diferentes formatos de entrada
 const extractFavoriteId = (f) => {
@@ -146,6 +147,7 @@ router.post("/", authMiddleware, async (req, res) => {
 
     let addedFavorite = null;
     if (!exists) {
+      await assertCanAdd({ userId, kind: "wishlist" });
       userCollection.favorites.unshift({ hotWheel: hotWheelId, priority: priority || 'medium' });
       await userCollection.save();
       console.log('✅ Favorito adicionado ao documento userCollection', userCollection._id.toString());
@@ -191,7 +193,8 @@ router.post("/", authMiddleware, async (req, res) => {
     res.status(200).json({ message: 'Adicionado à lista de desejos!', favorite: addedFavorite, favorites });
   } catch (error) {
     console.error("Erro ao adicionar à lista de desejos:", error);
-    res.status(500).json({ message: "Erro interno no servidor" });
+    const status = error?.status || 500;
+    res.status(status).json({ message: error?.message || "Erro interno no servidor", details: error?.details });
   }
 });
 

@@ -80,6 +80,43 @@ POST /api/collection/favorite
 Body: { userId, hotWheelId }
 ```
 
+## 💳 Assinatura (Planos + AbacatePay)
+
+Foi adicionada uma tela de assinatura no frontend (`/assinatura`) e uma integração no backend com a AbacatePay para criar cobranças via PIX.
+
+### Planos e limites
+
+- **FREE (grátis)**: 50 na coleção + 50 na lista de desejos
+- **PLAN_990 (R$ 9,90)**: 150 + 150
+- **PLAN_1490 (R$ 14,90)**: 300 + 300
+- **PLAN_1990 (R$ 19,90)**: sem limites
+
+Observação: como a API documentada da AbacatePay cria cobranças `ONE_TIME`, o projeto ativa o plano por **30 dias** após confirmação do pagamento.
+
+### Variáveis de ambiente (backend)
+
+Adicione no `backend/.env`:
+
+```
+ABACATEPAY_API_KEY=seu_token_da_abacatepay
+ABACATEPAY_WEBHOOK_SECRET=seu_secret_do_webhook
+ABACATEPAY_WEBHOOK_PUBLIC_KEY=sua_public_hmac_key
+
+# opcionais
+FRONTEND_URL=http://localhost:3000
+ABACATEPAY_RETURN_URL=http://localhost:3000/profile
+ABACATEPAY_COMPLETION_URL=http://localhost:3000/assinatura/sucesso
+```
+
+### Endpoints de billing
+
+- `GET /api/billing/plans` (público)
+- `GET /api/billing/me` (auth)
+- `POST /api/billing/checkout` (auth) body: `{ planId }`
+- `POST /api/billing/confirm` (auth) body: `{ billingId }`
+- `POST /api/billing/activate-free` (auth)
+- `POST /api/billing/webhook?webhookSecret=...` (webhook AbacatePay)
+
 ## 🎨 Ajuste de Formatação dos Nomes
 Para evitar que os nomes tenham números no início, foi feita uma normalização no backend antes de salvar no banco de dados.
 

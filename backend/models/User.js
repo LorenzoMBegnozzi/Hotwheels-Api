@@ -8,6 +8,21 @@ const userSchema = new mongoose.Schema({
   collection: [{ type: mongoose.Schema.Types.ObjectId, ref: "HotWheel" }],
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "HotWheel" }],
 
+  // Assinatura / Plano
+  subscriptionPlan: {
+    type: String,
+    enum: ["FREE", "PLAN_990", "PLAN_1490", "PLAN_1990"],
+    default: "FREE",
+  },
+  subscriptionStatus: {
+    type: String,
+    enum: ["ACTIVE", "INACTIVE", "PENDING", "EXPIRED"],
+    default: "ACTIVE",
+  },
+  subscriptionValidUntil: { type: Date, default: null },
+  subscriptionProvider: { type: String, default: null },
+  subscriptionLastBillingId: { type: String, default: null },
+
   // Social
   followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User", default: [] }],
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User", default: [] }],

@@ -4,6 +4,7 @@ const multer = require("multer");
 const UserCollection = require("../models/UserCollection");
 const HotWheel = require("../models/HotWheel");
 const authMiddleware = require("../middlewares/auth");
+const { assertCanAdd } = require("../utils/enforcePlanLimit");
 const router = express.Router();
 
 // Configuração do Multer para upload de imagens
@@ -27,7 +28,9 @@ router.post("/add", authMiddleware, async (req, res) => {
       userCollection = new UserCollection({ userId, collection: [], favorites: [] });
     }
 
-    if (!userCollection.collection.includes(hotWheelId)) {
+    const alreadyInCollection = userCollection.collection.includes(hotWheelId);
+    if (!alreadyInCollection) {
+      await assertCanAdd({ userId, kind: "collection" });
       userCollection.collection.push(hotWheelId);
       await userCollection.save();
     }
@@ -38,7 +41,8 @@ router.post("/add", authMiddleware, async (req, res) => {
     res.status(200).json({ message: "Adicionado à coleção!", collection: userCollection.collection });
   } catch (error) {
     console.error("Erro ao adicionar à coleção:", error);
-    res.status(500).json({ message: "Erro interno no servidor" });
+    const status = error?.status || 500;
+    res.status(status).json({ message: error?.message || "Erro interno no servidor", details: error?.details });
   }
 });
 
@@ -115,13 +119,15 @@ router.post("/add-custom", authMiddleware, upload.single("image"), async (req, r
     }
 
     // Adicionando o carro na coleção do usuário
+    await assertCanAdd({ userId, kind: "collection" });
     userCollection.collection.push(newHotWheel._id);
     await userCollection.save();
 
     res.status(201).json({ message: "Hot Wheel adicionado com sucesso!", car: newHotWheel });
   } catch (error) {
     console.error("Erro ao adicionar Hot Wheel personalizado:", error);
-    res.status(500).json({ message: "Erro interno no servidor", error });
+    const status = error?.status || 500;
+    res.status(status).json({ message: error?.message || "Erro interno no servidor", details: error?.details });
   }
 });
 

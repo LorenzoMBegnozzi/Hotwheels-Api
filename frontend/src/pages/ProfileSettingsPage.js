@@ -215,6 +215,26 @@ const ProfileSettingsPage = () => {
           </div>
 
           <div className="hw-grid-3">
+            {/* Assinatura */}
+            <div className="hw-card">
+              <h2 className="hw-card-title">
+                <span className="hw-card-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 4h10a2 2 0 0 1 2 2v1H5V6a2 2 0 0 1 2-2zm12 5v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9h14zm-9 2a1 1 0 0 0 0 2h4a1 1 0 0 0 0-2h-4z" />
+                  </svg>
+                </span>{' '}
+                Assinatura
+              </h2>
+
+              <p style={{ opacity: 0.85, marginBottom: 12 }}>
+                Selecione um plano para aumentar seus limites de coleção e lista de desejos.
+              </p>
+
+              <button className="hw-btn hw-btn-primary" onClick={() => navigate('/assinatura')}>
+                Ver planos
+              </button>
+            </div>
+
             {/* Avatar */}
             <div className="hw-card">
               <h2 className="hw-card-title">

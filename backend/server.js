@@ -54,7 +54,14 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
-app.use(express.json());
+// IMPORTANTE: Webhook do AbacatePay precisa do corpo bruto (raw body) para validação HMAC.
+// Então aplicamos body parser condicional: raw apenas no webhook, JSON para o resto.
+app.use((req, res, next) => {
+  if (String(req.originalUrl || "").startsWith("/api/billing/webhook")) {
+    return express.raw({ type: "application/json" })(req, res, next);
+  }
+  return express.json()(req, res, next);
+});
 
 /* =========================
    Rotas
@@ -67,6 +74,7 @@ app.use("/api/wishlist", require("./routes/wishlistRoutes"));
 app.use("/api/users", require("./routes/users"));
 app.use("/api/recognizer", require("./routes/recognizerRoutes"));
 app.use("/api/feed", require("./routes/feedRoutes"));
+app.use("/api/billing", require("./routes/billingRoutes"));
 
 /* =========================
    MongoDB
