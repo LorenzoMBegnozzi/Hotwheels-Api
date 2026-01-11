@@ -43,6 +43,8 @@ const FeedPage = () => {
   const [commentDrafts, setCommentDrafts] = useState({});
   const [openMenuPostId, setOpenMenuPostId] = useState(null);
 
+  const [lightboxUrl, setLightboxUrl] = useState(null);
+
   const currentUserId = localStorage.getItem('userId');
   const authorIdFilter = searchParams.get('userId') || '';
 
@@ -73,6 +75,17 @@ const FeedPage = () => {
     loadFeed();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authorIdFilter]);
+
+  useEffect(() => {
+    if (!lightboxUrl) return;
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setLightboxUrl(null);
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [lightboxUrl]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -226,7 +239,7 @@ const FeedPage = () => {
                     loading="lazy"
                     decoding="async"
                     fetchpriority="low"
-                    onClick={() => window.open(resolveApiAssetUrl(post.image), '_blank')}
+                    onClick={() => setLightboxUrl(resolveApiAssetUrl(post.image))}
                   />
                 ) : null}
               </div>
@@ -316,6 +329,33 @@ const FeedPage = () => {
             </button>
           </form>
         </div>
+      </div>
+
+      <div
+        className={`feed-lightbox ${lightboxUrl ? 'active' : ''}`}
+        onClick={(e) => {
+          if (e.target?.classList?.contains('feed-lightbox')) setLightboxUrl(null);
+        }}
+        aria-hidden={!lightboxUrl}
+      >
+        <button
+          type="button"
+          className="feed-lightbox-close"
+          onClick={() => setLightboxUrl(null)}
+          aria-label="Fechar imagem"
+        >
+          ✕
+        </button>
+        {lightboxUrl ? (
+          <img
+            src={lightboxUrl}
+            alt="Imagem ampliada"
+            className="feed-lightbox-img"
+            decoding="async"
+            fetchpriority="high"
+            onClick={(e) => e.stopPropagation()}
+          />
+        ) : null}
       </div>
     </div>
   );
