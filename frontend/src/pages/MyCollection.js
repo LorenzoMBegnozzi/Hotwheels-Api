@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { toastSuccess, toastError } from '../utils/alerts';
 import "../css/MyCollection.css";
 import { api } from "../utils/api";
+import { resolveApiAssetUrl } from "../utils/constants";
 
 const MyCollection = () => {
   const [collection, setCollection] = useState([]);
@@ -106,7 +107,7 @@ const MyCollection = () => {
           setCollection((prev) => prev.filter((car) => car._id !== carId));
           toastSuccess('Removido!', 'O item foi removido da sua coleção.');
         } catch (error) {
-          console.error("Erro ao remover item:", error);
+          console.error("❌ Erro ao remover item da coleção:", error);
           toastError('Erro!', 'Erro ao remover o item. Tente novamente.');
         }
       }
@@ -299,7 +300,7 @@ const MyCollection = () => {
               <div key={car._id} className="collection-card">
                 <div className="card-image">
                   <img
-                    src={car.imageUrl || "https://via.placeholder.com/600x400"}
+                    src={resolveApiAssetUrl(car.imageUrl) || "https://via.placeholder.com/600x400"}
                     alt={car.name}
                     loading="lazy"
                     decoding="async"

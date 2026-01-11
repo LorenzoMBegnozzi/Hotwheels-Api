@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { api, removeFromWishlist as apiRemoveFromWishlist, addToCollection as apiAddToCollection } from '../utils/api';
 import Swal from "sweetalert2";
 import { toastSuccess, toastError, toastWarning } from '../utils/alerts';
+import { resolveApiAssetUrl } from '../utils/constants';
 import { FaTrash } from 'react-icons/fa';
 
 const WishListPage = () => {
@@ -394,7 +395,7 @@ const WishListPage = () => {
                         </div>
 
                         <img
-                          src={car.imageUrl || "https://via.placeholder.com/600x400"}
+                          src={resolveApiAssetUrl(car.imageUrl) || "https://via.placeholder.com/600x400"}
                           alt={car.name}
                           loading="lazy"
                           decoding="async"

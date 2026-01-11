@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './CarItem.module.css';
+import { resolveApiAssetUrl } from '../../utils/constants';
 
 const CarItem = ({ car, onAddToCollection, onAddToWishlist, showActions = true }) => {
   const handleImageError = (e) => {
@@ -10,7 +11,7 @@ const CarItem = ({ car, onAddToCollection, onAddToWishlist, showActions = true }
     <div className={`${styles.carItem} ${!showActions ? styles.noActions : ''}`}>
       <div className={styles.imageContainer}>
         <img
-          src={car.imageUrl || '/default-car-image.png'}
+          src={resolveApiAssetUrl(car.imageUrl) || '/default-car-image.png'}
           alt={car.name}
           className={styles.carImage}
           loading="lazy"

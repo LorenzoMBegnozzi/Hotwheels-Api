@@ -3,7 +3,7 @@ import "../css/HomePage.css";
 import Swal from "sweetalert2";
 import { toastSuccess, toastError, toastInfo, toastWarning } from '../utils/alerts';
 import { useNavigate } from "react-router-dom";
-import { DEFAULT_PROFILE_IMAGE } from "../utils/constants";
+import { DEFAULT_PROFILE_IMAGE, resolveApiAssetUrl } from "../utils/constants";
 import {
   api,
   searchHotWheels,
@@ -465,12 +465,12 @@ const HomePage = () => {
             <div className="card" key={car._id}>
               <div
                 className="card-image"
-                onClick={() => car.imageUrl && setPopupImage(car.imageUrl)}
+                onClick={() => car.imageUrl && setPopupImage(resolveApiAssetUrl(car.imageUrl))}
                 style={{ cursor: car.imageUrl ? "pointer" : "default" }}
               >
                 {car.imageUrl ? (
                   <img
-                    src={car.imageUrl}
+                    src={resolveApiAssetUrl(car.imageUrl)}
                     alt={car.name || car.modelName || "Hot Wheels"}
                     className="card-img"
                     loading="lazy"

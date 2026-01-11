@@ -2,6 +2,26 @@ const axios = require('axios');
 const HotWheel = require('../models/HotWheel');
 const { computeFeatures } = require('./imageSimilarity');
 
+function trimTrailingSlashes(s) {
+  return String(s || '').replace(/\/+$/, '');
+}
+
+function resolveImageUrl(value) {
+  const s = String(value || '').trim();
+  if (!s) return '';
+  if (/^https?:\/\//i.test(s)) return s;
+  if (s.startsWith('/')) {
+    const base = trimTrailingSlashes(
+      process.env.PUBLIC_BASE_URL ||
+      process.env.API_PUBLIC_URL ||
+      process.env.BACKEND_URL ||
+      'http://localhost:5000'
+    );
+    return `${base}${s}`;
+  }
+  return s;
+}
+
 let cache = null; // { generatedAt: Date, items: [ { id,name,imageUrl,sourceImage,hist,ahash,dhash,edgeHist } ] }
 let inFlight = null;
 const MAX_AGE_MS = 1000 * 60 * 10; // 10 minutos
@@ -18,11 +38,12 @@ async function buildCache() {
       // Constrói lista de imagens candidatos (usa images se existir, senão fallback para imageUrl)
       const candidateImages = Array.isArray(hw.images) && hw.images.length > 0 ? hw.images : (hw.imageUrl ? [hw.imageUrl] : []);
       for (const imgUrl of candidateImages) {
-        if (!imgUrl) continue;
+        const resolved = resolveImageUrl(imgUrl);
+        if (!resolved) continue;
         try {
-          const resp = await axios.get(imgUrl, { responseType: 'arraybuffer', timeout: 7000 });
+          const resp = await axios.get(resolved, { responseType: 'arraybuffer', timeout: 7000 });
           const feats = await computeFeatures(Buffer.from(resp.data));
-          items.push({ id: hw._id.toString(), name: hw.name, imageUrl: hw.imageUrl, sourceImage: imgUrl, hist: feats.hist, ahash: feats.ahash, dhash: feats.dhash, edgeHist: feats.edgeHist });
+          items.push({ id: hw._id.toString(), name: hw.name, imageUrl: hw.imageUrl, sourceImage: resolved, hist: feats.hist, ahash: feats.ahash, dhash: feats.dhash, edgeHist: feats.edgeHist });
         } catch (e) {
           // ignora falha individual
         }
