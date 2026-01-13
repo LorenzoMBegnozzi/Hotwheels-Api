@@ -12,10 +12,12 @@ import UserProfilePage from "./pages/UserProfilePage";
 import FeedPage from "./pages/FeedPage";
 import UsersPage from "./pages/UsersPage";
 import AppLayout from "./components/layout/AppLayout";
+import PixSupportPopup from "./components/common/PixSupportPopup";
 
 const AppRoutes = () => {
   return (
     <Router>
+      <PixSupportPopup intervalMs={900_000} />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/register" element={<LoginPage />} />
