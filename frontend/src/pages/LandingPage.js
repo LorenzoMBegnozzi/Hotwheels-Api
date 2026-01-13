@@ -1,11 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../css/LandingPage.css';
 import sobreMim from '../css/sobre-mim.jpeg';
-import painelImg from '../css/painel.png';
+import painelImg from '../css/antes.jpg';
 import { useNavigate } from 'react-router-dom';
+
+const PIX_COPIA_E_COLA = '00020126580014BR.GOV.BCB.PIX0136279987cb-5902-4b41-ad87-1dd3aa31c1585204000053039865802BR5924Lorenzo Marzola Begnozzi6009SAO PAULO6214051099zL6T9NDo63048B39';
+const PIX_QR_PUBLIC_PATH = '/pix.jpg';
+const PIX_QR_FALLBACK_PUBLIC_PATH = '/pix-placeholder.svg';
+
+const copyTextToClipboard = async (text) => {
+  if (navigator?.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  throw new Error('Clipboard API unavailable');
+};
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const [pixCopyState, setPixCopyState] = useState('idle');
+  const [pixQrSrc, setPixQrSrc] = useState(`${process.env.PUBLIC_URL}${PIX_QR_PUBLIC_PATH}`);
+
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (!element) return;
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handleCopyPix = async () => {
+    try {
+      await copyTextToClipboard(PIX_COPIA_E_COLA);
+      setPixCopyState('copied');
+      setTimeout(() => setPixCopyState('idle'), 1800);
+    } catch {
+      setPixCopyState('error');
+      setTimeout(() => setPixCopyState('idle'), 2500);
+    }
+  };
+
+  let pixButtonLabel = 'Copiar código do Pix';
+  if (pixCopyState === 'copied') pixButtonLabel = 'Copiado!';
+  if (pixCopyState === 'error') pixButtonLabel = 'Falhou — tente novamente';
+
   return (
     <div className="lp-root">
       <header>
@@ -121,13 +158,14 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section>
+      <section id="interface">
         <div className="section-header">
           <div className="section-badge">Interface</div>
           <h2 className="section-title">Design pensado para colecionadores</h2>
           <p className="section-subtitle">Interface intuitiva e moderna que torna o gerenciamento da sua coleção uma experiência agradável</p>
         </div>
         <div className="screenshot-container">
+          <h3 className="section-title">Versão 1.0.0</h3>
           <img src={painelImg} alt="Painel" className="screenshot-placeholder" />
         </div>
       </section>
@@ -155,7 +193,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section>
+      <section id="social">
         <div className="section-header">
           <div className="section-badge">Redes Sociais</div>
           <h2 className="section-title">Conecte-se Comigo</h2>
@@ -182,6 +220,42 @@ const LandingPage = () => {
         </div>
       </section>
 
+      <section id="pix">
+        <div className="section-header">
+          <div className="section-badge">Apoie o Projeto</div>
+          <h2 className="section-title">Para ajudar o projeto…</h2>
+          <p className="section-subtitle">
+            Se o Diecast Social te ajuda, considere apoiar via Pix. Qualquer valor faz diferença para manter e evoluir a plataforma.
+          </p>
+        </div>
+
+        <div className="pix-card">
+          <div className="pix-left">
+            <div className="pix-qr">
+              <img
+                src={pixQrSrc}
+                alt="QR Code Pix"
+                className="pix-qr-img"
+                loading="lazy"
+                onError={() => setPixQrSrc(`${process.env.PUBLIC_URL}${PIX_QR_FALLBACK_PUBLIC_PATH}`)}
+              />
+            </div>
+          </div>
+
+          <div className="pix-right">
+            <div className="pix-actions">
+              <button type="button" className="btn-pix-copy" onClick={handleCopyPix}>
+                {pixButtonLabel}
+              </button>
+              <div className="pix-actions-hint">
+                {pixCopyState === 'copied' && 'Pronto! Agora é só colar no seu banco.'}
+                {pixCopyState === 'error' && 'Não foi possível copiar automaticamente no seu navegador. Tente novamente.'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section>
         <div className="cta-section">
           <h2>Pronto para organizar sua coleção?</h2>
@@ -195,11 +269,11 @@ const LandingPage = () => {
           <div className="footer-logo">Diecast <span style={{color:'#6366f1'}}>Social</span></div>
           <p className="footer-text">A plataforma completa para colecionadores de Hot Wheels</p>
           <div className="footer-links">
-            <button type="button" className="footer-link" onClick={() => navigate('/about')}>Sobre</button>
-            <a href="#features" className="footer-link">Recursos</a>
-            <button type="button" className="footer-link" onClick={() => navigate('/contact')}>Contato</button>
-            <button type="button" className="footer-link" onClick={() => navigate('/privacy')}>Privacidade</button>
-            <button type="button" className="footer-link" onClick={() => navigate('/terms')}>Termos</button>
+            <button type="button" className="footer-link" onClick={() => scrollToSection('features')}>Recursos</button>
+            <button type="button" className="footer-link" onClick={() => scrollToSection('interface')}>Interface</button>
+            <button type="button" className="footer-link" onClick={() => scrollToSection('about')}>Sobre</button>
+            <button type="button" className="footer-link" onClick={() => scrollToSection('social')}>Redes Sociais</button>
+            <button type="button" className="footer-link" onClick={() => scrollToSection('pix')}>Apoio</button>
           </div>
           <div className="footer-bottom">© 2024 Diecast Social. Desenvolvido por Lorenzo Marzola Begnozzi</div>
         </div>
