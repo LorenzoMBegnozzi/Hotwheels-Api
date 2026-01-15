@@ -1,29 +1,49 @@
-console.log("🔥🔥🔥 EMAILSERVICE LOADED (RESEND) 🔥🔥🔥");
-
 const { Resend } = require("resend");
-
-console.log("RESEND_API_KEY exists?", !!process.env.RESEND_API_KEY);
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-async function sendCodeEmail(to, subject, code) {
-  console.log("➡️ sendCodeEmail called:", { to, subject });
+function buildVerificationEmail(code) {
+  return `
+  <div style="max-width:480px;margin:0 auto;font-family:Arial,Helvetica,sans-serif;background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;padding:24px">
+    <h2 style="margin-top:0;color:#111827;text-align:center">
+      Diecast Social
+    </h2>
 
+    <p style="color:#374151;font-size:14px">
+      Você solicitou um código de verificação para continuar no <strong>Diecast Social</strong>.
+    </p>
+
+    <div style="background:#f3f4f6;border-radius:6px;padding:16px;text-align:center;margin:24px 0">
+      <p style="margin:0;font-size:13px;color:#6b7280">Seu código</p>
+      <p style="margin:8px 0 0;font-size:28px;letter-spacing:4px;font-weight:bold;color:#111827">
+        ${code}
+      </p>
+    </div>
+
+    <p style="color:#374151;font-size:13px">
+      Este código é válido por <strong>15 minutos</strong>.
+      Se você não solicitou, pode ignorar este email.
+    </p>
+
+    <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0" />
+
+    <p style="font-size:12px;color:#9ca3af;text-align:center">
+      © Diecast Social
+    </p>
+  </div>
+  `;
+}
+
+async function sendCodeEmail(to, subject, code) {
   try {
-    const result = await resend.emails.send({
-      from: "onboarding@resend.dev",
+    return await resend.emails.send({
+      from: "Diecast Social <onboarding@resend.dev>",
       to,
       subject,
-      text: `Seu código é: ${code}`,
-      html: `<p>Seu código é: <strong>${code}</strong></p>`,
+      html: buildVerificationEmail(code),
     });
-
-    console.log("✅ RESEND RESULT:", result);
-    return result;
   } catch (err) {
-    console.error("❌ RESEND ERROR status:", err?.statusCode);
-    console.error("❌ RESEND ERROR message:", err?.message);
-    console.error(err);
+    console.error("Email error:", err);
     throw err;
   }
 }
