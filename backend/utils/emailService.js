@@ -1,7 +1,9 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -9,15 +11,22 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendCodeEmail(to, subject, code) {
-  const fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER;
-  const mailOptions = {
-    from: `Diecast Social <${fromAddress}>`,
-    to,
-    subject,
-    text: `Seu código é: ${code}`,
-    html: `<p>Seu código é: <strong>${code}</strong></p>`,
-  };
-  await transporter.sendMail(mailOptions);
+  try {
+    const fromEmail = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+
+    const info = await transporter.sendMail({
+      from: `Diecast Social <${fromEmail}>`,
+      to,
+      subject,
+      text: `Seu código é: ${code}`,
+      html: `<p>Seu código é: <strong>${code}</strong></p>`,
+    });
+
+    console.log("Email sent:", info.messageId);
+  } catch (err) {
+    console.error("Email error:", err);
+    throw err;
+  }
 }
 
 module.exports = { sendCodeEmail };
