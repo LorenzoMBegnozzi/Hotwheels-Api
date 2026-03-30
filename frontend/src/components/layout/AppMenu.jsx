@@ -1,11 +1,14 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { FaHome, FaNewspaper, FaHeart, FaUser, FaUsers } from 'react-icons/fa';
+import { FaHome, FaNewspaper, FaHeart, FaUser, FaUsers, FaCog } from 'react-icons/fa';
 import { GiHomeGarage } from 'react-icons/gi';
+import { api } from '../../utils/api';
 
 import '../../css/AppMenu.css';
 
-const navItems = [
+const ADMIN_EMAIL = 'lorenzobegnozzi@hotmail.com';
+
+const baseNavItems = [
   { to: '/home', label: 'Home', Icon: FaHome },
   { to: '/users', label: 'Usuários', Icon: FaUsers },
   { to: '/feed', label: 'Feed', Icon: FaNewspaper },
@@ -15,9 +18,28 @@ const navItems = [
 ];
 
 const AppMenu = () => {
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let token = localStorage.getItem('token');
+    if (!token) return;
+    if (!token.startsWith('Bearer ')) token = `Bearer ${token}`;
+
+    api
+      .get('/api/auth/profile', { headers: { Authorization: token } })
+      .then(({ data }) => {
+        if (data?.email?.toLowerCase() === ADMIN_EMAIL) setIsAdmin(true);
+      })
+      .catch(() => {});
+  }, []);
+
+  const navItems = isAdmin
+    ? [...baseNavItems, { to: '/admin', label: 'Admin', Icon: FaCog }]
+    : baseNavItems;
+
   return (
     <nav className="app-menu" aria-label="Menu principal">
-      <div className="app-menu-inner">
+      <div className={`app-menu-inner${isAdmin ? ' app-menu-inner--7' : ''}`}>
         {navItems.map(({ to, label, Icon }) => (
           <NavLink
             key={to}

@@ -435,6 +435,33 @@ const ProfileSettingsPage = () => {
               </form>
             </div>
 
+            {/* Admin Panel Card — visível somente para o admin */}
+            {user?.email?.toLowerCase() === "lorenzobegnozzi@hotmail.com" && (
+              <div className="hw-card" style={{ borderColor: "rgba(99,102,241,0.35)", background: "linear-gradient(135deg, rgba(99,102,241,0.1) 0%, transparent 100%)" }}>
+                <h2 className="hw-card-title">
+                  <span className="hw-card-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 15.5A3.5 3.5 0 018.5 12 3.5 3.5 0 0112 8.5a3.5 3.5 0 013.5 3.5 3.5 3.5 0 01-3.5 3.5m7.43-2.92c.04-.36.07-.73.07-1.08s-.03-.73-.07-1.08l2.32-1.82c.21-.16.27-.46.13-.7l-2.2-3.81c-.13-.25-.42-.33-.67-.25l-2.74 1.1c-.57-.44-1.19-.8-1.86-1.07l-.42-2.92A.55.55 0 0014 2h-4a.55.55 0 00-.54.45l-.42 2.92c-.67.27-1.29.63-1.86 1.07l-2.74-1.1c-.25-.1-.54 0-.67.25L1.57 9.4c-.14.24-.08.54.13.7l2.32 1.82c-.04.35-.07.72-.07 1.08s.03.73.07 1.08L1.7 15.9c-.21.16-.27.46-.13.7l2.2 3.81c.13.25.42.33.67.25l2.74-1.1c.57.44 1.19.8 1.86 1.07l.42 2.92c.1.45.5.45.54.45h4c.44 0 .54-.27.54-.45l.42-2.92c.67-.27 1.29-.63 1.86-1.07l2.74 1.1c.25.1.54 0 .67-.25l2.2-3.81c.14-.24.08-.54-.13-.7l-2.32-1.82z" />
+                    </svg>
+                  </span>
+                  {" "}
+                  <span style={{ color: "#818cf8" }}>Painel Admin</span>
+                </h2>
+                <div className="hw-card-body">
+                  <p style={{ color: "#9ca3af", fontSize: "13px", marginBottom: "16px" }}>
+                    Acesse o painel de controle para visualizar estatísticas, usuários online, cadastros e mais.
+                  </p>
+                  <button
+                    className="hw-btn hw-btn-primary"
+                    onClick={() => navigate("/admin")}
+                    style={{ background: "rgba(99,102,241,0.8)", borderColor: "rgba(99,102,241,0.6)", width: "100%" }}
+                  >
+                    ⚙️ Abrir Painel de Controle
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Delete Account Card */}
             <div className="hw-card">
               <h2 className="hw-card-title">

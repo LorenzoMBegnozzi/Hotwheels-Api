@@ -13,6 +13,7 @@ import FeedPage from "./pages/FeedPage";
 import UsersPage from "./pages/UsersPage";
 import AppLayout from "./components/layout/AppLayout";
 import PixSupportPopup from "./components/common/PixSupportPopup";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 
 const AppRoutes = () => {
   return (
@@ -35,6 +36,9 @@ const AppRoutes = () => {
           <Route path="/reconhecedor" element={<RecognizerPage />} />
           <Route path="/user/:userId" element={<UserProfilePage />} />
         </Route>
+
+        {/* Admin — fora do AppLayout para ter layout próprio */}
+        <Route path="/admin" element={<AdminDashboardPage />} />
       </Routes>
     </Router>
   );
