@@ -1,6 +1,7 @@
-const jwt = require("jsonwebtoken"); 
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   let token = req.header("Authorization") || req.header("x-auth-token");
   console.log("🔍 Token recebido:", token);
 
@@ -10,7 +11,7 @@ const authMiddleware = (req, res, next) => {
 
   try {
     if (token.startsWith("Bearer ")) {
-      token = token.slice(7).trim(); // Remove "Bearer " do token
+      token = token.slice(7).trim();
     }
 
     if (!process.env.JWT_SECRET) {
@@ -21,10 +22,13 @@ const authMiddleware = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Adiciona o usuário decodificado ao request
+    req.user = decoded;
     console.log("✅ Usuário autenticado:", req.user);
-    
-    next(); // Continua para a próxima função do middleware
+
+    // Atualiza lastSeen sem bloquear a requisição
+    User.findByIdAndUpdate(decoded.id, { lastSeen: new Date() }).catch(() => {});
+
+    next();
   } catch (error) {
     console.error("❌ Erro na autenticação:", error);
     return res.status(401).json({ message: "Token inválido" });

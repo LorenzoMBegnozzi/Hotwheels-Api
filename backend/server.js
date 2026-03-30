@@ -47,7 +47,7 @@ const corsOptions = {
   },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "x-auth-token"],
-  credentials: false,
+  credentials: true,
   optionsSuccessStatus: 204,
 };
 
@@ -59,7 +59,8 @@ app.use(express.json());
 /* =========================
    Rotas
 ========================= */
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Servir uploads com headers CORS corretos
+app.use("/uploads", cors(corsOptions), express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/hotwheels", require("./routes/hotwheelsRoutes"));
 app.use("/api/collection", require("./routes/collectionRoutes"));
@@ -67,6 +68,7 @@ app.use("/api/wishlist", require("./routes/wishlistRoutes"));
 app.use("/api/users", require("./routes/users"));
 app.use("/api/recognizer", require("./routes/recognizerRoutes"));
 app.use("/api/feed", require("./routes/feedRoutes"));
+app.use("/api/admin", require("./routes/adminRoutes"));
 
 /* =========================
    MongoDB
