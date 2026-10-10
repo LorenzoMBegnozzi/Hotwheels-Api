@@ -1,4 +1,9 @@
 
+# Environment files (never commit real secrets)
+.env
+.env.*
+!.env.example
+
 # Playwright
 node_modules/
 /test-results/

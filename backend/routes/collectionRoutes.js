@@ -1,18 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const multer = require("multer");
 const UserCollection = require("../models/UserCollection");
 const HotWheel = require("../models/HotWheel");
 const authMiddleware = require("../middlewares/auth");
+const { memoryUpload } = require("../middlewares/upload");
 const router = express.Router();
 
-// Configuração do Multer para upload de imagens
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const upload = memoryUpload();
 
 // Adicionar um Hot Wheel à coleção do usuário
 router.post("/add", authMiddleware, async (req, res) => {
-  console.log("Payload recebido no backend:", req.body);
   const { hotWheelId } = req.body;
   const userId = req.user.id;
 
@@ -51,6 +48,10 @@ router.delete("/:userId/:carId", authMiddleware, async (req, res) => {
       return res.status(400).json({ message: "ID inválido" });
     }
 
+    if (String(req.user.id) !== String(userId)) {
+      return res.status(403).json({ message: "Você só pode remover itens da sua própria coleção." });
+    }
+
     let userCollection = await UserCollection.findOne({ userId });
 
     if (!userCollection) {
@@ -83,11 +84,10 @@ router.get("/:userId", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Coleção não encontrada" });
     }
 
-    console.log("Dados enviados para o frontend:", userCollection.collection);
-
     res.json({ collection: userCollection.collection });
   } catch (error) {
-    res.status(500).json({ message: "Erro ao buscar coleção", error });
+    console.error("Erro ao buscar coleção:", error);
+    res.status(500).json({ message: "Erro ao buscar coleção" });
   }
 });
 
@@ -121,7 +121,7 @@ router.post("/add-custom", authMiddleware, upload.single("image"), async (req, r
     res.status(201).json({ message: "Hot Wheel adicionado com sucesso!", car: newHotWheel });
   } catch (error) {
     console.error("Erro ao adicionar Hot Wheel personalizado:", error);
-    res.status(500).json({ message: "Erro interno no servidor", error });
+    res.status(500).json({ message: "Erro interno no servidor" });
   }
 });
 

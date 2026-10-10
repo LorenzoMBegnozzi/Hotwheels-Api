@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './UserProfilePage.module.css';
 import { DEFAULT_PROFILE_IMAGE } from '../utils/constants';
+import ScannerModal from '../components/common/ScannerModal';
+import '../css/ScannerModal.css';
 
 // Custom hooks
 import { useUserProfile } from '../hooks/useUserProfile';
@@ -18,6 +20,7 @@ const UserProfilePage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('collection');
+  const [scannerOpen, setScannerOpen] = useState(false);
   const [relationship, setRelationship] = useState(null);
   const [relationshipLoading, setRelationshipLoading] = useState(false);
   const [followActionLoading, setFollowActionLoading] = useState(false);
@@ -191,6 +194,24 @@ const UserProfilePage = () => {
                 >
                   {followButtonLabel}
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => setScannerOpen(true)}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: '10px',
+                    background: 'rgba(99,102,241,0.18)',
+                    border: '1px solid rgba(99,102,241,0.4)',
+                    color: '#818cf8',
+                    fontWeight: '700',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                  }}
+                  title={`Verificar se ${user.name} tem o carrinho`}
+                >
+                  📷 Verificar carrinho
+                </button>
               </div>
             )}
           </div>
@@ -240,6 +261,19 @@ const UserProfilePage = () => {
             onPageChange={goToPage}
           />
         </>
+      )}
+
+      {/* Scanner em modo perfil */}
+      {scannerOpen && (
+        <ScannerModal
+          onClose={() => setScannerOpen(false)}
+          profileUser={{
+            userId,
+            name: user.name,
+            collection: collection.map((c) => c._id || c),
+            wishlist: wishlist.map((c) => c._id || c),
+          }}
+        />
       )}
     </div>
   );

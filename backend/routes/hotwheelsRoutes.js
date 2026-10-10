@@ -1,5 +1,7 @@
 const express = require("express");
 const HotWheel = require("../models/HotWheel");
+const authMiddleware = require("../middlewares/auth");
+const adminOnly = require("../middlewares/adminOnly");
 
 const router = express.Router();
 
@@ -48,7 +50,7 @@ router.get("/search", async (req, res) => {
     let filter = { ...baseFilter };
 
     if (name && name.trim() !== "") {
-      filter.name = new RegExp(name.trim(), "i");
+      filter.name = new RegExp(escapeRegExp(name.trim()), "i");
     }
 
     if (category && category.trim() !== "") {
@@ -88,7 +90,7 @@ router.get("/categories", async (req, res) => {
   }
 });
 
-router.post("/add", async (req, res) => {
+router.post("/add", authMiddleware, adminOnly, async (req, res) => {
   try {
     const { name, imageUrl, images, year } = req.body;
 
@@ -115,7 +117,8 @@ router.post("/add", async (req, res) => {
 
     res.status(201).json({ message: "Hot Wheel criado!", hotWheel: newHotWheel });
   } catch (err) {
-    res.status(500).json({ message: "Erro ao criar Hot Wheel", error: err.message });
+    console.error("Erro ao criar Hot Wheel:", err);
+    res.status(500).json({ message: "Erro ao criar Hot Wheel" });
   }
 });
 

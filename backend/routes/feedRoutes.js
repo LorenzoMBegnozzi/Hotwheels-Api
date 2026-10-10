@@ -1,24 +1,14 @@
 const express = require("express");
-const multer = require("multer");
 const path = require("path");
 const mongoose = require("mongoose");
 
 const auth = require("../middlewares/auth");
 const Post = require("../models/Post");
+const { diskUpload } = require("../middlewares/upload");
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: path.join(__dirname, "..", "uploads"),
-  filename: (req, file, cb) => {
-    const safeName = String(file.originalname || "image")
-      .replace(/[^a-zA-Z0-9._-]/g, "_")
-      .slice(0, 80);
-    cb(null, `${Date.now()}-${safeName}`);
-  },
-});
-
-const upload = multer({ storage });
+const upload = diskUpload({ destination: path.join(__dirname, "..", "uploads") });
 
 const formatPost = (post, meId) => {
   const obj = post.toObject({ virtuals: false });

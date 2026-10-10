@@ -3,7 +3,6 @@ const User = require("../models/User");
 
 const authMiddleware = async (req, res, next) => {
   let token = req.header("Authorization") || req.header("x-auth-token");
-  console.log("🔍 Token recebido:", token);
 
   if (!token) {
     return res.status(401).json({ message: "Token de autenticação ausente" });
@@ -23,7 +22,6 @@ const authMiddleware = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
-    console.log("✅ Usuário autenticado:", req.user);
 
     // Atualiza lastSeen sem bloquear a requisição
     User.findByIdAndUpdate(decoded.id, { lastSeen: new Date() }).catch(() => {});

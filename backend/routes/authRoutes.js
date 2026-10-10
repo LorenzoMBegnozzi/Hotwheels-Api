@@ -1,14 +1,23 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const multer = require("multer");
-const path = require("path");
+const rateLimit = require("express-rate-limit");
 const User = require("../models/User");
-const authMiddleware = require("../middlewares/auth"); 
+const authMiddleware = require("../middlewares/auth");
 const VerificationCode = require("../models/VerificationCode");
 const { sendCodeEmail } = require("../utils/emailService");
+const { diskUpload } = require("../middlewares/upload");
 
 const router = express.Router();
+
+// Limita tentativas de login/registro/reset para dificultar força bruta.
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Muitas tentativas. Tente novamente em alguns minutos." },
+});
 
 const getJwtSecretOrRespond = (res) => {
   const secret = process.env.JWT_SECRET;
@@ -20,17 +29,10 @@ const getJwtSecretOrRespond = (res) => {
   return secret;
 };
 
-// Configuração do multer para upload de imagens
-const storage = multer.diskStorage({
-  destination: "uploads/",
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-const upload = multer({ storage });
+const upload = diskUpload();
 
 // 🟢 Rota de Registro (com nome e confirmação de senha)
-router.post("/register", async (req, res) => {
+router.post("/register", authLimiter, async (req, res) => {
   try {
     const { name, email, password, confirmPassword } = req.body;
     if (!email || !password || !confirmPassword) {
@@ -60,7 +62,7 @@ router.post("/register", async (req, res) => {
 });
 
 // Confirmar cadastro com código
-router.post("/confirm-signup", async (req, res) => {
+router.post("/confirm-signup", authLimiter, async (req, res) => {
   try {
     const { name, email, password, code } = req.body;
     if (!email || !password || !code) {
@@ -92,7 +94,7 @@ router.post("/confirm-signup", async (req, res) => {
 });
 
 // 🔵 Rota de Login
-router.post("/login", async (req, res) => {
+router.post("/login", authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -113,7 +115,7 @@ router.post("/login", async (req, res) => {
     res.json({ token, userId: user._id });
   } catch (err) {
     console.error("Erro no login:", err);
-    res.status(500).json({ message: "Erro ao fazer login", error: err.message });
+    res.status(500).json({ message: "Erro ao fazer login" });
   }
 });
 
@@ -183,7 +185,7 @@ router.put("/update-password", authMiddleware, async (req, res) => {
 });
 
 // Solicitar código de reset de senha
-router.post("/request-reset-code", async (req, res) => {
+router.post("/request-reset-code", authLimiter, async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) return res.status(400).json({ message: "Email é obrigatório." });
@@ -208,7 +210,7 @@ router.post("/request-reset-code", async (req, res) => {
 });
 
 // Confirmar reset com código
-router.post("/confirm-reset", async (req, res) => {
+router.post("/confirm-reset", authLimiter, async (req, res) => {
   try {
     const { email, code, newPassword, confirmPassword } = req.body;
     if (!email || !code || !newPassword || !confirmPassword) {
@@ -239,7 +241,7 @@ router.post("/confirm-reset", async (req, res) => {
 });
 
 // Solicitar código para exclusão de conta (recebe email no body, igual ao registro)
-router.post('/request-delete-code', async (req, res) => {
+router.post('/request-delete-code', authLimiter, async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) return res.status(400).json({ message: 'Email é obrigatório.' });

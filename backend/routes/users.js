@@ -5,6 +5,10 @@ const UserCollection = require("../models/UserCollection");
 const mongoose = require("mongoose");
 const auth = require("../middlewares/auth");
 
+function escapeRegExp(string) {
+  return String(string).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 // Lista de avatares permitidos (8 opções + padrão)
 const ALLOWED_AVATARS = [
   "/default-user.png",
@@ -22,7 +26,7 @@ const ALLOWED_AVATARS = [
 router.get("/search", async (req, res) => {
   try {
     const { name } = req.query;
-    const users = await User.find({ name: { $regex: name, $options: "i" } });
+    const users = await User.find({ name: { $regex: escapeRegExp(name || ""), $options: "i" } });
 
     const usersWithCollections = await Promise.all(
       users.map(async (u) => {
@@ -204,13 +208,17 @@ router.get("/:id", async (req, res) => {
 });
 
 // Atualizar avatar do usuário
-router.put('/:id/avatar', async (req, res) => {
+router.put('/:id/avatar', auth, async (req, res) => {
   try {
     const { id } = req.params;
     const { profilePicture } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'ID de usuário inválido' });
+    }
+
+    if (String(req.user.id) !== String(id)) {
+      return res.status(403).json({ message: 'Você só pode alterar seu próprio avatar.' });
     }
 
     if (!ALLOWED_AVATARS.includes(profilePicture)) {

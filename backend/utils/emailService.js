@@ -1,6 +1,12 @@
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 function buildVerificationEmail(code) {
   return `
@@ -36,8 +42,8 @@ function buildVerificationEmail(code) {
 
 async function sendCodeEmail(to, subject, code) {
   try {
-    return await resend.emails.send({
-      from: "Diecast Social <onboarding@resend.dev>",
+    return await transporter.sendMail({
+      from: `"Diecast Social" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
       to,
       subject,
       html: buildVerificationEmail(code),

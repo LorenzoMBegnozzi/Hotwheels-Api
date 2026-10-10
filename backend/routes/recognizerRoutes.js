@@ -3,20 +3,20 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
+const sharp = require('sharp');
+const { createWorker } = require('tesseract.js');
 const RecognizerImage = require('../models/RecognizerImage');
 const HotWheel = require('../models/HotWheel');
 const { computeHistogram, cosineSimilarity, computeFeatures, combinedSimilarity } = require('../utils/imageSimilarity');
 const { getCache } = require('../utils/hotwheelHistogramCache');
 const { extractText, cleanText, findYear, similarityRatio } = require('../utils/textOcr');
+const { memoryUpload } = require('../middlewares/upload');
 
 const router = express.Router();
 
-// Pasta não é mais necessária (usamos memoryStorage e não salvamos arquivos)
-
 // Use memory storage so uploaded image is NOT persisted to disk.
 // Isto atende a requisição: não salvar a imagem enviada no servidor.
-const memoryStorage = multer.memoryStorage();
-const upload = multer({ storage: memoryStorage });
+const upload = memoryUpload({ maxSizeMb: 8 });
 
 // POST /api/recognizer/cadastrar
 // Cadastro mantém apenas o nome (sem armazenar a imagem). Pode ser removido se não fizer sentido.
@@ -128,7 +128,7 @@ router.post('/reconhecer', upload.single('file'), async (req, res) => {
     });
   } catch (e) {
     console.error('[Recognizer] Erro interno /reconhecer:', e);
-    return res.status(500).json({ status: 'erro', mensagem: e.message, stack: e.stack, top3: [] });
+    return res.status(500).json({ status: 'erro', mensagem: 'Falha ao reconhecer imagem.', top3: [] });
   }
 });
 
@@ -161,7 +161,138 @@ router.post('/text', upload.single('file'), async (req, res) => {
     return res.json({ status: top3.length ? 'ok' : 'erro', mensagem: top3.length ? 'Top 3 por texto' : 'Nenhum encontrado', texto: cleaned, textoBruto: raw, anoDetectado: year, top3 });
   } catch (e) {
     console.error('[OCR] Erro /text:', e);
-    return res.status(500).json({ status: 'erro', mensagem: e.message, top3: [] });
+    return res.status(500).json({ status: 'erro', mensagem: 'Falha ao processar imagem.', top3: [] });
+  }
+});
+
+// POST /api/recognizer/packaging — lê texto da embalagem (foto da caixa/blister)
+router.post('/packaging', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ status: 'erro', mensagem: 'Arquivo não enviado', top3: [] });
+
+    const buffer = req.file.buffer;
+
+    // Obtém dimensões da imagem
+    const meta = await sharp(buffer).metadata();
+    const { width, height } = meta;
+
+    // Em embalagens Hot Wheels, o nome fica na faixa escura do rodapé (~15% inferior).
+    // Também recorta uma faixa do topo (~8%) onde pode aparecer o código (ex: FPY86).
+    const bottomCropTop  = Math.floor(height * 0.80); // últimos 20%
+    const bottomCropH    = height - bottomCropTop;
+    const topCropH       = Math.floor(height * 0.10); // primeiros 10%
+
+    const [bottomBuf, topBuf] = await Promise.all([
+      // Faixa inferior — nome do carro
+      sharp(buffer)
+        .extract({ left: 0, top: bottomCropTop, width, height: bottomCropH })
+        .resize({ width: Math.min(width * 3, 2400), kernel: 'lanczos3' }) // amplia para melhorar OCR
+        .grayscale()
+        .normalize()
+        .sharpen({ sigma: 1.5 })
+        .linear(1.4, -30)   // aumenta contraste
+        .png()
+        .toBuffer(),
+
+      // Faixa superior — código do produto (FPY86, etc.)
+      sharp(buffer)
+        .extract({ left: 0, top: 0, width, height: topCropH })
+        .resize({ width: Math.min(width * 3, 2400), kernel: 'lanczos3' })
+        .grayscale()
+        .normalize()
+        .sharpen()
+        .png()
+        .toBuffer(),
+    ]);
+
+    // OCR nas duas faixas em paralelo
+    const runOcr = async (imgBuf) => {
+      const w = await createWorker({ logger: () => {} });
+      await w.loadLanguage('eng');
+      await w.initialize('eng');
+      const { data: { text } } = await w.recognize(imgBuf);
+      await w.terminate();
+      return text;
+    };
+
+    const [bottomText, topText] = await Promise.all([runOcr(bottomBuf), runOcr(topBuf)]);
+
+    const combined = `${bottomText} ${topText}`;
+    console.log('[Packaging OCR] Faixa inferior:', bottomText.trim());
+    console.log('[Packaging OCR] Faixa superior:', topText.trim());
+
+    // Limpa e normaliza o texto combinado
+    const allText = combined
+      .replace(/\r?\n+/g, ' ')
+      .replace(/[^A-Za-z0-9 &()\-]/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .trim()
+      .toUpperCase();
+
+    console.log('[Packaging OCR] Texto final limpo:', allText);
+
+    if (!allText) {
+      return res.json({ status: 'erro', mensagem: 'Nenhum texto legível encontrado.', top3: [] });
+    }
+
+    // Busca carrinhos no banco e compara o nome contra fragmentos do texto extraído
+    const hotwheels = await HotWheel.find({}, { name: 1, year: 1, imageUrl: 1 });
+
+    const results = [];
+    for (const hw of hotwheels) {
+      const carName = hw.name.toUpperCase();
+
+      // 1. Score direto: similaridade entre nome do carro e texto inteiro
+      const directScore = similarityRatio(allText, carName);
+
+      // 2. Score por substring: verifica se o nome do carro aparece dentro do texto
+      let substringScore = 0;
+      if (allText.includes(carName)) {
+        substringScore = 1.0;
+      } else {
+        // Tenta fragmentos: cada palavra significativa do nome
+        const words = carName.split(' ').filter(w => w.length > 3);
+        const matchedWords = words.filter(w => allText.includes(w));
+        if (words.length > 0) {
+          substringScore = matchedWords.length / words.length;
+        }
+      }
+
+      // 3. Score de janela deslizante: compara o nome do carro com substrings do texto
+      let windowScore = 0;
+      const carWords = carName.split(' ');
+      const textWords = allText.split(' ');
+      for (let i = 0; i <= textWords.length - carWords.length; i++) {
+        const window = textWords.slice(i, i + carWords.length).join(' ');
+        const s = similarityRatio(window, carName);
+        if (s > windowScore) windowScore = s;
+      }
+
+      const finalScore = Math.max(substringScore, windowScore * 0.9, directScore * 0.5);
+
+      if (finalScore > 0.35) {
+        results.push({
+          id: hw._id.toString(),
+          nome: hw.name,
+          ano: hw.year,
+          url: hw.imageUrl,
+          score: Number(finalScore.toFixed(3)),
+        });
+      }
+    }
+
+    results.sort((a, b) => b.score - a.score);
+    const top3 = results.slice(0, 3);
+
+    return res.json({
+      status: top3.length ? 'ok' : 'erro',
+      mensagem: top3.length ? `${top3.length} possíveis correspondências` : 'Nenhum carrinho encontrado no texto da embalagem.',
+      textoExtraido: allText,
+      top3,
+    });
+  } catch (e) {
+    console.error('[Packaging OCR] Erro:', e);
+    return res.status(500).json({ status: 'erro', mensagem: 'Falha ao processar imagem da embalagem.', top3: [] });
   }
 });
 

@@ -81,10 +81,6 @@ const LandingPage = () => {
               <div className="stat-label">Modelos Catalogados</div>
             </div>
             <div className="stat">
-              <div className="stat-number">500+</div>
-              <div className="stat-label">Colecionadores</div>
-            </div>
-            <div className="stat">
               <div className="stat-number">5,000+</div>
               <div className="stat-label">Itens na Plataforma</div>
             </div>

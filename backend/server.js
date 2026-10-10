@@ -1,11 +1,26 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const mongoSanitize = require("express-mongo-sanitize");
 const mongoose = require("mongoose");
 const path = require("path");
 const fs = require("fs");
 
 const app = express();
+
+// Rodamos atrás de um proxy (Railway); necessário para rate-limit/IP corretos.
+app.set("trust proxy", 1);
+
+app.use(
+  helmet({
+    // A API serve imagens para outra origem (o frontend); CORP/COEP
+    // por padrão bloqueariam isso.
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    contentSecurityPolicy: false,
+  })
+);
 
 /* =========================
    CORS
@@ -54,7 +69,21 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
+
+// Remove chaves com $ ou . do body/query/params (protege contra operator injection no Mongo).
+app.use(mongoSanitize());
+
+// Limite geral de requisições por IP (proteção básica contra abuso/DoS).
+app.use(
+  "/api",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 300,
+    standardHeaders: true,
+    legacyHeaders: false,
+  })
+);
 
 /* =========================
    Rotas
@@ -121,6 +150,28 @@ if (fs.existsSync(FRONTEND_INDEX)) {
 ========================= */
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
+});
+
+/* =========================
+   Tratamento de erros
+========================= */
+// Captura erros do multer (arquivo grande, tipo não permitido) e do CORS,
+// e evita que qualquer stack trace vaze para o cliente.
+app.use((err, req, res, next) => {
+  if (err && err.name === "MulterError") {
+    return res.status(400).json({ message: "Erro no upload do arquivo." });
+  }
+  if (err && err.isFileTypeError) {
+    return res.status(400).json({ message: err.message });
+  }
+  if (err && err.message === "Not allowed by CORS") {
+    return res.status(403).json({ message: "Origem não permitida." });
+  }
+  if (err) {
+    console.error("Erro não tratado:", err);
+    return res.status(500).json({ message: "Erro interno no servidor." });
+  }
+  next();
 });
 
 /* =========================

@@ -245,9 +245,7 @@ router.delete("/:carId", authMiddleware, async (req, res) => {
     res.status(200).json({ message: "Item removido com sucesso.", favorites });
   } catch (error) {
     console.error("❌ Erro ao remover item da wishlist:", error);
-    if (error && error.stack) console.error(error.stack);
-    // Em desenvolvimento, retornar stack/mensagem completa auxilia debug localmente
-    res.status(500).json({ message: error.message || "Erro no servidor.", stack: error.stack });
+    res.status(500).json({ message: "Erro no servidor." });
   }
 });
 
